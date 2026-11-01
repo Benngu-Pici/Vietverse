@@ -1,0 +1,1272 @@
+{
+  "AN_KG": {
+    "name": "An Giang",
+    "historyBg": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Chau_Doc_An_Giang_Vietnam.jpg",
+    "cultureBg": "https://upload.wikimedia.org/wikipedia/commons/5/52/Chau_doc_floating_market.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT",
+      "- Miền sông nước Tây Nam",
+      "- Thất Sơn – vùng Bảy Núi",
+      "- Núi Sam – đất thiêng Châu Đốc",
+      "- Vùng biên giới giàu phù sa",
+      "- Giao thoa văn hóa Kinh – Khmer – Chăm – Hoa",
+      "- Lễ hội Vía Bà Chúa Xứ Núi Sam",
+      "- Làng Chăm và văn hóa thốt nốt",
+      "- Bún cá – mắm Châu Đốc – ẩm thực miền Tây"
+    ],
+    "history": [
+      {
+        "text": "Kênh Vĩnh Tế là một công trình thủy lợi và giao thông quan trọng được đào dưới triều vua Gia Long, do Thoại Ngọc Hầu Nguyễn Văn Thoại tổ chức thực hiện. Kênh nối khu vực Châu Đốc với Hà Tiên, góp phần khai phá vùng đất Tây Nam, thúc đẩy giao thông và có ý nghĩa quan trọng trong việc bảo vệ biên giới phía Tây Nam của triều Nguyễn.",
+        "title": "KÊNH VĨNH TẾ (1819–1824) & CÔNG CUỘC KHAI PHÁ, BẢO VỆ BIÊN GIỚI TÂY NAM",
+        "img2": "https://images.openai.com/static-rsc-4/NDf3tQccVjheZGVQmtQ0yBKvQkC4KPN4jBJ1GqWbCI60dvoNBAhTVxShZsCUC1HnIg5JpfDJACjt4sSb1FvJXkDRePGn3p8YTZVHvNNB31D-4tHVkhR_7cwutl8JyN5ACP3NQl6-9rnCxCuFaz1DoJwhFe_6zmiK-dHSai27mKV8ZJ2-w0fSoRzSzJ9ucH1P?purpose=fullsize",
+        "bookUrl": "https://angiang.gov.vn/vi/phat-huy-gia-tri-kenh-vinh-te?utm_source=chatgpt.com",
+        "videoUrl": "https://vinhte.angiang.gov.vn/videos?utm_source=chatgpt.com",
+        "img1": "https://images.openai.com/static-rsc-4/28QE4ksTacVdRNqUOie_N8EK6DbTHdS05Mt49vPSKBkyA6eKxl6R0BfaMkp7YmkovqLRjuSiLjJTfrEFbfDe13Df4CNsFmP6ScYfFATNG90UTzvkyVWZaMB1TRFsfU0mBQ2zt4BZJAc_tE40er5QetM8tkmBOLtlBuVxddoFUv9k4ZKKJVatFAjkH_oM1j8d?purpose=fullsize",
+        "thumbUrl": "https://images.openai.com/static-rsc-4/28QE4ksTacVdRNqUOie_N8EK6DbTHdS05Mt49vPSKBkyA6eKxl6R0BfaMkp7YmkovqLRjuSiLjJTfrEFbfDe13Df4CNsFmP6ScYfFATNG90UTzvkyVWZaMB1TRFsfU0mBQ2zt4BZJAc_tE40er5QetM8tkmBOLtlBuVxddoFUv9k4ZKKJVatFAjkH_oM1j8d?purpose=fullsize",
+        "minigameTags": "An Giang",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "text": "Lễ hội Vía Bà Chúa Xứ Núi Sam diễn ra hằng năm từ ngày 22–27 tháng 4 âm lịch tại Châu Đốc. Lễ hội gồm nhiều nghi thức truyền thống như rước tượng Bà, lễ Tắm Bà, Túc yết, Chánh tế và Hồi sắc, đồng thời thể hiện sự giao lưu văn hóa của các cộng đồng Kinh, Khmer, Chăm và Hoa. Năm 2024, UNESCO ghi danh lễ hội vào Danh sách Di sản văn hóa phi vật thể đại diện của nhân loại.",
+        "img2": "https://ich.unesco.org/img/photo/thumb/17000-HUG.webp?t=1783000021",
+        "bookUrl": "https://vtv.vn/xa-hoi/le-hoi-via-ba-chua-xu-nui-sam-duoc-unesco-ghi-danh-la-niem-vui-chung-cua-ca-nuoc-20241205220638458.htm?utm_source=chatgpt.com",
+        "img1": "https://ich.unesco.org/img/photo/thumb/16997-HUG.webp?t=1783000021",
+        "title": "VĂN HÓA — LỄ HỘI VÍA BÀ CHÚA XỨ NÚI SAM",
+        "videoUrl": "https://ich.unesco.org/en/video/73198?utm_source=chatgpt.com",
+        "thumbUrl": "https://ich.unesco.org/img/photo/thumb/16997-HUG.webp?t=1783000021",
+        "minigameTags": "An Giang",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "BN_BG": {
+    "name": "Bắc Ninh",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Lim_festival_Quan_Ho_B%E1%BA%AFc_Ninh.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Lim_festival_Quan_Ho_B%E1%BA%AFc_Ninh.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Kinh Bắc – làng cổ, di tích Phật giáo và dân ca Quan họ.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "QUAN HỌ BẮC NINH – KHÚC HÁT GIAO DUYÊN KINH BẮC",
+        "text": "Vùng Kinh Bắc gắn với nhiều lớp trầm tích lịch sử của đồng bằng Bắc Bộ. Bắc Ninh nổi bật với hệ thống làng cổ, đình chùa và truyền thống khoa bảng; trong đó chùa Dâu thường được nhắc đến như một trung tâm Phật giáo sớm của Việt Nam. Những di tích này phản ánh vai trò lâu đời của vùng đất trong đời sống chính trị, tín ngưỡng và học thuật.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lim_festival_Quan_Ho_B%E1%BA%AFc_Ninh.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Lim_festival_Quan_Ho_B%E1%BA%AFc_Ninh.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Lim_festival_Quan_Ho_B%E1%BA%AFc_Ninh.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=5YU3zLpZKiE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Quan_h%E1%BB%8D_B%E1%BA%AFc_Ninh",
+        "minigameTags": "Quan họ Bắc Ninh",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "DÂN CA QUAN HỌ BẮC NINH",
+        "text": "Dân ca Quan họ là loại hình hát giao duyên của vùng Kinh Bắc, thường được thể hiện theo lối đối đáp giữa liền anh và liền chị. Lời ca trữ tình, cách hát tinh tế cùng phong tục kết bạn, giao lưu giữa các bọn Quan họ tạo nên bản sắc riêng. Năm 2009, UNESCO ghi danh Dân ca Quan họ Bắc Ninh vào Danh sách Di sản văn hóa phi vật thể đại diện của nhân loại.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lim_festival_Quan_Ho_B%E1%BA%AFc_Ninh.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Lim_festival_Quan_Ho_B%E1%BA%AFc_Ninh.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Lim_festival_Quan_Ho_B%E1%BA%AFc_Ninh.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=5YU3zLpZKiE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Quan_h%E1%BB%8D_B%E1%BA%AFc_Ninh",
+        "minigameTags": "Quan họ Bắc Ninh",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "CM_BL": {
+    "name": "Cà Mau",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Mui_Ca_Mau_national_park.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Mui_Ca_Mau_national_park.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Đất Mũi, rừng ngập mặn, hệ sinh thái ven biển và văn hóa đờn ca tài tử.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "ĐẤT MŨI CÀ MAU – VÙNG ĐẤT CUỐI TRỜI NAM",
+        "text": "Cà Mau là vùng đất cực Nam của Việt Nam, được khai phá và phát triển cùng quá trình mở đất về phương Nam. Hệ thống sông rạch, rừng ngập mặn và những xóm cư dân ven biển định hình sinh kế của người dân qua nhiều thế hệ. Mũi Cà Mau ngày nay là dấu mốc địa lý nổi tiếng, gắn với ý thức về chủ quyền và hành trình mở cõi.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Mui_Ca_Mau_national_park.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Mui_Ca_Mau_national_park.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Mui_Ca_Mau_national_park.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=0CnKc2WA6x4",
+        "bookUrl": "https://vi.wikipedia.org/wiki/M%C5%A9i_C%C3%A0_Mau",
+        "minigameTags": "Mũi Cà Mau",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "ĐỜN CA TÀI TỬ VÀ VĂN HÓA SÔNG NƯỚC NAM BỘ",
+        "text": "Đờn ca tài tử là loại hình âm nhạc truyền thống phổ biến ở Nam Bộ, thường vang lên trong những buổi gặp gỡ cộng đồng và sinh hoạt gia đình. Nghệ thuật này kết hợp tiếng đàn với giọng ca ngẫu hứng trên nền các bài bản truyền thống, thể hiện tâm tình của cư dân miền sông nước. UNESCO ghi danh Nghệ thuật Đờn ca tài tử Nam Bộ vào Danh sách Di sản văn hóa phi vật thể đại diện của nhân loại năm 2013.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Mui_Ca_Mau_national_park.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Mui_Ca_Mau_national_park.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Mui_Ca_Mau_national_park.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=0CnKc2WA6x4",
+        "bookUrl": "https://vi.wikipedia.org/wiki/M%C5%A9i_C%C3%A0_Mau",
+        "minigameTags": "Mũi Cà Mau",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN04": {
+    "name": "Cao Bằng",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Pac_Bo_Cao_Bang.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Pac_Bo_Cao_Bang.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Miền núi đá vôi, thác Bản Giốc, di tích Pác Bó và văn hóa Tày – Nùng.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "DI TÍCH PÁC BÓ – CỘI NGUỒN CÁCH MẠNG",
+        "text": "Cao Bằng là vùng đất biên cương có lịch sử lâu đời, gắn với nhiều dấu mốc quan trọng của lịch sử Việt Nam. Năm 1941, Nguyễn Ái Quốc trở về nước và hoạt động tại Pác Bó, huyện Hà Quảng; hang Cốc Bó, suối Lê-nin và núi Các Mác trở thành những địa danh tiêu biểu của giai đoạn này. Khu di tích Pác Bó hiện lưu giữ nhiều địa điểm gắn với hoạt động cách mạng đầu thập niên 1940.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Pac_Bo_Cao_Bang.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Pac_Bo_Cao_Bang.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Pac_Bo_Cao_Bang.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/P%C3%A1c_B%C3%B3",
+        "minigameTags": "Pác Bó",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "HÁT THEN CỦA NGƯỜI TÀY, NÙNG",
+        "text": "Then là thực hành nghi lễ và diễn xướng dân gian quan trọng trong đời sống tinh thần của cộng đồng Tày, Nùng ở vùng núi phía Bắc, trong đó có Cao Bằng. Người thực hành vừa hát vừa đàn tính, dẫn dắt nghi lễ cầu an, cầu mùa hoặc bày tỏ ước vọng của cộng đồng. Thực hành Then của người Tày, Nùng, Thái ở Việt Nam được UNESCO ghi danh năm 2019.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Pac_Bo_Cao_Bang.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Pac_Bo_Cao_Bang.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Pac_Bo_Cao_Bang.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/P%C3%A1c_B%C3%B3",
+        "minigameTags": "Pác Bó",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "PQ": {
+    "name": "Đảo Phú Quốc",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Phu_Quoc_island_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Phu_Quoc_island_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Đảo ngọc, biển xanh, rừng nhiệt đới, làng chài và nghề nước mắm truyền thống.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "PHÚ QUỐC – DẤU ẤN LỊCH SỬ ĐẢO NGỌC",
+        "text": "Phú Quốc nằm trong vịnh Thái Lan, có lịch sử cư trú và giao thương biển lâu đời. Trong các thế kỷ gần đây, đảo phát triển với những làng chài, nghề biển và hoạt động sản xuất nước mắm; nhà tù Phú Quốc là di tích ghi dấu thời kỳ chiến tranh và sự hy sinh của nhiều chiến sĩ cách mạng. Những lớp lịch sử ấy cùng cảnh quan biển đảo tạo nên bản sắc riêng của đảo.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Phu_Quoc_island_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Phu_Quoc_island_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Phu_Quoc_island_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Ph%C3%BA_Qu%E1%BB%91c",
+        "minigameTags": "Phú Quốc",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "NGHỀ LÀM NƯỚC MẮM PHÚ QUỐC",
+        "text": "Nghề làm nước mắm là một nét văn hóa và sinh kế nổi bật của cư dân Phú Quốc. Cá cơm được ủ chượp với muối trong thùng gỗ lớn, sau thời gian lên men tạo nên loại nước mắm có màu hổ phách và hương vị đặc trưng. Nghề truyền thống này gắn với kinh nghiệm gia đình, nguồn lợi biển và thương hiệu ẩm thực lâu đời của đảo.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Phu_Quoc_island_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Phu_Quoc_island_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Phu_Quoc_island_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Ph%C3%BA_Qu%E1%BB%91c",
+        "minigameTags": "Phú Quốc",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "ĐL_PY": {
+    "name": "Đắk Lắk",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Gong_culture_Central_Highlands_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Gong_culture_Central_Highlands_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Cao nguyên bazan, cà phê, buôn làng Ê Đê – M’nông và văn hóa cồng chiêng.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "BUÔN ĐÔN VÀ LỊCH SỬ VÙNG ĐẤT TÂY NGUYÊN",
+        "text": "Đắk Lắk là vùng đất cao nguyên gắn với lịch sử của các cộng đồng Ê Đê, M’nông và nhiều dân tộc khác. Buôn Đôn từng là địa bàn giao thương, trao đổi hàng hóa qua biên giới và nổi tiếng với nghề săn bắt, thuần dưỡng voi trong quá khứ. Các buôn làng, nhà dài và không gian văn hóa truyền thống phản ánh mối quan hệ bền chặt giữa con người với rừng và đất đỏ bazan.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Gong_culture_Central_Highlands_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Gong_culture_Central_Highlands_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Gong_culture_Central_Highlands_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Kh%C3%B4ng_gian_v%C4%83n_h%C3%B3a_c%E1%BB%93ng_chi%C3%AAng_T%C3%A2y_Nguy%C3%AAn",
+        "minigameTags": "Không gian văn hóa cồng chiêng Tây Nguyên",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "KHÔNG GIAN VĂN HÓA CỒNG CHIÊNG TÂY NGUYÊN",
+        "text": "Cồng chiêng giữ vai trò quan trọng trong các nghi lễ vòng đời, lễ mừng mùa và sinh hoạt cộng đồng của nhiều dân tộc Tây Nguyên. Âm thanh cồng chiêng gắn với không gian nhà dài, bến nước và lễ hội làng, truyền tải quan niệm về con người, thiên nhiên và thế giới tâm linh. Không gian văn hóa cồng chiêng Tây Nguyên được UNESCO ghi danh năm 2005 và tuyên bố là kiệt tác di sản truyền khẩu, phi vật thể của nhân loại.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Gong_culture_Central_Highlands_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Gong_culture_Central_Highlands_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Gong_culture_Central_Highlands_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Kh%C3%B4ng_gian_v%C4%83n_h%C3%B3a_c%E1%BB%93ng_chi%C3%AAng_T%C3%A2y_Nguy%C3%AAn",
+        "minigameTags": "Không gian văn hóa cồng chiêng Tây Nguyên",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN71": {
+    "name": "Điện Biên",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Dien_Bien_Phu_A1_hill.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Dien_Bien_Phu_A1_hill.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Di tích chiến trường Điện Biên Phủ, thung lũng Mường Thanh và văn hóa Thái.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "CHIẾN THẮNG ĐIỆN BIÊN PHỦ NĂM 1954",
+        "text": "Điện Biên gắn liền với Chiến dịch Điện Biên Phủ, diễn ra từ tháng 3 đến tháng 5 năm 1954 trong cuộc kháng chiến chống thực dân Pháp. Sau 56 ngày đêm chiến đấu, quân đội Việt Minh giành thắng lợi, tạo bước ngoặt quan trọng dẫn tới việc ký Hiệp định Genève về Đông Dương. Các địa điểm như đồi A1, hầm Đờ Cát và Sở chỉ huy chiến dịch hiện là những di tích lịch sử tiêu biểu.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Dien_Bien_Phu_A1_hill.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Dien_Bien_Phu_A1_hill.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Dien_Bien_Phu_A1_hill.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Chi%E1%BA%BFn_tr%C6%B0%E1%BB%9Dng_%C4%90i%E1%BB%87n_Bi%C3%AAn_Ph%E1%BB%A7",
+        "minigameTags": "Chiến trường Điện Biên Phủ",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "LỄ HỘI HOA BAN CỦA NGƯỜI THÁI",
+        "text": "Hoa ban là hình ảnh quen thuộc trong đời sống và tâm thức của cộng đồng người Thái ở vùng Tây Bắc. Mùa hoa thường gắn với các hoạt động giao lưu văn nghệ, dân ca, múa xòe, trình diễn trang phục và giới thiệu ẩm thực truyền thống. Lễ hội Hoa Ban tại Điện Biên góp phần tôn vinh bản sắc văn hóa các dân tộc và quảng bá cảnh quan vùng núi Tây Bắc.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Dien_Bien_Phu_A1_hill.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Dien_Bien_Phu_A1_hill.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Dien_Bien_Phu_A1_hill.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Chi%E1%BA%BFn_tr%C6%B0%E1%BB%9Dng_%C4%90i%E1%BB%87n_Bi%C3%AAn_Ph%E1%BB%A7",
+        "minigameTags": "Chiến trường Điện Biên Phủ",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "ĐN_BP": {
+    "name": "Đồng Nai",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Bien_Hoa_pottery_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Bien_Hoa_pottery_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Sông Đồng Nai, Cù lao Phố, vườn cây và nghề gốm truyền thống Biên Hòa.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "BIÊN HÒA – DẤU ẤN ĐÔ THỊ CỔ NAM BỘ",
+        "text": "Đồng Nai là một trong những vùng đất có lịch sử khai phá lâu đời ở Đông Nam Bộ. Từ thế kỷ XVII, cư dân Việt cùng các cộng đồng khác đến khai khẩn, lập làng và phát triển giao thương dọc sông Đồng Nai. Cù lao Phố từng là thương cảng sầm uất trong thế kỷ XVII–XVIII, góp phần kết nối vùng nội địa với mạng lưới thương mại khu vực.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bien_Hoa_pottery_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Bien_Hoa_pottery_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Bien_Hoa_pottery_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Bi%C3%AAn_H%C3%B2a",
+        "minigameTags": "Biên Hòa",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "GỐM BIÊN HÒA – NGHỀ THỦ CÔNG TRUYỀN THỐNG",
+        "text": "Gốm Biên Hòa phát triển mạnh từ cuối thế kỷ XIX và đầu thế kỷ XX, kết hợp kỹ thuật thủ công địa phương với ảnh hưởng từ nhiều dòng gốm châu Á. Sản phẩm có màu men đa dạng, họa tiết trang trí phong phú và thường được tạo hình thủ công. Nghề gốm phản ánh lịch sử giao lưu văn hóa và quá trình phát triển đô thị của vùng Đồng Nai.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Bien_Hoa_pottery_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Bien_Hoa_pottery_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Bien_Hoa_pottery_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Bi%C3%AAn_H%C3%B2a",
+        "minigameTags": "Biên Hòa",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "ĐT_TG": {
+    "name": "Đồng Tháp",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Gao_Giong_Dong_Thap_lotus.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Gao_Giong_Dong_Thap_lotus.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Đồng sen Tháp Mười, vườn cây, di tích Gò Tháp và cảnh quan đất ngập nước.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "GÒ THÁP – DẤU TÍCH VĂN HÓA ÓC EO",
+        "text": "Đồng Tháp lưu giữ nhiều dấu tích của văn hóa Óc Eo, nền văn hóa cổ phát triển ở Nam Bộ trong những thế kỷ đầu Công nguyên. Khu di tích Gò Tháp có các gò nền, di vật kiến trúc và hiện vật khảo cổ liên quan đến đời sống tín ngưỡng của cư dân xưa. Những phát hiện tại đây góp phần làm rõ lịch sử giao thương và sự phát triển của các cộng đồng cổ ở đồng bằng sông Cửu Long.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Gao_Giong_Dong_Thap_lotus.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Gao_Giong_Dong_Thap_lotus.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Gao_Giong_Dong_Thap_lotus.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/G%C3%B2_Th%C3%A1p_%C4%90%E1%BB%93ng_Th%C3%A1p",
+        "minigameTags": "Gò Tháp Đồng Tháp",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "ĐỜN CA TÀI TỬ VÀ HÒA ĐIỆU MIỀN SÔNG NƯỚC",
+        "text": "Đời sống văn hóa Đồng Tháp mang đậm sắc thái miền Tây với dân ca, đờn ca tài tử, lễ hội dân gian và sinh hoạt cộng đồng ven sông. Đờn ca tài tử kết hợp giọng ca với các nhạc cụ truyền thống, thường được trình diễn trong những dịp hội họp, lễ tết. Loại hình này thể hiện sự phóng khoáng, mộc mạc và giàu cảm xúc của cư dân Nam Bộ.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Gao_Giong_Dong_Thap_lotus.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Gao_Giong_Dong_Thap_lotus.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Gao_Giong_Dong_Thap_lotus.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/G%C3%B2_Th%C3%A1p_%C4%90%E1%BB%93ng_Th%C3%A1p",
+        "minigameTags": "Gò Tháp Đồng Tháp",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "GL_BĐ": {
+    "name": "Gia Lai",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Binh_Dinh_traditional_martial_arts.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Binh_Dinh_traditional_martial_arts.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Cao nguyên Pleiku, Biển Hồ, văn hóa cồng chiêng và di sản võ cổ truyền Bình Định.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "TÂY SƠN – DẤU ẤN LỊCH SỬ VÙNG BÌNH ĐỊNH",
+        "text": "Vùng Bình Định trong địa bàn Gia Lai ngày nay gắn với phong trào khởi nghĩa Tây Sơn ở thế kỷ XVIII. Từ vùng đất Tây Sơn, phong trào do ba anh em Nguyễn Nhạc, Nguyễn Huệ và Nguyễn Lữ lãnh đạo đã tạo biến chuyển lớn trong lịch sử Việt Nam, với những chiến thắng tiêu biểu như Rạch Gầm – Xoài Mút và Ngọc Hồi – Đống Đa. Các di tích Tây Sơn góp phần lưu giữ ký ức về phong trào này.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Binh_Dinh_traditional_martial_arts.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Binh_Dinh_traditional_martial_arts.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Binh_Dinh_traditional_martial_arts.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%C3%B5_c%E1%BB%95_truy%E1%BB%81n_B%C3%ACnh_%C4%90%E1%BB%8Bnh",
+        "minigameTags": "Võ cổ truyền Bình Định",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "VÕ CỔ TRUYỀN BÌNH ĐỊNH",
+        "text": "Võ cổ truyền Bình Định là di sản văn hóa gắn với lịch sử võ học và tinh thần thượng võ của vùng đất Bình Định. Các bài quyền, binh khí, võ trận và nghi thức truyền dạy được gìn giữ trong các võ đường, dòng họ và lễ hội địa phương. Nghệ thuật võ cổ truyền vừa là phương pháp rèn luyện thể chất, vừa phản ánh ký ức lịch sử và bản sắc cộng đồng.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Binh_Dinh_traditional_martial_arts.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Binh_Dinh_traditional_martial_arts.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Binh_Dinh_traditional_martial_arts.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%C3%B5_c%E1%BB%95_truy%E1%BB%81n_B%C3%ACnh_%C4%90%E1%BB%8Bnh",
+        "minigameTags": "Võ cổ truyền Bình Định",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN23": {
+    "name": "Hà Tĩnh",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Vi_Giam_Nghe_Tinh_performance.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Vi_Giam_Nghe_Tinh_performance.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Ngã ba Đồng Lộc, núi Hồng – sông La, truyền thống hiếu học và dân ca Ví, giặm.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "NGÃ BA ĐỒNG LỘC – BIỂU TƯỢNG THANH NIÊN XUNG PHONG",
+        "text": "Hà Tĩnh có nhiều địa danh gắn với lịch sử đấu tranh và truyền thống hiếu học của miền Trung. Trong kháng chiến chống Mỹ, Ngã ba Đồng Lộc là nút giao thông chiến lược trên tuyến vận tải chi viện cho chiến trường miền Nam. Sự hy sinh của mười nữ thanh niên xung phong tại đây năm 1968 trở thành biểu tượng về lòng dũng cảm và tinh thần cống hiến của tuổi trẻ Việt Nam.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Vi_Giam_Nghe_Tinh_performance.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Vi_Giam_Nghe_Tinh_performance.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Vi_Giam_Nghe_Tinh_performance.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%C3%AD_gi%E1%BA%B7m_Ngh%E1%BB%87_T%C4%A9nh",
+        "minigameTags": "Ví giặm Nghệ Tĩnh",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "DÂN CA VÍ, GIẶM NGHỆ TĨNH",
+        "text": "Ví, giặm là loại hình dân ca gắn với lao động, sinh hoạt và giao tiếp cộng đồng của người dân Nghệ An – Hà Tĩnh. Lời hát thường mộc mạc, giàu tính tự sự, phản ánh tình yêu quê hương, tình cảm gia đình và kinh nghiệm sống. Dân ca Ví, giặm Nghệ Tĩnh được UNESCO ghi danh vào Danh sách Di sản văn hóa phi vật thể đại diện của nhân loại năm 2014.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Vi_Giam_Nghe_Tinh_performance.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Vi_Giam_Nghe_Tinh_performance.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Vi_Giam_Nghe_Tinh_performance.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%C3%AD_gi%E1%BA%B7m_Ngh%E1%BB%87_T%C4%A9nh",
+        "minigameTags": "Ví giặm Nghệ Tĩnh",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "HY_TB": {
+    "name": "Hưng Yên",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Pho_Hien_Hung_Yen_temple.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Pho_Hien_Hung_Yen_temple.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Phố Hiến cổ, nhãn lồng, làng nghề và các lễ hội dân gian đồng bằng Bắc Bộ.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "PHỐ HIẾN – THƯƠNG CẢNG QUỐC TẾ XƯA",
+        "text": "Vùng Hưng Yên gắn với Phố Hiến, thương cảng phát triển mạnh vào thế kỷ XVI–XVII. Thuyền buôn từ nhiều nơi từng đến giao thương, tạo nên một đô thị có cộng đồng cư dân và dấu ấn văn hóa đa dạng. Hệ thống đền, chùa, hội quán và nhà cổ còn lại phản ánh thời kỳ hưng thịnh của Phố Hiến trong mạng lưới thương mại vùng đồng bằng Bắc Bộ.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Pho_Hien_Hung_Yen_temple.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Pho_Hien_Hung_Yen_temple.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Pho_Hien_Hung_Yen_temple.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Ph%E1%BB%91_Hi%E1%BA%BFn",
+        "minigameTags": "Phố Hiến",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "LỄ HỘI CHỬ ĐỒNG TỬ – TIÊN DUNG",
+        "text": "Lễ hội Chử Đồng Tử – Tiên Dung gắn với truyền thuyết tình yêu giữa chàng trai nghèo Chử Đồng Tử và công chúa Tiên Dung. Lễ hội được tổ chức tại các địa điểm thờ hai nhân vật ở vùng Hưng Yên, với nghi thức rước, tế lễ và hoạt động dân gian. Câu chuyện đề cao tình yêu, lòng nhân ái và tinh thần vượt qua ranh giới địa vị xã hội.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Pho_Hien_Hung_Yen_temple.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Pho_Hien_Hung_Yen_temple.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Pho_Hien_Hung_Yen_temple.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Ph%E1%BB%91_Hi%E1%BA%BFn",
+        "minigameTags": "Phố Hiến",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "KH_NT": {
+    "name": "Khánh Hòa",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Po_Nagar_Cham_Towers_Nha_Trang.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Po_Nagar_Cham_Towers_Nha_Trang.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Vịnh biển Nha Trang, tháp Chăm Po Nagar, nghề biển và văn hóa duyên hải.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "THÁP BÀ PO NAGAR – DẤU ẤN VƯƠNG QUỐC CHĂM PA",
+        "text": "Khánh Hòa có vị trí quan trọng trên tuyến giao thương ven biển miền Trung. Quần thể tháp Bà Po Nagar tại Nha Trang được xây dựng qua nhiều giai đoạn, chủ yếu từ khoảng thế kỷ VIII đến XIII, là trung tâm thờ nữ thần Po Nagar của người Chăm. Di tích phản ánh trình độ kiến trúc, điêu khắc và đời sống tín ngưỡng của cư dân Chăm Pa xưa.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Po_Nagar_Cham_Towers_Nha_Trang.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Po_Nagar_Cham_Towers_Nha_Trang.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Po_Nagar_Cham_Towers_Nha_Trang.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Th%C3%A1p_B%C3%A0_Po_Nagar",
+        "minigameTags": "Tháp Bà Po Nagar",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "LỄ HỘI THÁP BÀ PO NAGAR",
+        "text": "Lễ hội Tháp Bà Po Nagar diễn ra tại Nha Trang, thu hút đông đảo người dân và khách hành hương. Các nghi thức dâng hương, tắm tượng, múa bóng và trình diễn nghệ thuật dân gian thể hiện sự tiếp nối tín ngưỡng thờ Mẫu, đồng thời cho thấy sự giao lưu giữa cộng đồng Chăm và Việt. Đây là một lễ hội tiêu biểu trong đời sống văn hóa tâm linh của địa phương.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Po_Nagar_Cham_Towers_Nha_Trang.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Po_Nagar_Cham_Towers_Nha_Trang.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Po_Nagar_Cham_Towers_Nha_Trang.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Th%C3%A1p_B%C3%A0_Po_Nagar",
+        "minigameTags": "Tháp Bà Po Nagar",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN01": {
+    "name": "Lai Châu",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Lai_Chau_mountains_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Lai_Chau_mountains_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Núi non Tây Bắc, đèo Ô Quy Hồ, ruộng bậc thang và văn hóa đa dân tộc.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "LAI CHÂU – DẤU ẤN LỊCH SỬ VÙNG BIÊN CƯƠNG",
+        "text": "Lai Châu là vùng núi biên giới có lịch sử gắn với các cộng đồng dân tộc Thái, Mông, Dao, Hà Nhì và nhiều nhóm cư dân khác. Qua nhiều thế hệ, các bản mường hình thành dọc thung lũng và sông suối, duy trì tập quán canh tác ruộng bậc thang, trao đổi hàng hóa và quan hệ cộng đồng. Vùng đất này cũng có vị trí quan trọng trong lịch sử giao lưu giữa miền núi Tây Bắc với các khu vực lân cận.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lai_Chau_mountains_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Lai_Chau_mountains_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Lai_Chau_mountains_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Lai_Ch%C3%A2u",
+        "minigameTags": "Lai Châu",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "LỄ HỘI GẦU TÀO CỦA NGƯỜI MÔNG",
+        "text": "Gầu Tào là lễ hội truyền thống của người Mông, thường được tổ chức để cầu phúc, cầu sức khỏe, mùa màng tốt tươi và con cháu đông vui. Lễ hội có phần nghi lễ cùng các hoạt động múa khèn, hát giao duyên, trò chơi dân gian và gặp gỡ cộng đồng. Đây là dịp để truyền dạy phong tục, trang phục, âm nhạc và củng cố sự gắn kết của bản làng.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Lai_Chau_mountains_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Lai_Chau_mountains_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Lai_Chau_mountains_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Lai_Ch%C3%A2u",
+        "minigameTags": "Lai Châu",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN09": {
+    "name": "Lạng Sơn",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Chi_Lang_pass_Lang_Son.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Chi_Lang_pass_Lang_Son.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Ải Chi Lăng, thành nhà Mạc, núi đá vôi và văn hóa Tày – Nùng.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "ẢI CHI LĂNG – CỬA ẢI LỊCH SỬ XỨ LẠNG",
+        "text": "Lạng Sơn là vùng biên ải có vai trò quan trọng trong lịch sử giao thương và bảo vệ biên giới phía Bắc. Ải Chi Lăng là địa danh gắn với nhiều trận đánh, nổi bật là chiến thắng năm 1427 trong cuộc khởi nghĩa Lam Sơn chống quân Minh. Địa hình thung lũng hẹp, núi đá bao quanh từng tạo lợi thế phòng thủ, khiến Chi Lăng trở thành biểu tượng của nghệ thuật quân sự Việt Nam.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Chi_Lang_pass_Lang_Son.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Chi_Lang_pass_Lang_Son.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Chi_Lang_pass_Lang_Son.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/%E1%BA%A2i_Chi_L%C4%83ng",
+        "minigameTags": "Ải Chi Lăng",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "LỄ HỘI LỒNG TỒNG CỦA CƯ DÂN TÀY",
+        "text": "Lồng Tồng, nghĩa là xuống đồng, là lễ hội cầu mùa phổ biến trong cộng đồng Tày ở miền núi phía Bắc. Lễ hội thường có nghi thức cúng trời đất, thần nông, sau đó là các hoạt động hát then, ném còn và trò chơi dân gian. Tại Lạng Sơn, lễ hội phản ánh ước vọng mùa màng tốt tươi, cuộc sống yên bình và sự gắn kết giữa các bản làng.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Chi_Lang_pass_Lang_Son.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Chi_Lang_pass_Lang_Son.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Chi_Lang_pass_Lang_Son.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/%E1%BA%A2i_Chi_L%C4%83ng",
+        "minigameTags": "Ải Chi Lăng",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "LC_YB": {
+    "name": "Lào Cai",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Sapa_terraced_fields_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Sapa_terraced_fields_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Sa Pa, đỉnh Fansipan, ruộng bậc thang và chợ phiên đa sắc màu.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "SA PA VÀ HÀNH TRÌNH HÌNH THÀNH VÙNG DU LỊCH TÂY BẮC",
+        "text": "Lào Cai là cửa ngõ giao thương vùng Tây Bắc, nơi các cộng đồng dân tộc sinh sống lâu đời dọc thung lũng và sườn núi. Sa Pa phát triển thành điểm nghỉ dưỡng từ đầu thế kỷ XX, trong khi các chợ vùng cao tiếp tục là nơi trao đổi hàng hóa và gặp gỡ văn hóa. Các di tích, tuyến đường cổ và cảnh quan ruộng bậc thang cho thấy lịch sử cư trú lâu dài của cư dân miền núi.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sapa_terraced_fields_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Sapa_terraced_fields_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Sapa_terraced_fields_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Sa_Pa",
+        "minigameTags": "Sa Pa",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "CHỢ PHIÊN VÀ TRANG PHỤC TRUYỀN THỐNG VÙNG CAO",
+        "text": "Chợ phiên ở Lào Cai không chỉ là nơi mua bán nông sản, thổ cẩm và vật dụng mà còn là không gian gặp gỡ của các cộng đồng H’Mông, Dao, Tày, Giáy và nhiều dân tộc khác. Trang phục thêu, nhuộm chàm, đồ bạc và âm nhạc dân gian thể hiện kỹ thuật thủ công cùng bản sắc của từng nhóm. Các phiên chợ góp phần duy trì mạng lưới giao lưu văn hóa vùng cao.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sapa_terraced_fields_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Sapa_terraced_fields_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Sapa_terraced_fields_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Sa_Pa",
+        "minigameTags": "Sa Pa",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "LĐ_ĐN_BT": {
+    "name": "Lâm Đồng",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Da_Lat_Xuan_Huong_lake_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Da_Lat_Xuan_Huong_lake_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Đà Lạt, cao nguyên Lang Biang, rừng thông, nông nghiệp ôn đới và văn hóa bản địa.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "ĐÀ LẠT – DẤU ẤN HÌNH THÀNH ĐÔ THỊ CAO NGUYÊN",
+        "text": "Lâm Đồng có lịch sử gắn với các cộng đồng bản địa như K’Ho, Mạ và Churu, cùng quá trình hình thành đô thị Đà Lạt vào cuối thế kỷ XIX và đầu thế kỷ XX. Đà Lạt phát triển thành trung tâm nghỉ dưỡng trên cao nguyên, để lại dấu ấn qua kiến trúc, quy hoạch và các công trình thời kỳ đầu. Những lớp lịch sử bản địa và đô thị cùng tạo nên diện mạo văn hóa đa dạng của vùng cao nguyên.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Da_Lat_Xuan_Huong_lake_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Da_Lat_Xuan_Huong_lake_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Da_Lat_Xuan_Huong_lake_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/%C4%90%C3%A0_L%E1%BA%A1t",
+        "minigameTags": "Đà Lạt",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "KHÔNG GIAN CỒNG CHIÊNG VÀ LỄ HỘI CỦA NGƯỜI K’HO",
+        "text": "Ở Lâm Đồng, cồng chiêng gắn với lễ mừng lúa mới, lễ cưới, lễ bỏ mả và những dịp quan trọng của cộng đồng bản địa. Âm nhạc, điệu múa và nghi thức truyền thống thường diễn ra trong không gian nhà dài hoặc sân làng, thể hiện mối liên hệ giữa con người, tổ tiên và thiên nhiên. Những thực hành này là một phần của di sản văn hóa Tây Nguyên.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Da_Lat_Xuan_Huong_lake_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Da_Lat_Xuan_Huong_lake_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Da_Lat_Xuan_Huong_lake_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/%C4%90%C3%A0_L%E1%BA%A1t",
+        "minigameTags": "Đà Lạt",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN22": {
+    "name": "Nghệ An",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Kim_Lien_Ho_Chi_Minh_birthplace.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Kim_Lien_Ho_Chi_Minh_birthplace.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Quê hương Kim Liên, thành Vinh, miền núi Trường Sơn và dân ca Ví, giặm.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "KIM LIÊN – QUÊ HƯƠNG CHỦ TỊCH HỒ CHÍ MINH",
+        "text": "Nghệ An là vùng đất có truyền thống lịch sử và tinh thần hiếu học lâu đời. Làng Hoàng Trù và làng Sen thuộc xã Kim Liên gắn với tuổi thơ của Chủ tịch Hồ Chí Minh, hiện là quần thể di tích quốc gia đặc biệt. Những ngôi nhà tranh, đồ dùng sinh hoạt và cảnh quan làng quê giúp giới thiệu bối cảnh gia đình, quê hương đã góp phần hình thành nhân cách của Người.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Kim_Lien_Ho_Chi_Minh_birthplace.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Kim_Lien_Ho_Chi_Minh_birthplace.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Kim_Lien_Ho_Chi_Minh_birthplace.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Kim_Li%C3%AAn_Ngh%E1%BB%87_An",
+        "minigameTags": "Kim Liên Nghệ An",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "DÂN CA VÍ, GIẶM NGHỆ TĨNH",
+        "text": "Ví, giặm là loại hình dân ca phát triển trong lao động và sinh hoạt của người dân Nghệ An, Hà Tĩnh. Những câu hát đối đáp, mộc mạc thường gắn với nghề nông, nghề thủ công, chèo thuyền và tình cảm quê hương. Dân ca Ví, giặm Nghệ Tĩnh được UNESCO ghi danh năm 2014, ghi nhận giá trị nghệ thuật và vai trò của cộng đồng trong việc gìn giữ di sản.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Kim_Lien_Ho_Chi_Minh_birthplace.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Kim_Lien_Ho_Chi_Minh_birthplace.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Kim_Lien_Ho_Chi_Minh_birthplace.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Kim_Li%C3%AAn_Ngh%E1%BB%87_An",
+        "minigameTags": "Kim Liên Nghệ An",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "NB_NĐ_HN": {
+    "name": "Ninh Bình",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Hoa_Lu_ancient_capital_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Hoa_Lu_ancient_capital_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Cố đô Hoa Lư, Tràng An, Tam Cốc – Bích Động và cảnh quan núi đá vôi.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "HOA LƯ – KINH ĐÔ ĐẦU TIÊN CỦA NHÀ NƯỚC ĐẠI CỒ VIỆT",
+        "text": "Ninh Bình gắn với kinh đô Hoa Lư, nơi Đinh Bộ Lĩnh thống nhất đất nước và lập quốc hiệu Đại Cồ Việt năm 968. Hoa Lư tiếp tục là kinh đô dưới triều Tiền Lê trước khi Lý Thái Tổ dời đô ra Thăng Long năm 1010. Núi đá vôi và địa hình hiểm trở tạo thành hệ thống phòng thủ tự nhiên, góp phần lý giải việc lựa chọn nơi đây làm trung tâm chính trị thời kỳ đầu độc lập.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hoa_Lu_ancient_capital_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Hoa_Lu_ancient_capital_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Hoa_Lu_ancient_capital_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/C%E1%BB%91_%C4%91%C3%B4_Hoa_L%C6%B0",
+        "minigameTags": "Cố đô Hoa Lư",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "HÁT CHÈO VÀ LỄ HỘI TRUYỀN THỐNG HOA LƯ",
+        "text": "Chèo là loại hình sân khấu dân gian phát triển ở đồng bằng Bắc Bộ, kết hợp hát, múa, nhạc và diễn xuất với nội dung gần gũi đời sống. Ninh Bình có truyền thống hát chèo và nhiều lễ hội gắn với di tích Hoa Lư, trong đó lễ hội Trường Yên tưởng niệm các vua Đinh, vua Lê. Những hoạt động này góp phần duy trì ký ức lịch sử và sinh hoạt cộng đồng.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hoa_Lu_ancient_capital_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Hoa_Lu_ancient_capital_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Hoa_Lu_ancient_capital_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/C%E1%BB%91_%C4%91%C3%B4_Hoa_L%C6%B0",
+        "minigameTags": "Cố đô Hoa Lư",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "PT_VP_HB": {
+    "name": "Phú Thọ",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Hung_Kings_Temple_Phu_Tho.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Hung_Kings_Temple_Phu_Tho.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Đền Hùng, đất Tổ, hát Xoan và văn hóa trung du Bắc Bộ.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "ĐỀN HÙNG – CỘI NGUỒN DÂN TỘC VIỆT",
+        "text": "Phú Thọ là vùng đất trung tâm của không gian văn hóa thời đại Hùng Vương. Khu di tích Đền Hùng trên núi Nghĩa Lĩnh gắn với truyền thuyết các vua Hùng dựng nước và trở thành địa điểm tưởng niệm tổ tiên của người Việt. Qua nhiều thế hệ, nơi đây giữ vai trò quan trọng trong đời sống tinh thần và ý thức về cội nguồn dân tộc.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hung_Kings_Temple_Phu_Tho.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Hung_Kings_Temple_Phu_Tho.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Hung_Kings_Temple_Phu_Tho.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/T%C3%ADn_ng%C6%B0%E1%BB%A1ng_th%E1%BB%9D_c%C3%BAng_H%C3%B9ng_V%C6%B0%C6%A1ng",
+        "minigameTags": "Tín ngưỡng thờ cúng Hùng Vương",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "TÍN NGƯỠNG THỜ CÚNG HÙNG VƯƠNG",
+        "text": "Tín ngưỡng thờ cúng Hùng Vương thể hiện lòng tri ân các vua Hùng và ý thức cộng đồng về nguồn gốc dân tộc. Nghi lễ dâng hương, rước lễ và các sinh hoạt văn hóa được tổ chức tại Đền Hùng và nhiều làng xã. UNESCO ghi danh Tín ngưỡng thờ cúng Hùng Vương ở Phú Thọ vào Danh sách Di sản văn hóa phi vật thể đại diện của nhân loại năm 2012.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hung_Kings_Temple_Phu_Tho.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Hung_Kings_Temple_Phu_Tho.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Hung_Kings_Temple_Phu_Tho.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/T%C3%ADn_ng%C6%B0%E1%BB%A1ng_th%E1%BB%9D_c%C3%BAng_H%C3%B9ng_V%C6%B0%C6%A1ng",
+        "minigameTags": "Tín ngưỡng thờ cúng Hùng Vương",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "QN_KT": {
+    "name": "Quảng Ngãi",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Sa_Huynh_culture_pottery_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Sa_Huynh_culture_pottery_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Đảo Lý Sơn, văn hóa Sa Huỳnh, núi Ấn – sông Trà và nghề trồng tỏi.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "VĂN HÓA SA HUỲNH – DẤU TÍCH CƯ DÂN CỔ VEN BIỂN",
+        "text": "Quảng Ngãi có nhiều di tích phản ánh lịch sử cư trú lâu đời, trong đó văn hóa Sa Huỳnh là một nền văn hóa khảo cổ nổi bật ở miền Trung, có niên đại khoảng thiên niên kỷ thứ nhất trước Công nguyên đến những thế kỷ đầu Công nguyên. Các mộ chum, đồ trang sức và hiện vật kim loại cho thấy đời sống xã hội và mạng lưới giao lưu rộng của cư dân cổ. Sa Huỳnh cũng là địa danh tiêu biểu trong nghiên cứu khảo cổ học Việt Nam.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sa_Huynh_culture_pottery_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Sa_Huynh_culture_pottery_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Sa_Huynh_culture_pottery_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%C4%83n_h%C3%B3a_Sa_Hu%E1%BB%B3nh",
+        "minigameTags": "Văn hóa Sa Huỳnh",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "BÀI CHÒI – NGHỆ THUẬT DÂN GIAN MIỀN TRUNG",
+        "text": "Bài chòi kết hợp âm nhạc, thơ ca, diễn xướng và trò chơi dân gian, thường được tổ chức trong dịp Tết và lễ hội ở miền Trung. Người hô hiệu sử dụng câu hát dí dỏm, giàu chất địa phương để giới thiệu quân bài, tạo nên không khí tương tác giữa người diễn và khán giả. Nghệ thuật Bài chòi Trung Bộ Việt Nam được UNESCO ghi danh năm 2017.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Sa_Huynh_culture_pottery_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Sa_Huynh_culture_pottery_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Sa_Huynh_culture_pottery_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%C4%83n_h%C3%B3a_Sa_Hu%E1%BB%B3nh",
+        "minigameTags": "Văn hóa Sa Huỳnh",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN13": {
+    "name": "Quảng Ninh",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Ha_Long_Bay_Vietnam_limestone_islands.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Ha_Long_Bay_Vietnam_limestone_islands.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Vịnh Hạ Long, di sản biển đảo, thương cảng Vân Đồn và văn hóa vùng mỏ.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "VÂN ĐỒN – THƯƠNG CẢNG CỔ VÙNG ĐÔNG BẮC",
+        "text": "Quảng Ninh có lịch sử gắn với biển đảo và các tuyến giao thương quốc tế. Thương cảng Vân Đồn được thành lập dưới triều Lý vào thế kỷ XII, là một trong những thương cảng quốc tế sớm của Đại Việt, kết nối hoạt động buôn bán với khu vực Đông Á. Vùng đất này cũng gắn với chiến thắng Bạch Đằng năm 1288 trong cuộc kháng chiến chống quân Nguyên – Mông.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ha_Long_Bay_Vietnam_limestone_islands.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Ha_Long_Bay_Vietnam_limestone_islands.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Ha_Long_Bay_Vietnam_limestone_islands.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%E1%BB%8Bnh_H%E1%BA%A1_Long",
+        "minigameTags": "Vịnh Hạ Long",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "HÁT THEN, HÁT SOỌNG CỌ VÀ LỄ HỘI VÙNG MỎ",
+        "text": "Quảng Ninh là nơi giao thoa văn hóa giữa cư dân vùng biển, vùng mỏ và các cộng đồng dân tộc miền núi. Hát then, hát soọng cọ cùng các lễ hội đình, đền phản ánh đời sống tín ngưỡng và sinh hoạt cộng đồng. Bên cạnh đó, văn hóa công nhân mỏ hình thành qua lịch sử khai thác than, tạo nên một sắc thái văn hóa hiện đại đặc trưng của vùng Đông Bắc.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ha_Long_Bay_Vietnam_limestone_islands.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Ha_Long_Bay_Vietnam_limestone_islands.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Ha_Long_Bay_Vietnam_limestone_islands.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%E1%BB%8Bnh_H%E1%BA%A1_Long",
+        "minigameTags": "Vịnh Hạ Long",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "QT_QB": {
+    "name": "Quảng Trị",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Hien_Luong_Bridge_Quang_Tri_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Hien_Luong_Bridge_Quang_Tri_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Di tích Hiền Lương – Bến Hải, Thành cổ Quảng Trị, hang động và bờ biển miền Trung.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "VĨ TUYẾN 17 VÀ DI TÍCH ĐÔI BỜ HIỀN LƯƠNG",
+        "text": "Quảng Trị nằm ở vị trí chiến lược trên dải đất miền Trung. Sau Hiệp định Genève năm 1954, sông Bến Hải và cầu Hiền Lương trở thành ranh giới quân sự tạm thời chia cắt hai miền Việt Nam trong nhiều năm. Hệ thống di tích đôi bờ Hiền Lương – Bến Hải lưu giữ ký ức về thời kỳ chia cắt và khát vọng thống nhất đất nước.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hien_Luong_Bridge_Quang_Tri_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Hien_Luong_Bridge_Quang_Tri_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Hien_Luong_Bridge_Quang_Tri_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Hi%E1%BB%81n_L%C6%B0%C6%A1ng_B%E1%BA%BFn_H%E1%BA%A3i",
+        "minigameTags": "Hiền Lương Bến Hải",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "HÒ VÍ, GIẶM VÀ LỄ HỘI CẦU NGƯ VEN BIỂN",
+        "text": "Đời sống văn hóa Quảng Trị kết hợp các làn điệu dân ca miền Trung với tín ngưỡng cư dân nông nghiệp và ngư nghiệp. Lễ hội cầu ngư ở các làng ven biển thường có nghi thức tế thần biển, cầu mong chuyến đi bình an và mùa cá thuận lợi. Những làn điệu hò lao động phản ánh sự gắn bó của cộng đồng với sông nước, biển cả và ký ức địa phương.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hien_Luong_Bridge_Quang_Tri_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Hien_Luong_Bridge_Quang_Tri_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Hien_Luong_Bridge_Quang_Tri_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Hi%E1%BB%81n_L%C6%B0%C6%A1ng_B%E1%BA%BFn_H%E1%BA%A3i",
+        "minigameTags": "Hiền Lương Bến Hải",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "QĐHS": {
+    "name": "Quần đảo Hoàng Sa",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Paracel_Islands_aerial_view.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Paracel_Islands_aerial_view.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Quần đảo xa bờ, lịch sử hàng hải, tư liệu bản đồ và văn hóa cư dân biển miền Trung.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "HOÀNG SA TRONG LỊCH SỬ HÀNG HẢI VIỆT NAM",
+        "text": "Quần đảo Hoàng Sa nằm ở Biển Đông, trong khu vực có lịch sử hoạt động hàng hải lâu đời. Các tư liệu lịch sử Việt Nam ghi nhận hoạt động khai thác hải sản, thu lượm sản vật và thực thi nhiệm vụ trên biển của các đội Hoàng Sa từ thời các chúa Nguyễn. Ngày nay, Hoàng Sa là chủ đề quan trọng trong nghiên cứu lịch sử hàng hải, tư liệu bản đồ và nhận thức về biển đảo Việt Nam.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Paracel_Islands_aerial_view.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Paracel_Islands_aerial_view.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Paracel_Islands_aerial_view.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Qu%E1%BA%A7n_%C4%91%C3%A3o_Ho%C3%A0ng_Sa",
+        "minigameTags": "Quần đảo Hoàng Sa",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "VĂN HÓA ĐI BIỂN VÀ TÍN NGƯỠNG CƯ DÂN DUYÊN HẢI",
+        "text": "Di sản văn hóa gắn với Hoàng Sa được lưu giữ chủ yếu trong cộng đồng cư dân ven biển miền Trung, đặc biệt qua ký ức về những chuyến đi biển xa. Các nghi lễ cầu an, lễ khao lề thế lính Hoàng Sa và tục thờ cá Ông phản ánh niềm tin, sự tri ân và kinh nghiệm ứng xử với biển cả. Những thực hành này giúp truyền lại ký ức hàng hải giữa các thế hệ.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Paracel_Islands_aerial_view.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Paracel_Islands_aerial_view.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Paracel_Islands_aerial_view.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Qu%E1%BA%A7n_%C4%91%C3%A3o_Ho%C3%A0ng_Sa",
+        "minigameTags": "Quần đảo Hoàng Sa",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "QĐTS": {
+    "name": "Quần đảo Trường Sa",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Spratly_Islands_aerial_view.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Spratly_Islands_aerial_view.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Đảo san hô, hệ sinh thái biển nhiệt đới, nghề cá và đời sống cộng đồng biển đảo.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "TRƯỜNG SA – HÀNH TRÌNH GẮN BÓ VỚI BIỂN ĐẢO",
+        "text": "Quần đảo Trường Sa nằm ở khu vực trung tâm Biển Đông, trên tuyến hàng hải quốc tế quan trọng. Lịch sử khu vực gắn với hoạt động đi biển, đánh bắt hải sản và các ghi chép hàng hải của nhiều cộng đồng trong khu vực. Ngày nay, các đảo và điểm đóng quân có ý nghĩa lớn đối với đời sống cư dân biển, hoạt động hậu cần nghề cá và công tác bảo đảm an toàn hàng hải.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spratly_Islands_aerial_view.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Spratly_Islands_aerial_view.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Spratly_Islands_aerial_view.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Qu%E1%BA%A7n_%C4%91%C3%A3o_Tr%C6%B0%E1%BB%9Dng_Sa",
+        "minigameTags": "Quần đảo Trường Sa",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "VĂN HÓA NGƯ DÂN VÀ TÌNH NGHĨA BIỂN ĐẢO",
+        "text": "Văn hóa gắn với Trường Sa thể hiện qua đời sống ngư dân, các nghi lễ cầu bình an trước chuyến biển và sự hỗ trợ lẫn nhau giữa những người làm nghề biển. Trên các đảo có hoạt động sinh hoạt cộng đồng, tưởng niệm và chăm sóc cây xanh trong điều kiện tự nhiên khắc nghiệt. Những câu chuyện về người lính đảo và ngư dân góp phần nuôi dưỡng tình cảm, trách nhiệm đối với biển đảo.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Spratly_Islands_aerial_view.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Spratly_Islands_aerial_view.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Spratly_Islands_aerial_view.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Qu%E1%BA%A7n_%C4%91%C3%A3o_Tr%C6%B0%E1%BB%9Dng_Sa",
+        "minigameTags": "Quần đảo Trường Sa",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN05": {
+    "name": "Sơn La",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Son_La_prison_museum_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Son_La_prison_museum_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Cao nguyên Mộc Châu, nhà tù Sơn La, lòng hồ thủy điện và văn hóa Thái.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "NHÀ TÙ SƠN LA – DI TÍCH LỊCH SỬ CÁCH MẠNG",
+        "text": "Sơn La là vùng đất Tây Bắc có lịch sử cư trú lâu đời của các cộng đồng Thái, Mông, Dao và nhiều dân tộc khác. Nhà tù Sơn La do thực dân Pháp xây dựng từ năm 1908, từng giam giữ nhiều chiến sĩ cách mạng Việt Nam. Di tích hiện là địa chỉ giáo dục truyền thống, ghi dấu tinh thần đấu tranh trong điều kiện giam cầm khắc nghiệt.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Son_La_prison_museum_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Son_La_prison_museum_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Son_La_prison_museum_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Nh%C3%A0_t%C3%B9_S%C6%A1n_La",
+        "minigameTags": "Nhà tù Sơn La",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "LỄ HỘI XÊN BẢN, XÊN MƯỜNG CỦA NGƯỜI THÁI",
+        "text": "Xên bản, xên mường là nghi lễ truyền thống của người Thái nhằm cầu mong bản mường yên ổn, mùa màng tốt tươi và cuộc sống no đủ. Nghi lễ thường gắn với việc dâng lễ, cúng thần linh và các hoạt động văn nghệ cộng đồng. Những điệu xòe, tiếng khèn và trang phục truyền thống làm nổi bật tinh thần cố kết cộng đồng ở vùng Tây Bắc.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Son_La_prison_museum_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Son_La_prison_museum_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Son_La_prison_museum_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Nh%C3%A0_t%C3%B9_S%C6%A1n_La",
+        "minigameTags": "Nhà tù Sơn La",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "TN_LA": {
+    "name": "Tây Ninh",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Cao_Dai_Holy_See_Tay_Ninh.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Cao_Dai_Holy_See_Tay_Ninh.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Núi Bà Đen, Tòa Thánh Cao Đài, hồ Dầu Tiếng và văn hóa vùng biên.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "NÚI BÀ ĐEN VÀ LỊCH SỬ VÙNG ĐẤT TÂY NINH",
+        "text": "Tây Ninh nằm ở cửa ngõ kết nối Đông Nam Bộ với Campuchia, có lịch sử khai phá gắn với các cộng đồng Việt, Khmer và những dòng di dân khác. Núi Bà Đen là địa danh nổi bật trong lịch sử địa phương, gắn với truyền thuyết dân gian, tín ngưỡng thờ Linh Sơn Thánh Mẫu và các hoạt động hành hương. Trong thế kỷ XX, Tây Ninh cũng là địa bàn quan trọng của nhiều sự kiện lịch sử cách mạng.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cao_Dai_Holy_See_Tay_Ninh.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Cao_Dai_Holy_See_Tay_Ninh.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Cao_Dai_Holy_See_Tay_Ninh.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/T%C3%B2a_Th%C3%A1nh_T%C3%A2y_Ninh",
+        "minigameTags": "Tòa Thánh Tây Ninh",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "TÒA THÁNH CAO ĐÀI VÀ ĐẠO CAO ĐÀI",
+        "text": "Đạo Cao Đài ra đời tại Nam Bộ vào năm 1926, kết hợp một số yếu tố tư tưởng và thực hành từ nhiều truyền thống tôn giáo. Tòa Thánh Tây Ninh là trung tâm hành chính và nghi lễ quan trọng của đạo, nổi bật với kiến trúc nhiều màu sắc và biểu tượng phong phú. Các nghi lễ, trang phục và âm nhạc tạo nên một nét văn hóa tôn giáo đặc trưng của Tây Ninh.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cao_Dai_Holy_See_Tay_Ninh.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Cao_Dai_Holy_See_Tay_Ninh.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Cao_Dai_Holy_See_Tay_Ninh.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/T%C3%B2a_Th%C3%A1nh_T%C3%A2y_Ninh",
+        "minigameTags": "Tòa Thánh Tây Ninh",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "TN_BK": {
+    "name": "Thái Nguyên",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Thai_Nguyen_tea_hills_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Thai_Nguyen_tea_hills_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Đồi chè Tân Cương, hồ Núi Cốc, ATK Định Hóa và văn hóa trà.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "ATK ĐỊNH HÓA – AN TOÀN KHU TRONG KHÁNG CHIẾN",
+        "text": "Thái Nguyên giữ vị trí quan trọng trong lịch sử cách mạng Việt Nam. Trong kháng chiến chống Pháp, vùng Định Hóa thuộc căn cứ địa Việt Bắc, nơi Chủ tịch Hồ Chí Minh và các cơ quan Trung ương làm việc, chỉ đạo cuộc kháng chiến. Hệ thống di tích ATK hiện lưu giữ những địa điểm gắn với các quyết định và hoạt động quan trọng của thời kỳ này.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Thai_Nguyen_tea_hills_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Thai_Nguyen_tea_hills_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Thai_Nguyen_tea_hills_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Tr%C3%A0_Th%C3%A1i_Nguy%C3%AAn",
+        "minigameTags": "Trà Thái Nguyên",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "VĂN HÓA TRÀ THÁI NGUYÊN",
+        "text": "Trà là sản phẩm gắn bó lâu đời với đời sống kinh tế và văn hóa Thái Nguyên, đặc biệt ở vùng Tân Cương. Kỹ thuật hái búp, làm héo, vò và sao trà được truyền qua nhiều thế hệ, tạo nên hương thơm cốm và vị chát dịu đặc trưng. Văn hóa thưởng trà còn thể hiện sự hiếu khách và lối sinh hoạt tinh tế của cộng đồng địa phương.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Thai_Nguyen_tea_hills_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Thai_Nguyen_tea_hills_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Thai_Nguyen_tea_hills_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Tr%C3%A0_Th%C3%A1i_Nguy%C3%AAn",
+        "minigameTags": "Trà Thái Nguyên",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN21": {
+    "name": "Thanh Hóa",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Ho_Citadel_Thanh_Hoa_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Ho_Citadel_Thanh_Hoa_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Thành nhà Hồ, Lam Kinh, biển Sầm Sơn và di sản diễn xướng dân gian.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "THÀNH NHÀ HỒ – DI SẢN KIẾN TRÚC ĐÁ THẾ KỶ XIV",
+        "text": "Thanh Hóa là vùng đất có vai trò lớn trong lịch sử Việt Nam, gắn với các triều đại và phong trào khởi nghĩa. Thành nhà Hồ được xây dựng năm 1397 dưới thời Hồ Quý Ly, với tường thành bằng những khối đá lớn được ghép chính xác. Công trình là minh chứng cho kỹ thuật xây dựng, tổ chức nhà nước và tư duy phòng thủ cuối thế kỷ XIV; UNESCO ghi danh di sản này năm 2011.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ho_Citadel_Thanh_Hoa_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Ho_Citadel_Thanh_Hoa_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Ho_Citadel_Thanh_Hoa_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Th%C3%A0nh_nh%C3%A0_H%E1%BB%93",
+        "minigameTags": "Thành nhà Hồ",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "TRÒ XUÂN PHẢ – DIỄN XƯỚNG DÂN GIAN ĐỘC ĐÁO",
+        "text": "Trò Xuân Phả là loại hình diễn xướng dân gian ở Thanh Hóa, thường được trình diễn trong lễ hội làng với các điệu múa, mặt nạ và trang phục mang tính biểu tượng. Những màn diễn mô phỏng sự giao lưu với các cộng đồng bên ngoài, kết hợp âm nhạc và động tác cách điệu. Di sản này phản ánh trí tưởng tượng dân gian và đời sống lễ hội của cư dân đồng bằng Bắc Trung Bộ.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Ho_Citadel_Thanh_Hoa_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Ho_Citadel_Thanh_Hoa_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Ho_Citadel_Thanh_Hoa_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Th%C3%A0nh_nh%C3%A0_H%E1%BB%93",
+        "minigameTags": "Thành nhà Hồ",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "CT_ST_HG": {
+    "name": "TP Cần Thơ",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Cai_Rang_floating_market_Can_Tho.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Cai_Rang_floating_market_Can_Tho.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Bến Ninh Kiều, chợ nổi Cái Răng, vườn cây ăn trái và văn hóa sông nước.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "BẾN NINH KIỀU – DẤU ẤN ĐÔ THỊ SÔNG HẬU",
+        "text": "Cần Thơ phát triển từ các xóm cư dân ven sông Hậu thành trung tâm giao thương quan trọng của đồng bằng sông Cửu Long. Bến Ninh Kiều gắn với lịch sử mở rộng đô thị, vận tải đường thủy và hoạt động mua bán nông sản. Mạng lưới sông rạch, chợ và vườn cây phản ánh quá trình hình thành đời sống đô thị miền Tây.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cai_Rang_floating_market_Can_Tho.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Cai_Rang_floating_market_Can_Tho.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Cai_Rang_floating_market_Can_Tho.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Ch%E1%BB%A3_n%E1%BB%95i_C%C3%A1i_R%C4%83ng",
+        "minigameTags": "Chợ nổi Cái Răng",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "CHỢ NỔI CÁI RĂNG – VĂN HÓA GIAO THƯƠNG TRÊN SÔNG",
+        "text": "Chợ nổi Cái Răng là hình thức mua bán nông sản trên sông, hình thành từ nhu cầu vận chuyển hàng hóa bằng ghe thuyền ở vùng sông nước. Người bán treo mẫu hàng trên cây bẹo để khách nhận biết từ xa; các ghe thường tụ họp từ sáng sớm. Chợ nổi vừa là không gian kinh tế vừa thể hiện khả năng thích nghi của cư dân miền Tây với môi trường sông ngòi.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cai_Rang_floating_market_Can_Tho.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Cai_Rang_floating_market_Can_Tho.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Cai_Rang_floating_market_Can_Tho.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Ch%E1%BB%A3_n%E1%BB%95i_C%C3%A1i_R%C4%83ng",
+        "minigameTags": "Chợ nổi Cái Răng",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "ĐN_QN": {
+    "name": "TP Đà Nẵng",
+    "historyBg": "https://upload.wikimedia.org/wikipedia/commons/2/23/Da_Nang_City_Vietnam.jpg",
+    "cultureBg": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Marble_Mountains_Da_Nang.jpg",
+    "features": [
+      "Đà Nẵng – \"Thành phố đáng sống\" là điểm giao thoa độc đáo giữa bề dày lịch sử anh hùng và kho tàng di sản văn hóa cực kỳ đặc sắc"
+    ],
+    "history": [
+      {
+        "text": "Trận Chiến Đà Nẵng (1858–1860): Tiếng Súng Mở Đầu & Kháng Chiến Tại Bán Đảo Sơn Trà.\n\nRạng sáng ngày 1/9/1858, hạm đội Liên quân Pháp – Tây Ban Nha do Đô đốc Genouilly chỉ huy đã nổ súng bắn phá cửa biển Đà Nẵng và bán đảo Sơn Trà, chính thức mở đầu cuộc chiến tranh xâm lược Việt Nam. Triều đình nhà Nguyễn đã cử Danh tướng Nguyễn Tri Phương vào làm Tổng đốc trực tiếp chỉ huy mặt trận Đà Nẵng.\nVới tư duy quân sự thiên tài, Nguyễn Tri Phương đã áp dụng chiến thuật \"vườn không nhà trống\", cho đắp lũy đồn dài bao vây cản bước kẻ thù, không cho chúng tiến ra Huế. Dưới sự đùm bọc của nhân dân Quảng Nam – Đà Nẵng, quân dân ta đã giằng co, cầm chân và đánh bại ý đồ \"đánh nhanh thắng nhanh\" của liên quân xâm lược suốt gần 2 năm (1858–1860), buộc giặc phải rút quân khỏi Đà Nẵng.",
+        "title": "TRẬN CHIẾN ĐÀ NẴNG (1858–1860) & PHÒNG TUYẾN SƠN TRÀ - ĐIỆN HẢI",
+        "img2": "https://upload.wikimedia.org/wikipedia/commons/b/bd/French_ships_at_Danang_1858.jpg",
+        "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/2/23/Da_Nang_City_Vietnam.jpg",
+        "img1": "https://upload.wikimedia.org/wikipedia/commons/2/23/Da_Nang_City_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=xVoNfZ8MQuw",
+        "bookUrl": "https://redsvn.net/tran-da-nang-1858-1860-chien-thang-lon-duy-nhat-cua-nha-nguyen-truoc-quan-phap2/",
+        "minigameTags": "Đà Nẵng",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "bookUrl": "https://bazantravel.com/lang-da-my-nghe-non-nuoc-tai-da-nang/",
+        "img2": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Marble_Mountains_Da_Nang.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=Bw4pGnAsC2g",
+        "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Marble_Mountains_Da_Nang.jpg",
+        "text": "Làng đá mỹ nghệ Non Nước (phường Hòa Hải, quận Ngũ Hành Sơn, TP. Đà Nẵng) là Di sản văn hóa phi vật thể quốc gia có lịch sử hơn 300–400 năm, khởi nguồn từ thế kỷ XVII do nghệ nhân Huỳnh Loan (Thanh Hóa) truyền nghề. Từ khối đá vôi Ngũ Hành Sơn, các nghệ nhân đã chế tác hàng ngàn tác phẩm tinh xảo từ vật dụng sinh hoạt, trang sức đến tượng Phật, tượng Chăm Pa, linh vật và công trình kiến trúc quy mô, thể hiện nét giao thoa độc đáo giữa văn hóa Việt cổ và nghệ thuật điêu khắc Chăm Pa (Mỹ Sơn). Làng đá Non Nước đóng vai trò là di sản trọng tâm của địa phương Ngũ Hành Sơn, được lồng ghép trực tiếp vào hệ thống bộ bài và các hoạt động trải nghiệm.",
+        "img1": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Marble_Mountains_Da_Nang.jpg",
+        "title": "Làng đá Mỹ nghệ Non Nước",
+        "minigameTags": "Đà Nẵng",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VNHN": {
+    "name": "TP Hà Nội",
+    "historyBg": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Hanoi_Flag_Tower_2013.jpg",
+    "cultureBg": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Hoan_Kiem_Lake_Hanoi.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT",
+      "- Thủ đô nghìn năm văn hiến",
+      "- Hoàng thành Thăng Long – Di sản Văn hóa Thế giới",
+      "- Phố cổ, hồ Gươm và kiến trúc Pháp",
+      "- Ẩm thực Tràng An: phở, cốm Làng Vòng, trà sen Tây Hồ"
+    ],
+    "history": [
+      {
+        "title": "HOÀNG THÀNH THĂNG LONG & CHIẾU DỜI ĐÔ (1010)",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "img1": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Hanoi_Flag_Tower_2013.jpg",
+        "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Hanoi_Flag_Tower_2013.jpg",
+        "text": "Mùa thu năm 1010, vua Lý Thái Tổ (Lý Công Uẩn) ban Chiếu dời đô, quyết định chuyển kinh đô nước Đại Cồ Việt từ vùng núi Hoa Lư (Ninh Bình) về thành Đại La. Khi thuyền ngự vừa cập bến dưới chân thành, vua thấy hình ảnh rồng vàng bay lên, bèn đổi tên thành Thăng Long (\"Rồng bay lên\").\nTrải qua các triều đại Lý, Trần, Lê, Mạc, Nguyễn, Hoàng thành Thăng Long liên tục giữ vai trò là trung tâm quyền lực chính trị, văn hóa và kinh tế quan trọng bậc nhất của đất nước. Với tầng dầy di tích lịch sử và di vật khảo cổ quý giá nối tiếp nhau qua hơn 1.300 năm, khu di sản đã được UNESCO chính thức công nhận là Di sản Văn hóa Thế giới vào năm 2010.",
+        "img2": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Hanoi_Flag_Tower_2013.jpg",
+        "bookUrl": "https://vinpearl.com/vi/hoang-thanh-thang-long-ha-noi",
+        "minigameTags": "Hà Nội",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "Nét Đẹp Văn Hóa Ẩm Thực và Lối Sống Tràng An Tinh Tế",
+        "img1": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Hoan_Kiem_Lake_Hanoi.jpg",
+        "bookUrl": "https://langcomvong.com",
+        "videoUrl": "https://www.youtube.com/watch?v=onv2NoHnckU",
+        "img2": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Hoan_Kiem_Lake_Hanoi.jpg",
+        "text": "Nét ẩm thực Tràng An ngàn năm văn hiến vốn nổi tiếng bởi sự thanh tao, cầu kỳ và tinh tế trong từng cách chế biến lẫn nghệ thuật thưởng thức. \nĐiển hình cho phong vị tao nhã ấy chính là sự kết hợp giữa \"Cốm Làng Vòng\" dẻo thơm – món quà mùa thu mộc mạc gói trọn trong lớp lá sen xanh mát – cùng \"Trà sen Tây Hồ,\" tuyệt phẩm danh trà được dệt ướp kỳ công qua hàng ngàn bông sen Bách Diệp thanh khiết. Sự hòa quyện giữa vị ngọt thanh dịu của hạt cốm non cùng tách trà sen đậm đà, ngát hương không chỉ đơn thuần là thói quen ẩm thực, mà đã trở thành một triết lý sống chậm rãi, lắng đọng nét đẹp nét lịch thiệp và chiều sâu tâm hồn của người Hà Nội qua bao thế hệ.",
+        "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Hoan_Kiem_Lake_Hanoi.jpg",
+        "minigameTags": "Hà Nội",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "HP_HD": {
+    "name": "TP Hải Phòng",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Cat_Ba_island_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Cat_Ba_island_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Cảng biển, quần đảo Cát Bà, sông Bạch Đằng và văn hóa làng biển.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "BẠCH ĐẰNG – DÒNG SÔNG CỦA NHỮNG CHIẾN THẮNG",
+        "text": "Hải Phòng và vùng cửa sông Bạch Đằng gắn với những chiến thắng quan trọng trong lịch sử chống ngoại xâm. Năm 938, Ngô Quyền đánh bại quân Nam Hán bằng trận địa cọc trên sông; năm 1288, Trần Hưng Đạo tiếp tục vận dụng địa hình thủy triều để đánh bại quân Nguyên – Mông. Những chiến thắng này trở thành biểu tượng của nghệ thuật quân sự và ý chí độc lập của dân tộc.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cat_Ba_island_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Cat_Ba_island_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Cat_Ba_island_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/H%C3%A1t_%C4%91%C3%BAm_H%E1%BA%A3i_Ph%C3%B2ng",
+        "minigameTags": "Hát đúm Hải Phòng",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "HÁT ĐÚM THỦY NGUYÊN",
+        "text": "Hát đúm là loại hình dân ca đối đáp truyền thống ở vùng Thủy Nguyên, Hải Phòng, thường diễn ra trong dịp hội làng và mùa xuân. Người hát dùng lời ca giao duyên, ứng tác theo tình huống, thể hiện sự duyên dáng và khả năng ứng đối. Hát đúm phản ánh đời sống văn hóa của cư dân ven biển và vùng cửa sông Bắc Bộ.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Cat_Ba_island_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Cat_Ba_island_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Cat_Ba_island_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/H%C3%A1t_%C4%91%C3%BAm_H%E1%BA%A3i_Ph%C3%B2ng",
+        "minigameTags": "Hát đúm Hải Phòng",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "HCM_BRVT_BD": {
+    "name": "TP Hồ Chí Minh",
+    "historyBg": "https://upload.wikimedia.org/wikipedia/commons/2/22/Ho_Chi_Minh_City_Hall_2017.jpg",
+    "cultureBg": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Saigon_Notre-Dame_Basilica_2015.jpg",
+    "features": [
+      "TP. Hồ Chí Minh là một đô thị lớn, năng động và đa dạng về văn hóa của Việt Nam. Thành phố mang trong mình dấu ấn lịch sử lâu đời, đồng thời là nơi giao thoa giữa nhiều vùng miền và cộng đồng văn hóa khác nhau. Nhịp sống hiện đại, tinh thần cởi mở cùng đời sống nghệ thuật, ẩm thực và sáng tạo phong phú tạo nên một bản sắc riêng, vừa trẻ trung vừa giàu giá trị truyền thống."
+    ],
+    "history": [
+      {
+        "img2": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Ben_Thanh_Market_Saigon_1920s.jpg",
+        "text": "Sài Gòn là vùng đất có lịch sử hình thành và phát triển lâu đời. Trước khi trở thành một đô thị lớn, nơi đây đã có cư dân sinh sống từ rất sớm. Đến năm 1698, Thống suất Nguyễn Hữu Cảnh được chúa Nguyễn cử vào kinh lược phương Nam, lập phủ Gia Định và dinh Phiên Trấn, đặt nền móng cho quá trình hình thành và phát triển của Sài Gòn – Gia Định.\n\nTrong các thế kỷ tiếp theo, Sài Gòn từng bước trở thành một trung tâm quan trọng về kinh tế, giao thương và văn hóa của Nam Bộ. Từ giữa thế kỷ XIX, thành phố trải qua thời kỳ thuộc địa và có nhiều thay đổi về quy hoạch, kiến trúc và đời sống đô thị. Trong thế kỷ XX, Sài Gòn tiếp tục giữ vai trò quan trọng trong lịch sử Việt Nam, trải qua nhiều biến động gắn với các cuộc đấu tranh giành độc lập và thống nhất đất nước.\n\nSau ngày 30/4/1975, Sài Gòn – Gia Định được sắp xếp lại về mặt hành chính. Ngày 2/7/1976, Quốc hội quyết định đổi tên thành phố Sài Gòn – Gia Định thành Thành phố Hồ Chí Minh. Từ đó, thành phố bước vào giai đoạn xây dựng và phát triển mới, trở thành một đô thị lớn, năng động và có vai trò quan trọng trong đời sống kinh tế, văn hóa của Việt Nam.",
+        "img1": "https://upload.wikimedia.org/wikipedia/commons/2/22/Ho_Chi_Minh_City_Hall_2017.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/2/22/Ho_Chi_Minh_City_Hall_2017.jpg",
+        "title": "Sài Gòn – Gia Định và hành trình tên gọi hơn 300 năm lịch sử",
+        "bookUrl": "https://vi.wikipedia.org/wiki/S%C3%A0i_G%C3%B2n_Gia_%C4%90%E1%BB%8Bnh",
+        "minigameTags": "Hồ Chí Minh",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "img1": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Saigon_Notre-Dame_Basilica_2015.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "title": "Hát bóng rỗi Gia Định – Sài Gòn",
+        "thumbUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Saigon_Notre-Dame_Basilica_2015.jpg",
+        "img2": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Saigon_Notre-Dame_Basilica_2015.jpg",
+        "text": "Hát bóng rỗi là một loại hình diễn xướng nghi lễ dân gian gắn với tín ngưỡng thờ Mẫu và các nữ thần của cư dân Nam Bộ trong quá trình khai phá, tụ cư ở vùng đất phương Nam. Tại vùng Gia Định – Sài Gòn, loại hình này gắn với đời sống tín ngưỡng tại các miễu và những nghi lễ cầu an, tạ lễ, thể hiện sự giao thoa văn hóa giữa các cộng đồng Việt, Chăm, Hoa và Khmer.\n\nHát bóng rỗi không chỉ đơn thuần là ca hát mà là một hình thức diễn xướng tổng hợp, kết hợp giữa hát, âm nhạc, múa và biểu diễn. Một buổi diễn thường có các phần như khai tràng, hát chầu mời – thỉnh tổ, múa dâng bông, múa dâng mâm, bán lộc và các tiết mục chặp bóng. Đặc biệt, múa bóng với những đạo cụ như hoa, mâm, dù, trống chầu hay các vật dụng dân gian tạo nên nét biểu diễn rất riêng và sinh động.\n\nQua những làn điệu, động tác múa và nghi thức trang trọng, hát bóng rỗi phản ánh đời sống tinh thần, niềm tin và mong ước bình an của cộng đồng cư dân xưa. Ngày nay, đây là một nét văn hóa dân gian truyền thống được nghiên cứu và gìn giữ như một phần của di sản văn hóa vùng Sài Gòn – Gia Định và Nam Bộ.",
+        "bookUrl": "https://vi.wikipedia.org/wiki/H%C3%A1t_b%C3%B3ng_r%E1%BB%97i",
+        "minigameTags": "Hồ Chí Minh",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VN26": {
+    "name": "TP Huế",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Hue_Imperial_City_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Hue_Imperial_City_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Kinh thành Huế, lăng tẩm triều Nguyễn, sông Hương, áo dài và nhã nhạc cung đình.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "PHÚ XUÂN – KINH ĐÔ TRIỀU NGUYỄN",
+        "text": "Huế trở thành trung tâm chính trị quan trọng dưới các chúa Nguyễn và là kinh đô của Việt Nam dưới triều Nguyễn từ năm 1802 đến 1945. Kinh thành, Hoàng thành, Tử Cấm thành cùng hệ thống lăng tẩm phản ánh quy hoạch đô thị, kiến trúc cung đình và nghi lễ triều đại. Quần thể di tích Cố đô Huế được UNESCO ghi danh là Di sản văn hóa thế giới năm 1993.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hue_Imperial_City_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Hue_Imperial_City_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Hue_Imperial_City_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=0CnKc2WA6x4",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Nh%C3%A3_nh%E1%BA%A1c_cung_%C4%91%C3%ACnh_Hu%E1%BA%BF",
+        "minigameTags": "Nhã nhạc cung đình Huế",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "NHÃ NHẠC CUNG ĐÌNH HUẾ",
+        "text": "Nhã nhạc cung đình Huế là loại hình âm nhạc được trình diễn trong các nghi lễ của triều đình Nguyễn, với hệ thống bài bản, nhạc cụ và quy tắc biểu diễn riêng. Âm nhạc phục vụ các dịp tế lễ, lễ đăng quang, tiếp sứ thần và những nghi thức quan trọng. UNESCO ghi danh Nhã nhạc cung đình Việt Nam vào năm 2003, ghi nhận giá trị lịch sử và nghệ thuật của loại hình này.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Hue_Imperial_City_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Hue_Imperial_City_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Hue_Imperial_City_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=0CnKc2WA6x4",
+        "bookUrl": "https://vi.wikipedia.org/wiki/Nh%C3%A3_nh%E1%BA%A1c_cung_%C4%91%C3%ACnh_Hu%E1%BA%BF",
+        "minigameTags": "Nhã nhạc cung đình Huế",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "TQ_HG": {
+    "name": "Tuyên Quang",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Tan_Trao_historical_site_Tuyen_Quang.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Tan_Trao_historical_site_Tuyen_Quang.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Tân Trào, cao nguyên đá Đồng Văn, sông Lô và văn hóa các dân tộc miền núi.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "TÂN TRÀO – THỦ ĐÔ KHU GIẢI PHÓNG",
+        "text": "Tuyên Quang có vai trò nổi bật trong lịch sử cách mạng Việt Nam. Trong những năm 1945, Tân Trào là căn cứ quan trọng của cách mạng, nơi diễn ra Quốc dân Đại hội tháng 8 năm 1945 và nhiều quyết định dẫn tới Tổng khởi nghĩa giành chính quyền. Cây đa Tân Trào, đình Tân Trào và lán Nà Nưa là những địa điểm tiêu biểu của khu di tích lịch sử này.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Tan_Trao_historical_site_Tuyen_Quang.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Tan_Trao_historical_site_Tuyen_Quang.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Tan_Trao_historical_site_Tuyen_Quang.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/T%C3%A2n_Tr%C3%A0o",
+        "minigameTags": "Tân Trào",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "LỄ HỘI LỒNG TỒNG CỦA CỘNG ĐỒNG TÀY",
+        "text": "Lồng Tồng là lễ hội xuống đồng của người Tày, nhằm cầu cho mưa thuận gió hòa, mùa màng bội thu và bản làng bình yên. Nghi lễ thường có phần cúng tế, gieo hạt tượng trưng, hát then, đàn tính và các trò chơi dân gian. Ở Tuyên Quang, lễ hội là dịp cộng đồng gặp gỡ, truyền dạy phong tục và thể hiện sự gắn bó với đất đai canh tác.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Tan_Trao_historical_site_Tuyen_Quang.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Tan_Trao_historical_site_Tuyen_Quang.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Tan_Trao_historical_site_Tuyen_Quang.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=z60dG5kbYQE",
+        "bookUrl": "https://vi.wikipedia.org/wiki/T%C3%A2n_Tr%C3%A0o",
+        "minigameTags": "Tân Trào",
+        "minigameUrl": ""
+      }
+    ]
+  },
+  "VL_BT_TV": {
+    "name": "Vĩnh Long",
+    "historyBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Vinh_Long_brick_kilns_Mang_Thit_Vietnam.jpg",
+    "cultureBg": "https://commons.wikimedia.org/wiki/Special:FilePath/Vinh_Long_brick_kilns_Mang_Thit_Vietnam.jpg",
+    "features": [
+      "### ĐẶC ĐIỂM NỔI BẬT\n- Cù lao sông Tiền – sông Hậu, vườn cây ăn trái, gạch gốm Mang Thít và đờn ca tài tử.\n- Di sản lịch sử và văn hóa đặc trưng của địa phương\n- Ẩm thực, lễ hội và cảnh quan gắn với đời sống cộng đồng"
+    ],
+    "history": [
+      {
+        "title": "VÙNG ĐẤT VĨNH LONG – LỊCH SỬ KHAI PHÁ MIỀN SÔNG NƯỚC",
+        "text": "Vĩnh Long nằm giữa các nhánh lớn của sông Mekong, được khai phá và phát triển qua nhiều thế kỷ cùng quá trình mở rộng cư trú của cư dân Nam Bộ. Những cù lao, bến sông và vườn cây trở thành nền tảng cho giao thương nông sản, nghề thủ công và đời sống làng xã. Di tích Văn Thánh Miếu Vĩnh Long phản ánh truyền thống trọng học và ảnh hưởng của Nho học ở địa phương.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Vinh_Long_brick_kilns_Mang_Thit_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Vinh_Long_brick_kilns_Mang_Thit_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Vinh_Long_brick_kilns_Mang_Thit_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%C4%83n_Th%C3%A1nh_Mi%E1%BA%BFu_V%C4%A9nh_Long",
+        "minigameTags": "Văn Thánh Miếu Vĩnh Long",
+        "minigameUrl": ""
+      }
+    ],
+    "culture": [
+      {
+        "title": "ĐỜN CA TÀI TỬ VÀ NGHỆ THUẬT ĐỜN KÌM",
+        "text": "Đờn ca tài tử là loại hình âm nhạc thính phòng dân gian Nam Bộ, thường được trình diễn trong những buổi sinh hoạt thân mật và dịp lễ hội. Đàn kìm, đàn tranh, đàn cò, guitar phím lõm cùng giọng ca tạo nên cách diễn tấu linh hoạt dựa trên các bài bản truyền thống. Di sản này được UNESCO ghi danh năm 2013 và vẫn được duy trì trong các câu lạc bộ, gia đình nghệ nhân ở miền Tây.",
+        "thumbUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/Vinh_Long_brick_kilns_Mang_Thit_Vietnam.jpg",
+        "img1": "https://commons.wikimedia.org/wiki/Special:FilePath/Vinh_Long_brick_kilns_Mang_Thit_Vietnam.jpg",
+        "img2": "https://commons.wikimedia.org/wiki/Special:FilePath/Vinh_Long_brick_kilns_Mang_Thit_Vietnam.jpg",
+        "videoUrl": "https://www.youtube.com/watch?v=2syvZv_IG38",
+        "bookUrl": "https://vi.wikipedia.org/wiki/V%C4%83n_Th%C3%A1nh_Mi%E1%BA%BFu_V%C4%A9nh_Long",
+        "minigameTags": "Văn Thánh Miếu Vĩnh Long",
+        "minigameUrl": ""
+      }
+    ]
+  }
+}

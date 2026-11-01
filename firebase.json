@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "vietverse-main",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
