@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vietverse | Admin – Khám phá</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  :root{--red:#d32f2f;--red-dark:#b71c1c;--gold:#f5c842;--bg:#f7f3f0;--card:#fff;--border:#ece5e0;--text:#1a1a1a;--muted:#888;--ok:#2e7d32;}
+  html,body{min-height:100%;background:var(--bg);font-family:'Be Vietnam Pro',sans-serif;color:var(--text);}
+  .topbar{position:sticky;top:0;z-index:50;background:var(--red);color:#fff;display:flex;align-items:center;gap:16px;padding:0 24px;height:58px;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+  .topbar h1{font-family:'Baloo 2',cursive;font-size:1.25rem;flex:1;}
+  .topbar a{color:#fff;text-decoration:none;font-weight:700;font-size:.85rem;opacity:.9;}
+  .topbar a:hover{opacity:1;text-decoration:underline;}
+  .layout{display:grid;grid-template-columns:300px 1fr;gap:22px;max-width:1300px;margin:0 auto;padding:22px 20px 90px;align-items:start;}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,.06);}
+  /* sidebar */
+  .side{padding:16px;position:sticky;top:78px;max-height:calc(100vh - 100px);display:flex;flex-direction:column;}
+  @media(max-width:900px){.side{position:static;max-height:340px;}}
+  .side input{width:100%;padding:10px 14px;border-radius:10px;border:2px solid var(--border);background:#faf8f6;font:inherit;font-size:.9rem;outline:none;margin-bottom:10px;}
+  .side input:focus{border-color:var(--red);}
+  #provList{overflow-y:auto;flex:1;}
+  .prov{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;cursor:pointer;font-size:.9rem;font-weight:600;}
+  .prov:hover{background:#faf1ef;}
+  .prov.active{background:rgba(211,47,47,.12);color:var(--red);}
+  .prov small{color:var(--muted);font-weight:600;margin-left:auto;font-size:.7rem;white-space:nowrap;}
+  .dot{width:9px;height:9px;border-radius:50%;background:#ddd;flex-shrink:0;}
+  .dot.has{background:var(--ok);}
+  .add-id{display:flex;gap:6px;margin-top:10px;}
+  .add-id input{margin:0;}
+  /* editor */
+  .editor{padding:26px 28px;}
+  .empty{text-align:center;color:var(--muted);padding:80px 20px;font-weight:600;}
+  .ed-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:6px;}
+  .ed-head h2{font-family:'Baloo 2',cursive;color:var(--red);font-size:1.5rem;}
+  .ed-head code{background:#f3ece7;padding:2px 8px;border-radius:6px;font-size:.78rem;color:#7a5a4a;}
+  .links{display:flex;flex-wrap:wrap;gap:14px;font-size:.8rem;margin-bottom:22px;color:var(--muted);}
+  .links a{color:var(--red);font-weight:700;text-decoration:none;}
+  .sec{margin-top:26px;}
+  .sec-title{font-family:'Baloo 2',cursive;font-size:1.05rem;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+  .fg{margin-bottom:14px;}
+  .fg label{display:block;font-size:.74rem;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;}
+  .fg input,.fg textarea,.fg select{width:100%;padding:10px 13px;border-radius:10px;border:2px solid var(--border);background:#faf8f6;font:inherit;font-size:.92rem;color:var(--text);outline:none;transition:.15s;}
+  .fg textarea{resize:vertical;line-height:1.5;}
+  .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(211,47,47,.1);background:#fff;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:700px){.row2,.row3{grid-template-columns:1fr;}}
+  .hint{font-size:.76rem;color:var(--muted);line-height:1.5;margin-top:5px;}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;}
+  .tab{padding:9px 18px;border-radius:999px;border:2px solid var(--border);background:#fff;font:inherit;font-weight:800;font-size:.88rem;cursor:pointer;color:var(--muted);}
+  .tab.active{background:var(--red);border-color:var(--red);color:#fff;}
+  .items{display:none;}
+  .items.active{display:block;}
+  .item-card{border:2px solid var(--border);border-radius:14px;margin-bottom:12px;background:#fff;overflow:hidden;}
+  .item-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#faf3ef;cursor:pointer;}
+  .item-num{width:26px;height:26px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .item-prev{flex:1;font-weight:700;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .item-btns{display:flex;gap:6px;}
+  .item-btns button{border:none;background:#fff;border:1px solid var(--border);border-radius:8px;padding:4px 9px;cursor:pointer;font-size:.8rem;}
+  .item-btns button:hover{background:#ffeceb;}
+  .item-body{padding:16px 16px 4px;display:none;}
+  .item-card.open .item-body{display:block;}
+  .btn{padding:10px 18px;border-radius:12px;border:none;font:inherit;font-weight:800;font-size:.9rem;cursor:pointer;}
+  .btn-add{background:#fff0ef;color:var(--red);width:100%;border:2px dashed rgba(211,47,47,.35);}
+  .btn-add:hover{background:#ffe2df;}
+  .btn-sm{padding:9px 14px;background:var(--red);color:#fff;border-radius:10px;font-size:.85rem;}
+  .savebar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:14px;justify-content:flex-end;box-shadow:0 -4px 16px rgba(0,0,0,.08);}
+  .savebar .state{margin-right:auto;font-size:.85rem;font-weight:700;color:var(--muted);}
+  .savebar .state.dirty{color:#c2410c;}
+  .btn-save{background:var(--red);color:#fff;padding:12px 30px;box-shadow:0 4px 14px rgba(211,47,47,.3);}
+  .btn-save:disabled{opacity:.5;cursor:not-allowed;}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:#fff;padding:12px 26px;border-radius:14px;font-weight:700;font-size:.9rem;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:90vw;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.success{background:#1b5e20;}
+  .toast.error{background:var(--red-dark);}
+  /* nhập hàng loạt */
+  .bulk{display:flex;flex-direction:column;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+  .btn-ghost{background:#fff;border:2px solid var(--border);color:var(--red);padding:9px 12px;font-size:.82rem;border-radius:10px;}
+  .btn-ghost:hover{background:#fff0ef;border-color:rgba(211,47,47,.4);}
+  .modal{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;}
+  .modal.open{display:flex;}
+  .modal-box{background:#fff;border-radius:18px;width:100%;max-width:720px;max-height:92vh;overflow-y:auto;padding:24px 26px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .modal-box h3{font-family:'Baloo 2',cursive;color:var(--red);font-size:1.25rem;margin-bottom:8px;}
+  .modal-box textarea{width:100%;margin-top:10px;padding:10px 13px;border-radius:10px;border:2px solid var(--border);background:#faf8f6;font:12.5px/1.5 ui-monospace,Consolas,monospace;outline:none;resize:vertical;}
+  .modal-box textarea:focus{border-color:var(--red);}
+  .modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🧭 Quản lý nội dung Khám phá</h1>
+  <a href="explore.html" target="_blank">Xem trang Khám phá ↗</a>
+  <a href="admin.html">← Admin chính</a>
+</div>
+
+<div class="layout">
+  <aside class="card side">
+    <input id="provSearch" placeholder="🔍 Tìm tỉnh / thành…">
+    <div id="provList"><div class="empty" style="padding:30px 0">Đang tải…</div></div>
+    <div class="add-id">
+      <input id="newId" placeholder="Thêm ID tỉnh khác…">
+      <button class="btn btn-sm" id="newIdBtn">＋</button>
+    </div>
+    <div class="bulk">
+      <button class="btn btn-ghost" id="impOpenBtn">📥 Nhập hàng loạt (JSON)</button>
+      <button class="btn btn-ghost" id="expBtn">📄 Tải JSON mẫu / sao lưu</button>
+    </div>
+  </aside>
+
+  <main class="card editor" id="editor">
+    <div class="empty">👈 Chọn một tỉnh / thành ở bên trái để thêm hoặc sửa nội dung.</div>
+  </main>
+</div>
+
+<div class="savebar">
+  <span class="state" id="saveState">Chưa chọn tỉnh</span>
+  <button class="btn btn-save" id="saveBtn" disabled>💾 Lưu tỉnh này</button>
+</div>
+<div class="modal" id="impModal">
+  <div class="modal-box">
+    <h3>📥 Nhập hàng loạt từ JSON</h3>
+    <div class="hint">Bấm <b>“Tải JSON mẫu / sao lưu”</b> để lấy file có sẵn đủ ID các tỉnh, điền nội dung rồi chọn file (hoặc dán) vào đây. Khóa có thể là ID hoặc tên tỉnh. Chỉ các trường có trong file mới bị ghi đè (mảng <code>history</code>/<code>culture</code> sẽ được thay bằng mảng trong file); tỉnh/trường không nhắc tới giữ nguyên.</div>
+    <input type="file" id="impFile" accept=".json,application/json" style="margin-top:12px;font-size:.85rem">
+    <textarea id="impText" rows="14" spellcheck="false" placeholder='{ "HaNoi": { "name": "Hà Nội", "features": ["..."], "history": [ { "title": "...", "text": "..." } ], "culture": [] } }'></textarea>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" id="impCancel" type="button">Đóng</button>
+      <button class="btn btn-save" id="impRun" type="button">Nhập vào Firestore</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="vv-learn.js"></script>
+<script src="data.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, doc, setDoc, writeBatch, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+    authDomain: "vvss-b7a49.firebaseapp.com",
+    projectId: "vvss-b7a49",
+    storageBucket: "vvss-b7a49.firebasestorage.app",
+    messagingSenderId: "562837285603",
+    appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6"
+  }, "adminExplore");
+  const db = getFirestore(app);
+
+  // Danh sách tỉnh trong data.js (cùng nguồn với trang Khám phá)
+  const PD = (typeof provinceData !== 'undefined') ? provinceData : {};
+  const $ = id => document.getElementById(id);
+  const ITEM_KEYS = ['title','text','thumbUrl','img1','img2','videoUrl','bookUrl','minigameTags','minigameUrl'];
+  const IMG_KEYS = ['thumbUrl','img1','img2'];
+
+  let docs = {}, books = [], extraIds = new Set(), current = null, dirty = false;
+
+  function toast(msg, type) {
+    const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + (type || '');
+    clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+  function normImg(url) {   // link chia sẻ Google Drive → link xem được trong <img>
+    if (!url) return url;
+    let m = url.match(/drive\.google\.com\/file\/d\/([^/]+)/) || url.match(/[?&]id=([^&]+)/);
+    return (m && /drive\.google\.com/.test(url)) ? `https://drive.google.com/uc?export=view&id=${m[1]}` : url;
+  }
+  const pretty = id => id.replace(/([a-z])([A-Z])/g, '$1 $2');
+  const nameOf = id => (docs[id] && docs[id].name) || (PD[id] && PD[id].name) || pretty(id);
+  function setDirty(v) {
+    dirty = v;
+    const st = $('saveState');
+    st.textContent = !current ? 'Chưa chọn tỉnh' : v ? '● Có thay đổi chưa lưu' : '✓ Đã lưu';
+    st.className = 'state' + (v ? ' dirty' : '');
+  }
+  window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+  // ───────── LOAD ─────────
+  async function loadAll() {
+    try {
+      const snap = await getDocs(collection(db, 'provinces'));
+      docs = {}; snap.forEach(d => { docs[d.id] = d.data(); });
+    } catch (e) { toast('Không đọc được Firestore: ' + e.message, 'error'); }
+    try {
+      const b = await getDocs(collection(db, 'books'));
+      books = []; b.forEach(d => { const x = d.data(); if (x.title && x.pdfUrl) books.push({ title: x.title, url: x.pdfUrl }); });
+      books.sort((a, b2) => a.title.localeCompare(b2.title, 'vi'));
+    } catch (e) { console.warn('books', e.message); }
+    renderList();
+  }
+
+  // ───────── DANH SÁCH TỈNH ─────────
+  function allIds() {
+    const s = new Set([...Object.keys(PD), ...Object.keys(docs), ...extraIds]);
+    return [...s].sort((a, b) => nameOf(a).localeCompare(nameOf(b), 'vi'));
+  }
+  function renderList() {
+    const q = VV.norm($('provSearch').value);
+    const box = $('provList'); box.innerHTML = '';
+    const ids = allIds().filter(id => !q || VV.norm(nameOf(id)).includes(q) || VV.norm(id).includes(q));
+    if (!ids.length) { box.innerHTML = '<div class="empty" style="padding:30px 0">Không có tỉnh nào.<br><small>Đặt data.js cùng thư mục hoặc thêm ID thủ công.</small></div>'; return; }
+    ids.forEach(id => {
+      const d = docs[id], r = document.createElement('div');
+      r.className = 'prov' + (id === current ? ' active' : '');
+      const dot = document.createElement('span'); dot.className = 'dot' + (d ? ' has' : '');
+      const nm = document.createElement('span'); nm.textContent = nameOf(id);
+      const sm = document.createElement('small');
+      sm.textContent = d ? `LS ${(d.history || []).length} · VH ${(d.culture || []).length}` : 'chưa có';
+      r.append(dot, nm, sm);
+      r.addEventListener('click', () => selectProvince(id));
+      box.appendChild(r);
+    });
+  }
+  $('provSearch').addEventListener('input', renderList);
+  $('newIdBtn').addEventListener('click', () => {
+    const id = $('newId').value.trim().replace(/\s+/g, '');
+    if (!id) return;
+    extraIds.add(id); $('newId').value = ''; renderList(); selectProvince(id);
+  });
+
+  function selectProvince(id) {
+    if (dirty && !confirm('Có thay đổi chưa lưu ở tỉnh hiện tại. Bỏ thay đổi và chuyển sang tỉnh khác?')) return;
+    current = id; renderEditor(); renderList(); setDirty(false); $('saveBtn').disabled = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ───────── EDITOR ─────────
+  function field(label, cls, opts) {
+    const fg = document.createElement('div'); fg.className = 'fg';
+    const l = document.createElement('label'); l.textContent = label; fg.appendChild(l);
+    const el = document.createElement(opts && opts.area ? 'textarea' : 'input');
+    el.className = cls; if (opts && opts.area) el.rows = opts.rows || 5;
+    if (opts && opts.ph) el.placeholder = opts.ph;
+    fg.appendChild(el);
+    if (opts && opts.hint) { const h = document.createElement('div'); h.className = 'hint'; h.textContent = opts.hint; fg.appendChild(h); }
+    return fg;
+  }
+
+  function renderEditor() {
+    const id = current, d = docs[id] || {};
+    const ed = $('editor'); ed.innerHTML = '';
+    const head = document.createElement('div'); head.className = 'ed-head';
+    const h2 = document.createElement('h2'); h2.textContent = nameOf(id);
+    const code = document.createElement('code'); code.textContent = 'ID: ' + id;
+    head.append(h2, code); ed.appendChild(head);
+
+    const links = document.createElement('div'); links.className = 'links';
+    const a1 = document.createElement('a'); a1.href = 'explore.html?province=' + encodeURIComponent(nameOf(id)); a1.target = '_blank'; a1.textContent = '↗ Xem tỉnh này trên Khám phá';
+    const a2 = document.createElement('span'); a2.textContent = '🎮 Nút Minigame mặc định → minigame.html?province=' + nameOf(id);
+    links.append(a1, a2); ed.appendChild(links);
+
+    // Thông tin chung
+    const s1 = document.createElement('div'); s1.className = 'sec';
+    s1.innerHTML = '<div class="sec-title">📌 Thông tin chung</div>';
+    const nameF = field('Tên hiển thị *', 'g-name', { hint: 'Tên tiếng Việt có dấu. Dùng cho gợi ý tỉnh khi tạo map / thêm sách và lọc minigame.' });
+    const bgRow = document.createElement('div'); bgRow.className = 'row2';
+    bgRow.append(field('Ảnh nền Lịch sử (URL)', 'g-historyBg', { ph: 'https://…' }), field('Ảnh nền Văn hóa (URL)', 'g-cultureBg', { ph: 'https://…' }));
+    const feat = field('Đặc điểm nổi bật (mỗi dòng 1 ý)', 'g-features', { area: true, rows: 4, ph: 'Thủ đô nghìn năm văn hiến\nTrung tâm chính trị – văn hóa…' });
+    s1.append(nameF, bgRow, feat); ed.appendChild(s1);
+    s1.querySelector('.g-name').value = (d.name || (PD[id] && PD[id].name) || '');
+    s1.querySelector('.g-historyBg').value = d.historyBg || '';
+    s1.querySelector('.g-cultureBg').value = d.cultureBg || '';
+    s1.querySelector('.g-features').value = (d.features || []).join('\n');
+
+    // Lịch sử / Văn hóa
+    const s2 = document.createElement('div'); s2.className = 'sec';
+    s2.innerHTML = '<div class="tabs"><button class="tab active" data-k="history">📜 Lịch sử</button><button class="tab" data-k="culture">🎎 Văn hóa</button></div>';
+    ['history', 'culture'].forEach((k, i) => {
+      const wrap = document.createElement('div'); wrap.className = 'items' + (i === 0 ? ' active' : ''); wrap.dataset.k = k;
+      const list = document.createElement('div'); list.className = 'list'; wrap.appendChild(list);
+      (d[k] || []).forEach(it => addItem(list, it, false));
+      const add = document.createElement('button'); add.type = 'button'; add.className = 'btn btn-add';
+      add.textContent = k === 'history' ? '＋ Thêm mục lịch sử' : '＋ Thêm mục văn hóa';
+      add.addEventListener('click', () => { addItem(list, {}, true); setDirty(true); });
+      wrap.appendChild(add); s2.appendChild(wrap);
+    });
+    s2.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+      s2.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x === t));
+      s2.querySelectorAll('.items').forEach(w => w.classList.toggle('active', w.dataset.k === t.dataset.k));
+    }));
+    ed.appendChild(s2);
+    ed.addEventListener('input', () => setDirty(true));
+  }
+
+  function addItem(list, data, open) {
+    const card = document.createElement('div'); card.className = 'item-card' + (open ? ' open' : '');
+    const head = document.createElement('div'); head.className = 'item-head';
+    const num = document.createElement('span'); num.className = 'item-num';
+    const prev = document.createElement('span'); prev.className = 'item-prev';
+    const btns = document.createElement('div'); btns.className = 'item-btns';
+    [['up', '▲'], ['down', '▼'], ['del', '🗑']].forEach(([a, t]) => {
+      const b = document.createElement('button'); b.type = 'button'; b.dataset.a = t === '🗑' ? 'del' : a; b.textContent = t; btns.appendChild(b);
+    });
+    head.append(num, prev, btns);
+
+    const body = document.createElement('div'); body.className = 'item-body';
+    body.appendChild(field('Tiêu đề *', 'f-title', { ph: 'VD: Khởi nghĩa Hai Bà Trưng' }));
+    body.appendChild(field('Nội dung', 'f-text', { area: true, rows: 7 }));
+    const imgs = document.createElement('div'); imgs.className = 'row3';
+    imgs.append(field('Ảnh thumbnail (thẻ nhỏ)', 'f-thumbUrl', { ph: 'https://…' }), field('Ảnh 1', 'f-img1', { ph: 'https://…' }), field('Ảnh 2', 'f-img2', { ph: 'https://…' }));
+    body.appendChild(imgs);
+    body.appendChild(field('Video (link YouTube hoặc file video)', 'f-videoUrl', { ph: 'https://youtu.be/…' }));
+
+    const bookF = field('Sách liên quan (link)', 'f-bookUrl', { ph: 'https://… (hoặc chọn từ thư viện bên dưới)' });
+    const sel = document.createElement('select'); sel.style.marginTop = '8px';
+    sel.innerHTML = '<option value="">— chọn sách từ thư viện —</option>';
+    books.forEach(b => { const o = document.createElement('option'); o.value = b.url; o.textContent = b.title; sel.appendChild(o); });
+    sel.addEventListener('change', () => { if (sel.value) { bookF.querySelector('input').value = sel.value; sel.value = ''; setDirty(true); } });
+    bookF.appendChild(sel); body.appendChild(bookF);
+
+    const mg = document.createElement('div'); mg.className = 'row2';
+    mg.append(
+      field('Minigame – lọc thêm tag (tùy chọn)', 'f-minigameTags', { ph: 'VD: lễ hội, truyền thuyết', hint: 'Để trống: nút Minigame mở trang minigame và lọc theo tỉnh. Có tag: lọc theo tỉnh + tag.' }),
+      field('Minigame – link riêng (tùy chọn)', 'f-minigameUrl', { ph: 'https://…', hint: 'Nếu điền, nút Minigame sẽ mở đúng link này thay vì tự lọc.' })
+    );
+    body.appendChild(mg);
+    card.append(head, body);
+
+    ITEM_KEYS.forEach(k => { const el = card.querySelector('.f-' + k); if (el) el.value = data[k] || ''; });
+    const refresh = () => { prev.textContent = card.querySelector('.f-title').value.trim() || '(chưa có tiêu đề)'; };
+    card.querySelector('.f-title').addEventListener('input', refresh);
+    IMG_KEYS.forEach(k => card.querySelector('.f-' + k).addEventListener('blur', e => { e.target.value = normImg(e.target.value.trim()); }));
+    head.addEventListener('click', e => { if (!e.target.closest('.item-btns')) card.classList.toggle('open'); });
+    btns.addEventListener('click', e => {
+      const a = e.target.dataset.a; if (!a) return;
+      if (a === 'del') { if (confirm('Xóa mục này?')) { card.remove(); renumber(list); setDirty(true); } }
+      else if (a === 'up' && card.previousElementSibling) { list.insertBefore(card, card.previousElementSibling); renumber(list); setDirty(true); }
+      else if (a === 'down' && card.nextElementSibling) { list.insertBefore(card.nextElementSibling, card); renumber(list); setDirty(true); }
+    });
+    list.appendChild(card); refresh(); renumber(list);
+  }
+  function renumber(list) { list.querySelectorAll('.item-card').forEach((c, i) => { c.querySelector('.item-num').textContent = i + 1; }); }
+
+  // ───────── LƯU ─────────
+  function collectItems(kind) {
+    const label = kind === 'history' ? 'Lịch sử' : 'Văn hóa';
+    const out = [];
+    const cards = document.querySelectorAll(`.items[data-k="${kind}"] .item-card`);
+    for (let i = 0; i < cards.length; i++) {
+      const o = {};
+      ITEM_KEYS.forEach(k => { const v = cards[i].querySelector('.f-' + k).value.trim(); if (v) o[k] = IMG_KEYS.includes(k) ? normImg(v) : v; });
+      if (!Object.keys(o).length) continue;                                  // thẻ trống → bỏ qua
+      if (!o.title) throw new Error(`${label} – mục ${i + 1}: thiếu tiêu đề`);
+      out.push(o);
+    }
+    return out;
+  }
+
+  $('saveBtn').addEventListener('click', async () => {
+    if (!current) return;
+    let payload;
+    try {
+      const name = document.querySelector('.g-name').value.trim();
+      if (!name) throw new Error('Nhập Tên hiển thị của tỉnh');
+      payload = {
+        name,
+        historyBg: normImg(document.querySelector('.g-historyBg').value.trim()),
+        cultureBg: normImg(document.querySelector('.g-cultureBg').value.trim()),
+        features: document.querySelector('.g-features').value.split('\n').map(x => x.trim()).filter(Boolean),
+        history: collectItems('history'),
+        culture: collectItems('culture'),
+        updatedAt: serverTimestamp()
+      };
+    } catch (e) { toast(e.message, 'error'); return; }
+
+    const btn = $('saveBtn'); btn.disabled = true; btn.textContent = 'Đang lưu…';
+    try {
+      await setDoc(doc(db, 'provinces', current), payload, { merge: true });
+      docs[current] = Object.assign({}, docs[current], payload);
+      toast('✓ Đã lưu ' + payload.name, 'success');
+      setDirty(false); renderList();
+    } catch (e) { console.error(e); toast('Lỗi lưu: ' + e.message, 'error'); }
+    finally { btn.disabled = false; btn.textContent = '💾 Lưu tỉnh này'; }
+  });
+
+  // ───────── NHẬP HÀNG LOẠT (JSON) ─────────
+  const slugId = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')
+    .replace(/[^A-Za-z0-9]+/g, ' ').trim().split(' ').filter(Boolean).map(w => w[0].toUpperCase() + w.slice(1)).join('');
+
+  function resolveId(key) {                       // khóa = ID có sẵn, hoặc tên tỉnh, hoặc tỉnh mới
+    const ids = allIds();
+    if (ids.includes(key)) return { id: key, isNew: false };
+    const nk = VV.norm(key);
+    const hit = ids.find(id => VV.norm(nameOf(id)) === nk || VV.norm(id) === nk);
+    if (hit) return { id: hit, isNew: false };
+    return { id: slugId(key) || key.replace(/[\s\/]+/g, ''), isNew: true };
+  }
+
+  function parseImport(text) {
+    const data = JSON.parse(text);
+    let pairs;
+    if (Array.isArray(data)) pairs = data.map(o => [o && (o.id || o.name), o]);
+    else if (data && typeof data === 'object') pairs = Object.entries(data);
+    else throw new Error('JSON phải là object {id: {...}} hoặc mảng [...]');
+    const out = new Map();
+    pairs.forEach(([key, o], idx) => {
+      if (!key || !o || typeof o !== 'object') throw new Error(`Mục #${idx + 1}: thiếu ID/tên hoặc dữ liệu không hợp lệ`);
+      const { id, isNew } = resolveId(String(key));
+      const p = {};
+      if (o.name !== undefined && String(o.name).trim()) p.name = String(o.name).trim();
+      else if (isNew) p.name = String(key).trim();
+      ['historyBg', 'cultureBg'].forEach(k => { if (o[k] !== undefined) p[k] = normImg(String(o[k]).trim()); });
+      if (o.features !== undefined) p.features = (Array.isArray(o.features) ? o.features : String(o.features).split('\n')).map(x => String(x).trim()).filter(Boolean);
+      ['history', 'culture'].forEach(k => {
+        if (o[k] === undefined) return;
+        if (!Array.isArray(o[k])) throw new Error(`${key}: "${k}" phải là mảng`);
+        p[k] = [];
+        o[k].forEach((it, i) => {
+          const r = {};
+          ITEM_KEYS.forEach(f => { const v = it && it[f] != null ? String(it[f]).trim() : ''; if (v) r[f] = IMG_KEYS.includes(f) ? normImg(v) : v; });
+          if (!Object.keys(r).length) return;                           // mục trống → bỏ qua
+          if (!r.title) throw new Error(`${key} – ${k === 'history' ? 'Lịch sử' : 'Văn hóa'} mục ${i + 1}: thiếu title`);
+          p[k].push(r);
+        });
+      });
+      out.set(id, { id, isNew, p });
+    });
+    return [...out.values()];
+  }
+
+  async function runImport() {
+    const txt = $('impText').value.trim();
+    if (!txt) { toast('Dán JSON hoặc chọn file trước', 'error'); return; }
+    let list;
+    try { list = parseImport(txt); } catch (e) { toast('Lỗi JSON: ' + e.message, 'error'); return; }
+    if (!list.length) { toast('Không có tỉnh nào để nhập', 'error'); return; }
+    const nNew = list.filter(x => x.isNew).length;
+    if (!confirm(`Nhập ${list.length} tỉnh vào Firestore (${list.length - nNew} cập nhật, ${nNew} tỉnh mới)?`)) return;
+    const btn = $('impRun'); btn.disabled = true; btn.textContent = 'Đang nhập…';
+    try {
+      for (let i = 0; i < list.length; i += 400) {
+        const b = writeBatch(db);
+        list.slice(i, i + 400).forEach(({ id, p }) => b.set(doc(db, 'provinces', id), Object.assign({}, p, { updatedAt: serverTimestamp() }), { merge: true }));
+        await b.commit();
+      }
+      list.forEach(({ id, p }) => { docs[id] = Object.assign({}, docs[id], p); });
+      $('impModal').classList.remove('open'); $('impText').value = ''; $('impFile').value = '';
+      renderList();
+      if (current && !dirty && list.some(x => x.id === current)) renderEditor();
+      toast(`✓ Đã nhập ${list.length} tỉnh`, 'success');
+    } catch (e) { console.error(e); toast('Lỗi nhập: ' + e.message, 'error'); }
+    finally { btn.disabled = false; btn.textContent = 'Nhập vào Firestore'; }
+  }
+
+  $('impOpenBtn').addEventListener('click', () => $('impModal').classList.add('open'));
+  $('impCancel').addEventListener('click', () => $('impModal').classList.remove('open'));
+  $('impModal').addEventListener('click', e => { if (e.target.id === 'impModal') $('impModal').classList.remove('open'); });
+  $('impFile').addEventListener('change', async e => { const f = e.target.files[0]; if (f) $('impText').value = await f.text(); });
+  $('impRun').addEventListener('click', runImport);
+
+  $('expBtn').addEventListener('click', () => {
+    const blank = () => ({ title: '', text: '', thumbUrl: '', img1: '', img2: '', videoUrl: '', bookUrl: '', minigameTags: '', minigameUrl: '' });
+    const out = {};
+    allIds().forEach(id => {
+      const d = docs[id] || {};
+      out[id] = {
+        name: nameOf(id), historyBg: d.historyBg || '', cultureBg: d.cultureBg || '',
+        features: d.features && d.features.length ? d.features : [''],
+        history: d.history && d.history.length ? d.history : [blank()],
+        culture: d.culture && d.culture.length ? d.culture : [blank()]
+      };
+    });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' }));
+    a.download = 'provinces-template.json'; a.click(); URL.revokeObjectURL(a.href);
+    toast('Đã tải provinces-template.json', 'success');
+  });
+
+  loadAll();
+</script>
+</body>
+</html>

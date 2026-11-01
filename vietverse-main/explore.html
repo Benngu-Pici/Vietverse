@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Vietverse | Khám Phá</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #d32f2f;
+      --red-dark: #b71c1c;
+      --red-panel: #C8101F;
+      --nh: 70px;
+      --panel-w: 460px;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      height: 100vh; display: flex; flex-direction: column;
+      background: #f5f5f5; overflow: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb { background: #c62828; border-radius: 8px; }
+
+    /* ═══ NAVBAR ═══ */
+    .navbar {
+      position: relative; z-index: 100;
+      height: var(--nh); background: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 36px 0 22px;
+      border-bottom-left-radius: 22px; border-bottom-right-radius: 22px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.07);
+      flex-shrink: 0;
+    }
+    .logo { height: 38px; cursor: pointer; display: block; transition: opacity .2s; }
+    .logo:hover { opacity: .82; }
+
+    .nav-links { display: flex; align-items: center; gap: 44px; }
+    .nav-links a {
+      text-decoration: none; color: var(--red); font-weight: 700; font-size: .97rem;
+      position: relative; transition: opacity .2s, transform .2s;
+    }
+    .nav-links a:not(.nav-active)::after {
+      content: ''; position: absolute; bottom: -5px; left: 0;
+      width: 0; height: 2.5px; background: var(--red); border-radius: 3px;
+      transition: width .25s cubic-bezier(.2,.9,.4,1.1);
+    }
+    .nav-links a:not(.nav-active):hover::after { width: 100%; }
+    .nav-links a:not(.nav-active):hover { opacity: .72; transform: translateY(-1px); }
+    .nav-links a.nav-active {
+      background: var(--red); color: #fff !important;
+      padding: 8px 24px; border-radius: 999px;
+      animation: navPulse 2.4s infinite;
+    }
+    .nav-links a.nav-active::after { display: none; }
+    @keyframes navPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(211,47,47,.35); }
+      70%  { box-shadow: 0 0 0 9px rgba(211,47,47,0); }
+      100% { box-shadow: 0 0 0 0 rgba(211,47,47,0); }
+    }
+
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+      gap: 6px; width: 38px; height: 38px;
+      background: none; border: none; cursor: pointer; padding: 0;
+      border-radius: 10px; transition: background .2s;
+    }
+    .hamburger:hover { background: rgba(211,47,47,.09); }
+    .hamburger span {
+      display: block; width: 22px; height: 2.5px;
+      background: var(--red); border-radius: 4px;
+      transition: transform .3s cubic-bezier(.4,0,.2,1), opacity .3s;
+      transform-origin: center; flex-shrink: 0;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+
+    .mobile-drawer {
+      position: fixed; top: 0; left: 0; width: 100%;
+      background: #fff; z-index: 97;
+      max-height: 0; overflow: hidden;
+      transition: max-height .38s cubic-bezier(.4,0,.2,1), box-shadow .3s;
+      border-bottom-left-radius: 28px; border-bottom-right-radius: 28px;
+    }
+    .mobile-drawer.open { max-height: calc(var(--nh) + 440px); box-shadow: 0 20px 48px rgba(0,0,0,.14); }
+    .drawer-inner {
+      padding: 16px 20px 28px; display: flex; flex-direction: column; gap: 2px;
+      margin-top: var(--nh);
+    }
+    .drawer-inner a {
+      text-decoration: none; color: var(--red); font-weight: 700; font-size: 1.05rem;
+      padding: 11px 16px; border-radius: 14px;
+      display: flex; align-items: center; gap: 10px;
+      transition: background .18s, transform .18s;
+    }
+    .drawer-inner a:not(.nav-active):hover { background: rgba(211,47,47,.07); transform: translateX(4px); }
+    .drawer-inner a.nav-active { background: var(--red); color: #fff; box-shadow: 0 4px 16px rgba(211,47,47,.3); }
+    .drawer-divider { height: 1px; background: #f0f0f0; margin: 5px 0; }
+
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    /* ═══ MAIN LAYOUT ═══ */
+    #main {
+      flex: 1; display: flex; position: relative; overflow: hidden;
+    }
+
+    /* ── MAP ── */
+    #map-container {
+      flex: 1; position: relative; display: flex;
+      justify-content: center; align-items: center;
+      background: #ffffff;
+      transition: margin-right 0.4s cubic-bezier(.4,0,.2,1);
+    }
+    #map-container.panel-open { margin-right: var(--panel-w); }
+
+    #vietnam-svg-wrapper {
+      position: relative; width: 100%; max-width: 1200px;
+      height: 100%; overflow: hidden;
+    }
+    #vietnam-svg-wrapper svg {
+      width: 100%; height: 100%; object-fit: contain;
+      touch-action: none; cursor: grab; display: block;
+    }
+    #vietnam-svg-wrapper svg path {
+      outline: none; -webkit-tap-highlight-color: transparent;
+      transition: fill 0.2s ease;
+    }
+    #vietnam-svg-wrapper svg path:hover {
+      fill: #ffb3bb !important; cursor: pointer;
+    }
+    #vietnam-svg-wrapper svg path:focus { outline: none; }
+
+    .demo-zone {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; flex-direction: column; gap: 20px; color: #bbb;
+    }
+    .demo-zone i { font-size: 64px; }
+    .demo-zone p { font-size: 16px; font-weight: 600; }
+    .demo-btn {
+      background: var(--red); color: white; border: none;
+      padding: 14px 32px; border-radius: 14px; font-size: 15px;
+      font-weight: 700; cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .demo-btn:hover { background: var(--red-dark); transform: scale(1.03); }
+
+    /* ── ZOOM ── */
+    #zoom-controls {
+      position: absolute; top: 16px; right: 16px;
+      display: flex; flex-direction: column;
+      border: 1px solid #e0e0e0; border-radius: 10px;
+      background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      overflow: hidden; z-index: 20;
+    }
+    #zoom-controls button {
+      width: 40px; height: 40px; font-size: 20px; font-weight: 700;
+      background: white; border: none; cursor: pointer; outline: none;
+      transition: background 0.15s; color: #444;
+    }
+    #zoom-controls button:hover { background: #f5f5f5; }
+    #zoom-controls button:not(:last-child) { border-bottom: 1px solid #eee; }
+
+    /* ── TOOLTIP ── */
+    #tooltip {
+      position: fixed; display: none; background: white;
+      border: 1px solid #eee; z-index: 200; pointer-events: none;
+      border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+      max-width: 240px; overflow: hidden;
+    }
+    #tooltip .tt-head {
+      background: var(--red); color: white; padding: 8px 14px;
+      font-weight: 700; font-size: 13px;
+    }
+    #tooltip .tt-body {
+      padding: 8px 14px; color: #555; font-size: 12.5px; line-height: 1.5;
+    }
+
+    /* ═══ SIDE PANEL ═══ */
+    #side-panel {
+      position: absolute; right: 0; top: 0; bottom: 0;
+      width: var(--panel-w);
+      background: linear-gradient(160deg, #E8192C 0%, #C0111F 100%);
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+      z-index: 50; display: flex; flex-direction: column;
+      border-radius: 20px 0 0 20px; overflow: hidden;
+      box-shadow: -8px 0 40px rgba(0,0,0,0.22);
+    }
+    #side-panel.open { transform: translateX(0); }
+
+    .sp-header {
+      padding: 26px 24px 18px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; flex-shrink: 0;
+    }
+    .sp-close {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.18); border: none; cursor: pointer;
+      color: white; font-size: 17px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .sp-close:hover { background: rgba(255,255,255,0.32); }
+    .sp-province-name {
+      font-family: 'Baloo 2', cursive; font-weight: 800;
+      font-size: 28px; color: white; letter-spacing: 1px;
+      text-transform: uppercase; text-align: center;
+    }
+
+    .sp-cat-buttons {
+      padding: 4px 20px 16px;
+      display: flex; flex-direction: column; gap: 14px;
+      flex-shrink: 0;
+    }
+    .cat-btn {
+      position: relative; width: 100%; height: 110px;
+      border-radius: 18px; overflow: hidden; cursor: pointer;
+      border: none; background: #555;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.28);
+    }
+    .cat-btn:hover { transform: scale(1.025); box-shadow: 0 8px 28px rgba(0,0,0,0.38); }
+    .cat-btn .cat-bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; object-fit: cover; display: none;
+    }
+    .cat-btn .cat-bg.loaded { display: block; }
+    .cat-btn .cat-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.22) 100%);
+    }
+    .cat-btn .cat-label {
+      position: relative; z-index: 2;
+      font-family: 'Baloo 2', cursive; font-weight: 800;
+      font-size: 30px; color: white; letter-spacing: 2px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .sp-info {
+      padding: 8px 28px 24px; flex: 1; overflow-y: auto;
+      color: rgba(255,255,255,0.95); font-size: 15px; line-height: 2;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+    .sp-info::-webkit-scrollbar { width: 3px; }
+    .sp-info::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+    .sp-info ul { list-style: disc; padding-left: 20px; }
+    .sp-info li { font-weight: 500; }
+    .sp-info .info-label { font-weight: 700; }
+    .sp-info .sublist { list-style: none; padding-left: 16px; }
+    .sp-info .sublist li::before { content: '+ '; font-weight: 800; color: #ffe082; }
+
+    .sp-loading {
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px; color: rgba(255,255,255,0.6); gap: 12px;
+    }
+    .spinner {
+      width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ═══ CARDS PANEL ═══ */
+    #cards-panel {
+      position: absolute; inset: 0; z-index: 55;
+      background: linear-gradient(160deg, #E8192C 0%, #C0111F 100%);
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      border-radius: 20px 0 0 20px; overflow: hidden;
+    }
+    #cards-panel.open { transform: translateX(0); }
+
+    .cp-header {
+      padding: 20px 24px 14px;
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .cp-back {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.18); border: none; cursor: pointer;
+      color: white; font-size: 17px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; flex-shrink: 0;
+    }
+    .cp-back:hover { background: rgba(255,255,255,0.32); }
+    .cp-title {
+      font-family: 'Baloo 2', cursive; font-weight: 800;
+      font-size: 26px; color: white; letter-spacing: 1.5px;
+      text-transform: uppercase; flex: 1; text-align: center;
+      padding-right: 36px;
+    }
+
+    .cp-grid {
+      flex: 1; overflow-y: auto;
+      padding: 8px 16px 20px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      align-content: start;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+    .cp-grid::-webkit-scrollbar { width: 4px; }
+    .cp-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+
+    .card-item {
+      background: #a50f1e;
+      border-radius: 18px; overflow: hidden; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.28);
+    }
+    .card-item:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.4); }
+    .card-thumb {
+      width: 100%; aspect-ratio: 4/3;
+      background: rgba(0,0,0,0.3);
+      overflow: hidden; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    .card-item:hover .card-thumb img { transform: scale(1.06); }
+    .card-thumb .no-img {
+      font-size: 42px; color: rgba(255,255,255,0.25);
+    }
+    .card-label {
+      padding: 10px 12px 12px;
+      color: white; font-weight: 700; font-size: 14px;
+      text-align: center; background: #a50f1e;
+    }
+
+    .empty-state {
+      grid-column: span 2;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 20px; color: rgba(255,255,255,0.45); gap: 14px;
+      text-align: center;
+    }
+    .empty-state svg { width: 52px; height: 52px; opacity: 0.4; }
+    .empty-state p { font-size: 14px; line-height: 1.7; }
+
+    /* ═══════════════════════════════════════════
+       SCREEN 3 — DETAIL PAGE
+    ═══════════════════════════════════════════ */
+    #detail-page {
+      position: fixed; inset: 0; z-index: 300;
+      background: #f2f2f4;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    #detail-page.open { transform: translateY(0); }
+
+    .detail-nav {
+      height: var(--nh); background: #fff; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 36px 0 22px;
+      border-bottom-left-radius: 22px; border-bottom-right-radius: 22px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.07); z-index: 10;
+    }
+    .detail-nav .nav-links a.nav-active {
+      background: var(--red); color: #fff !important;
+      padding: 8px 24px; border-radius: 999px;
+      animation: navPulse 2.4s infinite;
+    }
+
+    /* Detail body */
+    .detail-body {
+      flex: 1; display: flex; gap: 20px; padding: 20px 24px 20px 20px;
+      overflow: hidden; min-height: 0; position: relative;
+    }
+
+    /* LEFT — red card */
+    .detail-left {
+      flex: 1; min-width: 0;
+      background: var(--red);
+      border-radius: 24px; display: flex; flex-direction: column;
+      overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      transition: filter 0.3s;
+    }
+    /* Blur detail-left when right sidebar is shown on mobile */
+    .detail-left.blurred { filter: blur(3px) brightness(0.7); pointer-events: none; }
+
+    .dl-header {
+      padding: 18px 22px 16px;
+      display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+    }
+    .dl-back {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,0.22); border: none; cursor: pointer;
+      color: white; font-size: 17px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; flex-shrink: 0;
+    }
+    .dl-back:hover { background: rgba(255,255,255,0.38); }
+    .dl-back svg { width: 18px; height: 18px; }
+    .dl-title {
+      font-family: 'Baloo 2', cursive; font-weight: 800;
+      font-size: 20px; color: white; flex: 1; line-height: 1.3;
+    }
+
+    .dl-content {
+      flex: 1; background: #fff; overflow-y: auto; padding: 26px 28px 22px;
+      scrollbar-width: thin; scrollbar-color: #ddd transparent;
+    }
+    .dl-content::-webkit-scrollbar { width: 4px; }
+    .dl-content::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+    /* ── FIX: text wraps, never overflows ── */
+    .dl-text {
+      font-size: 15px; color: #1a1a1a; line-height: 1.9;
+      text-align: justify; margin-bottom: 22px;
+      word-wrap: break-word; overflow-wrap: break-word;
+      white-space: pre-wrap;
+      max-width: 100%;
+    }
+    .dl-images {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .dl-img-slot {
+      border-radius: 14px; overflow: hidden; aspect-ratio: 16/10;
+      background: #eee; display: flex; align-items: center; justify-content: center;
+    }
+    .dl-img-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .dl-img-slot svg { width: 38px; height: 38px; color: #ccc; }
+
+    /* RIGHT sidebar */
+    .detail-right {
+      width: 290px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    /* ── VIDEO replaces flag ── */
+    .dr-video-wrap {
+      border-radius: 18px; overflow: hidden; aspect-ratio: 16/9;
+      background: #111;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .dr-video-wrap video {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      border-radius: 18px;
+    }
+    .dr-video-wrap iframe {
+      width: 100%; height: 100%; border: none; display: block;
+    }
+    .dr-video-placeholder {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 8px;
+      color: rgba(255,255,255,0.3); width: 100%; height: 100%;
+      position: absolute; inset: 0;
+    }
+    .dr-video-placeholder svg { width: 40px; height: 40px; }
+    .dr-video-placeholder span { font-size: 12px; font-weight: 600; }
+
+    /* Action buttons — now links */
+    .dr-btn {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--red); color: white;
+      border-radius: 16px; padding: 18px 20px; cursor: pointer;
+      font-family: 'Baloo 2', cursive; font-weight: 700;
+      font-size: 17px; letter-spacing: 0.3px;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(211,47,47,0.3);
+      text-decoration: none;
+      border: none;
+    }
+    .dr-btn:hover { background: var(--red-dark); transform: translateX(4px); }
+    .dr-btn.disabled {
+      opacity: 0.45; cursor: not-allowed; pointer-events: none;
+    }
+    .dr-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+    /* ── MOBILE: toggle button for detail-right ── */
+    #drToggleBtn {
+      display: none; /* hidden on desktop */
+      position: absolute;
+      top: 14px; right: 14px;
+      z-index: 20;
+      background: var(--red);
+      color: white; border: none;
+      border-radius: 50%;
+      width: 46px; height: 46px;
+      box-shadow: 0 4px 16px rgba(211,47,47,0.4);
+      cursor: pointer;
+      align-items: center; justify-content: center;
+      font-size: 18px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    #drToggleBtn:hover { background: var(--red-dark); transform: scale(1.07); }
+
+    /* Mobile: detail-right overlays detail-left */
+    @media (max-width: 700px) {
+      .detail-body {
+        padding: 12px;
+        position: relative;
+      }
+      .detail-right {
+        position: absolute;
+        top: 12px; right: 12px; bottom: 12px;
+        width: calc(100% - 24px);
+        max-width: 340px;
+        background: #f2f2f4;
+        border-radius: 20px;
+        padding: 16px;
+        z-index: 10;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+        transform: translateX(calc(100% + 24px));
+        transition: transform 0.38s cubic-bezier(.4,0,.2,1);
+        overflow-y: auto;
+      }
+      .detail-right.mobile-open {
+        transform: translateX(0);
+      }
+      #drToggleBtn { display: flex; }
+      #drCloseBtn { display: flex; }
+      .detail-left { border-radius: 16px; }
+      .dl-content { padding: 18px 16px; }
+      .dl-text { font-size: 14px; }
+    }
+
+    #drCloseBtn {
+      display: none;
+      align-self: flex-end;
+      background: rgba(0,0,0,0.08); border: none;
+      border-radius: 50%; width: 34px; height: 34px;
+      cursor: pointer; align-items: center; justify-content: center;
+      color: #555; font-size: 16px;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    #drCloseBtn:hover { background: rgba(0,0,0,0.15); }
+
+    /* ── STATUS TOAST ── */
+    .fs-status {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: #1a1a2e; color: white; padding: 10px 24px;
+      border-radius: 30px; font-size: 13px; font-weight: 600;
+      z-index: 9999; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s; white-space: nowrap;
+    }
+    .fs-status.show { opacity: 1; }
+    .fs-status.error { background: #c62828; }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar" id="navbar">
+  <img src="logo.png" alt="Vietverse" class="logo" id="logoImg"
+       onerror="this.style.display='none'"/>
+  <div class="nav-links">
+    <a href="profile.html">Profile</a>
+    <a href="ar.html">AR</a>
+    <a href="minigame.html">Minigame</a>
+    <a href="library.html">Library</a>
+    <a href="explore.html" class="nav-active">Explore</a>
+    <a href="index.html">Home</a>
+  </div>
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile drawer -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-inner">
+    <a href="profile.html">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
+    </a>
+    <a href="ar.html">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>AR
+    </a>
+    <a href="minigame.html">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Minigame
+    </a>
+    <div class="drawer-divider"></div>
+    <a href="library.html">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Library
+    </a>
+    <div class="drawer-divider"></div>
+    <a href="explore.html" class="nav-active">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Explore
+    </a>
+    <a href="index.html">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home
+    </a>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div id="main">
+
+  <!-- MAP -->
+  <div id="map-container">
+    <div id="vietnam-svg-wrapper"></div>
+    <div id="zoom-controls">
+      <button id="zoomInBtn" title="Phóng to">+</button>
+      <button id="zoomOutBtn" title="Thu nhỏ">−</button>
+    </div>
+  </div>
+
+  <!-- ══ SIDE PANEL ══ -->
+  <div id="side-panel">
+    <div class="sp-header">
+      <button class="sp-close" id="closePanelBtn" title="Đóng">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="sp-province-name" id="spName">HẢI PHÒNG</div>
+    </div>
+
+    <div class="sp-cat-buttons">
+      <button class="cat-btn" id="btnHistory" onclick="openCardsPanel('history')">
+        <img class="cat-bg" id="histBg" src="" alt=""/>
+        <div class="cat-overlay"></div>
+        <span class="cat-label">LỊCH SỬ</span>
+      </button>
+      <button class="cat-btn" id="btnCulture" onclick="openCardsPanel('culture')">
+        <img class="cat-bg" id="cultBg" src="" alt=""/>
+        <div class="cat-overlay"></div>
+        <span class="cat-label">VĂN HÓA</span>
+      </button>
+    </div>
+
+    <div class="sp-info" id="spInfo">
+      <div class="sp-loading" id="spLoading">
+        <div class="spinner"></div>
+        <span>Đang tải...</span>
+      </div>
+      <ul id="spInfoList" style="display:none">
+        <li><span class="info-label">Diện tích:</span> <span id="spArea">—</span></li>
+        <li><span class="info-label">Dân số:</span> <span id="spPop">—</span></li>
+        <li>
+          <span class="info-label">Đặc điểm nổi bật:</span>
+          <ul class="sublist" id="spFeatures"></ul>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ══ CARDS PANEL ══ -->
+    <div id="cards-panel">
+      <div class="cp-header">
+        <button class="cp-back" onclick="closeCardsPanel()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="cp-title" id="cpTitle">VĂN HÓA</div>
+      </div>
+      <div class="cp-grid" id="cpGrid">
+        <div class="sp-loading" style="grid-column:span 2">
+          <div class="spinner"></div><span>Đang tải...</span>
+        </div>
+      </div>
+    </div>
+  </div><!-- /side-panel -->
+
+</div><!-- /main -->
+
+<!-- ═══ DETAIL PAGE ═══ -->
+<div id="detail-page">
+
+  <!-- Navbar clone -->
+  <div class="detail-nav">
+    <img src="logo.png" alt="Vietverse" class="logo"
+         onerror="this.style.display='none'"/>
+    <div class="nav-links">
+      <a href="profile.html">Profile</a>
+      <a href="ar.html">AR</a>
+      <a href="minigame.html">Minigame</a>
+      <a href="library.html">Library</a>
+      <a href="explore.html" class="nav-active">Explore</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+
+  <div class="detail-body">
+
+    <!-- Mobile toggle button (shown only on small screens) -->
+    <button id="drToggleBtn" onclick="toggleDetailRight()" title="Xem thêm">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+      </svg>
+    </button>
+
+    <!-- LEFT -->
+    <div class="detail-left" id="detailLeft">
+      <div class="dl-header">
+        <button class="dl-back" onclick="closeDetailPage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="dl-title" id="dlTitle">VĂN HÓA: —</div>
+      </div>
+      <div class="dl-content">
+        <p class="dl-text" id="dlText"></p>
+        <div class="dl-images" id="dlImages"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT sidebar -->
+    <div class="detail-right" id="detailRight">
+
+      <!-- Close button (mobile only) -->
+      <button id="drCloseBtn" onclick="toggleDetailRight()" title="Đóng">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <!-- VIDEO (replaces flag) -->
+      <div class="dr-video-wrap" id="drVideoWrap">
+        <div class="dr-video-placeholder" id="drVideoPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+          </svg>
+          <span>Chưa có video</span>
+        </div>
+      </div>
+
+      <!-- BOOK LINK button -->
+      <a class="dr-btn disabled" id="drBookBtn" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+        </svg>
+        Sách / thông tin
+      </a>
+
+      <!-- MINIGAME LINK button -->
+      <a class="dr-btn disabled" id="drMinigameBtn" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+          <line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+        </svg>
+        Minigame
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tooltip">
+  <div class="tt-head" id="ttHead"></div>
+  <div class="tt-body" id="ttBody"></div>
+</div>
+
+<!-- STATUS TOAST -->
+<div class="fs-status" id="fsStatus"></div>
+
+<!-- ═══ FIREBASE + FIRESTORE ═══ -->
+<script src="vv-learn.js"></script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {
+  getFirestore, doc, getDoc, collection, getDocs
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const app = initializeApp({
+  apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+  authDomain: "vvss-b7a49.firebaseapp.com",
+  projectId: "vvss-b7a49",
+  storageBucket: "vvss-b7a49.firebasestorage.app",
+  messagingSenderId: "562837285603",
+  appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6",
+  measurementId: "G-BRSGSK6MSM"
+});
+const db = getFirestore(app);
+
+/* ═══ MỞ TỈNH TỪ ?province=... (link từ minigame) ═══
+   Danh sách tỉnh lấy từ Firestore (collection 'provinces'): so khớp theo id doc, trường name (nếu có) và tên trong data.js. */
+let _provIndex = null;
+async function loadProvinceIndex() {
+  if (_provIndex) return _provIndex;
+  _provIndex = [];
+  try {
+    const snap = await getDocs(collection(db, 'provinces'));
+    snap.forEach(d => {
+      const x = d.data() || {};
+      const jsName = mapProvinceData[d.id] && mapProvinceData[d.id].name;
+      _provIndex.push({ id: d.id, names: [d.id, x.name, x.title, jsName].filter(Boolean) });
+    });
+  } catch (e) { console.warn('[provinces]', e.message); }
+  Object.keys(mapProvinceData).forEach(id => {            // bổ sung tỉnh có trong data.js nhưng chưa có doc
+    if (!_provIndex.some(p => p.id === id)) _provIndex.push({ id, names: [id, mapProvinceData[id].name].filter(Boolean) });
+  });
+  return _provIndex;
+}
+async function openFromQuery() {
+  const q = VV.readQuery();
+  if (!q.provinces.length) return;
+  const idx = await loadProvinceIndex();
+  for (const want of q.provinces) {
+    const k = VV.key(want);
+    const hit = idx.find(p => p.names.some(n => VV.key(n) === k));
+    if (hit) { openPanel(hit.id); return; }
+  }
+  showStatus('Chưa có dữ liệu cho: ' + q.provinces[0], true);
+}
+
+/* ═══ STATE ═══ */
+let currentProvId   = null;
+let currentCatType  = 'culture';
+let currentItems    = [];
+let provCache       = {};
+let mapProvinceData = {};
+
+/* ═══ DOM ═══ */
+const tooltip      = document.getElementById('tooltip');
+const ttHead       = document.getElementById('ttHead');
+const ttBody       = document.getElementById('ttBody');
+const sidePanel    = document.getElementById('side-panel');
+const cardsPanel   = document.getElementById('cards-panel');
+const detailPage   = document.getElementById('detail-page');
+const mapContainer = document.getElementById('map-container');
+const panZoomWrap  = document.getElementById('vietnam-svg-wrapper');
+const fsStatus     = document.getElementById('fsStatus');
+
+/* ═══ TOAST ═══ */
+let toastTimer;
+function showStatus(msg, isError = false) {
+  fsStatus.textContent = msg;
+  fsStatus.className = 'fs-status show' + (isError ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => fsStatus.classList.remove('show'), 3000);
+}
+
+/* ═══ FIRESTORE ═══ */
+async function fetchProvince(id) {
+  delete provCache[id];
+  try {
+    const ref  = doc(db, 'provinces', id);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      provCache[id] = snap.data();
+      return snap.data();
+    } else {
+      showStatus('⚠ Không tìm thấy dữ liệu cho: ' + id, true);
+    }
+  } catch(e) {
+    console.error('[Firestore] Lỗi:', e);
+    showStatus('Lỗi kết nối Firestore: ' + e.message, true);
+  }
+  return null;
+}
+
+/* ═══ OPEN PROVINCE PANEL ═══ */
+window.openPanel = async function(provinceId) {
+  currentProvId = provinceId;
+  cardsPanel.classList.remove('open');
+
+  const info = mapProvinceData[provinceId];
+  document.getElementById('spName').textContent = info ? info.name.toUpperCase() : provinceId;
+
+  sidePanel.classList.add('open');
+  mapContainer.classList.add('panel-open');
+
+  document.getElementById('spLoading').style.display = 'flex';
+  document.getElementById('spInfoList').style.display = 'none';
+
+  const histBg = document.getElementById('histBg');
+  const cultBg = document.getElementById('cultBg');
+  histBg.classList.remove('loaded');
+  cultBg.classList.remove('loaded');
+
+  const data = await fetchProvince(provinceId);
+  window._provNameFS = (data && (data.name || data.title)) || '';
+
+  if (data?.historyBg) {
+    histBg.src = data.historyBg;
+    histBg.onload = () => histBg.classList.add('loaded');
+    histBg.onerror = () => histBg.classList.remove('loaded');
+  }
+  if (data?.cultureBg) {
+    cultBg.src = data.cultureBg;
+    cultBg.onload = () => cultBg.classList.add('loaded');
+    cultBg.onerror = () => cultBg.classList.remove('loaded');
+  }
+
+  const fmt = n => n ? n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '—';
+  document.getElementById('spArea').textContent = info ? fmt(info.area) + ' km²' : '—';
+  document.getElementById('spPop').textContent  = info ? fmt(info.population) + ' người' : '—';
+
+  const feats = data?.features || [];
+  document.getElementById('spFeatures').innerHTML =
+    feats.length ? feats.map(f => `<li>${escHtml(f)}</li>`).join('') : '<li>Chưa có dữ liệu</li>';
+
+  document.getElementById('spLoading').style.display = 'none';
+  document.getElementById('spInfoList').style.display = 'block';
+};
+
+document.getElementById('closePanelBtn').addEventListener('click', () => {
+  sidePanel.classList.remove('open');
+  mapContainer.classList.remove('panel-open');
+  cardsPanel.classList.remove('open');
+});
+
+/* ═══ CARDS PANEL ═══ */
+window.openCardsPanel = async function(type) {
+  currentCatType = type;
+  document.getElementById('cpTitle').textContent = type === 'history' ? 'LỊCH SỬ' : 'VĂN HÓA';
+
+  const grid = document.getElementById('cpGrid');
+  grid.innerHTML = `<div class="sp-loading" style="grid-column:span 2"><div class="spinner"></div><span>Đang tải...</span></div>`;
+  cardsPanel.classList.add('open');
+
+  const data = await fetchProvince(currentProvId);
+  currentItems = (data && data[type]) ? data[type] : [];
+
+  if (!currentItems.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+        </svg>
+        <p>Chưa có dữ liệu ${type === 'history' ? 'lịch sử' : 'văn hóa'}<br>cho tỉnh này.</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = currentItems.map((item, idx) => `
+    <div class="card-item" onclick="openDetail(${idx})">
+      <div class="card-thumb">
+        ${item.thumbUrl
+          ? `<img src="${escHtml(item.thumbUrl)}" alt="${escHtml(item.title)}"
+                  onerror="this.parentElement.innerHTML='<svg class=\\'no-img\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'rgba(255,255,255,0.25)\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/><polyline points=\\'21 15 16 10 5 21\\'/></svg>'" />`
+          : `<svg class="no-img" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5">
+               <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+             </svg>`
+        }
+      </div>
+      <div class="card-label">${escHtml(item.title || '—')}</div>
+    </div>
+  `).join('');
+};
+
+window.closeCardsPanel = function() {
+  cardsPanel.classList.remove('open');
+};
+
+/* ═══ DETAIL PAGE ═══ */
+window.openDetail = function(idx) {
+  const item = currentItems[idx];
+  if (!item) return;
+
+  const label = currentCatType === 'history' ? 'LỊCH SỬ' : 'VĂN HÓA';
+  document.getElementById('dlTitle').textContent = `${label}: ${item.title || '—'}`;
+  document.getElementById('dlText').textContent  = item.text || '';
+
+  // Images
+  const makeSlot = (url) => url
+    ? `<div class="dl-img-slot">
+         <img src="${escHtml(url)}" alt=""
+              onerror="this.parentElement.innerHTML='<svg viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'#ccc\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'/><polyline points=\\'21 15 16 10 5 21\\'/></svg>'"/>
+       </div>`
+    : `<div class="dl-img-slot">
+         <svg viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+           <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+         </svg>
+       </div>`;
+
+  document.getElementById('dlImages').innerHTML = makeSlot(item.img1) + makeSlot(item.img2);
+
+  // ── VIDEO ──
+  const videoWrap = document.getElementById('drVideoWrap');
+  const placeholder = document.getElementById('drVideoPlaceholder');
+  const videoUrl = item.videoUrl || '';
+
+  // Remove previous video/iframe
+  videoWrap.querySelectorAll('video, iframe').forEach(el => el.remove());
+  placeholder.style.display = 'flex';
+
+  if (videoUrl) {
+    placeholder.style.display = 'none';
+
+    // YouTube embed detection
+    const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:embed\/|watch\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch || videoUrl.includes('youtube.com/embed')) {
+      const videoId = ytMatch ? ytMatch[1] : '';
+      const embedUrl = ytMatch
+        ? `https://www.youtube.com/embed/${videoId}?rel=0`
+        : videoUrl;
+      const iframe = document.createElement('iframe');
+      iframe.src = embedUrl;
+      iframe.allowFullscreen = true;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      videoWrap.appendChild(iframe);
+    } else {
+      // Direct video file
+      const video = document.createElement('video');
+      video.src = videoUrl;
+      video.controls = true;
+      video.preload = 'metadata';
+      video.onerror = () => { placeholder.style.display = 'flex'; video.remove(); };
+      videoWrap.appendChild(video);
+    }
+  }
+
+  // ── BOOK LINK ──
+  const bookBtn = document.getElementById('drBookBtn');
+  if (item.bookUrl) {
+    bookBtn.href = item.bookUrl;
+    bookBtn.classList.remove('disabled');
+    bookBtn.onclick = null;
+  } else {
+    bookBtn.href = '#';
+    bookBtn.classList.add('disabled');
+    bookBtn.onclick = (e) => e.preventDefault();
+  }
+
+  // ── MINIGAME LINK ──
+  // Có link riêng thì dùng; không thì mở trang minigame và lọc theo tag tỉnh (+ tag riêng của mục nếu có)
+  const mgBtn = document.getElementById('drMinigameBtn');
+  const _pd = mapProvinceData[currentProvId];
+  const mgProv = window._provNameFS || (_pd && _pd.name) || currentProvId;
+  if (item.minigameUrl) {
+    mgBtn.href = item.minigameUrl;
+  } else {
+    let u = 'minigame.html?province=' + encodeURIComponent(mgProv);
+    const mt = VV.toArr(item.minigameTags);
+    if (mt.length) u += '&tags=' + encodeURIComponent(mt.join(','));
+    mgBtn.href = u;
+  }
+  mgBtn.classList.remove('disabled');
+  mgBtn.onclick = null;
+
+  // Reset mobile sidebar state
+  document.getElementById('detailRight').classList.remove('mobile-open');
+  document.getElementById('detailLeft').classList.remove('blurred');
+
+  detailPage.classList.add('open');
+};
+
+window.closeDetailPage = function() {
+  detailPage.classList.remove('open');
+};
+
+/* ═══ MOBILE DETAIL-RIGHT TOGGLE ═══ */
+window.toggleDetailRight = function() {
+  const right  = document.getElementById('detailRight');
+  const left   = document.getElementById('detailLeft');
+  const isOpen = right.classList.contains('mobile-open');
+
+  if (isOpen) {
+    right.classList.remove('mobile-open');
+    left.classList.remove('blurred');
+  } else {
+    right.classList.add('mobile-open');
+    left.classList.add('blurred');
+  }
+};
+
+/* ═══ MAP + PAN/ZOOM ═══ */
+let scale = 1, originX = 0, originY = 0;
+let isDragging = false, startX, startY, touchStartDist = 0;
+
+function applyTransform() {
+  const svg = panZoomWrap.querySelector('svg');
+  if (svg) svg.style.transform = `translate(${originX}px,${originY}px) scale(${scale})`;
+}
+
+function setupMap() {
+  mapProvinceData = (typeof provinceData !== 'undefined') ? provinceData : {};
+
+  fetch('vietnam.svg')
+    .then(r => { if (!r.ok) throw new Error('no svg'); return r.text(); })
+    .then(svg => {
+      panZoomWrap.innerHTML = svg;
+      const svgEl = panZoomWrap.querySelector('svg');
+      setTimeout(openFromQuery, 0);
+
+      svgEl.querySelectorAll('path').forEach(path => {
+        const id   = path.getAttribute('id');
+        const info = mapProvinceData[id];
+        path.setAttribute('fill', info?.color || '#e8e8e8');
+        path.setAttribute('stroke', '#fff');
+        path.setAttribute('stroke-width', '0.5');
+
+        if (info) {
+          path.addEventListener('mousemove', e => {
+            const fmt = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            ttHead.textContent = info.name;
+            ttBody.innerHTML   = `${fmt(info.area)} km² &nbsp;|&nbsp; ${fmt(info.population)} người`;
+            tooltip.style.left    = (e.clientX + 14) + 'px';
+            tooltip.style.top     = (e.clientY + 10) + 'px';
+            tooltip.style.display = 'block';
+          });
+          path.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+          path.addEventListener('click', e => {
+            e.stopPropagation();
+            tooltip.style.display = 'none';
+            openPanel(id);
+          });
+        }
+      });
+
+      svgEl.addEventListener('mousedown', e => {
+        isDragging = true; startX = e.clientX - originX; startY = e.clientY - originY;
+        svgEl.style.cursor = 'grabbing';
+      });
+    })
+    .catch(() => {
+      panZoomWrap.innerHTML = `
+        <div class="demo-zone">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+            <polygon points="3 11 12 2 21 11 21 22 15 22 15 16 9 16 9 22 3 22"/>
+          </svg>
+          <p>Tải file <code>vietnam.svg</code> + <code>data.js</code> vào cùng thư mục</p>
+          <button class="demo-btn" onclick="openPanel('HaiPhong')">
+            Demo: Mở Hải Phòng
+          </button>
+        </div>`;
+    });
+
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    originX = e.clientX - startX; originY = e.clientY - startY; applyTransform();
+  });
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    const svg = panZoomWrap.querySelector('svg');
+    if (svg) svg.style.cursor = 'grab';
+  });
+
+  panZoomWrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    scale = Math.min(Math.max(scale * (e.deltaY < 0 ? 1.1 : 0.9), 0.35), 14);
+    applyTransform();
+  }, { passive: false });
+
+  panZoomWrap.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      isDragging = true; startX = e.touches[0].clientX - originX; startY = e.touches[0].clientY - originY;
+    } else if (e.touches.length === 2) {
+      touchStartDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                                  e.touches[0].clientY - e.touches[1].clientY);
+    }
+  }, { passive: true });
+  panZoomWrap.addEventListener('touchmove', e => {
+    if (e.touches.length === 1 && isDragging) {
+      originX = e.touches[0].clientX - startX; originY = e.touches[0].clientY - startY; applyTransform();
+    } else if (e.touches.length === 2) {
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                           e.touches[0].clientY - e.touches[1].clientY);
+      scale = Math.min(Math.max(scale * (d / touchStartDist), 0.35), 14);
+      applyTransform(); touchStartDist = d;
+    }
+  }, { passive: true });
+  panZoomWrap.addEventListener('touchend', () => { isDragging = false; });
+
+  document.getElementById('zoomInBtn').addEventListener('click',  () => { scale = Math.min(scale * 1.2, 14); applyTransform(); });
+  document.getElementById('zoomOutBtn').addEventListener('click', () => { scale = Math.max(scale / 1.2, 0.35); applyTransform(); });
+}
+
+/* ═══ NAVBAR HAMBURGER ═══ */
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const mobileDrawer = document.getElementById('mobileDrawer');
+hamburgerBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  hamburgerBtn.classList.toggle('open');
+  mobileDrawer.classList.toggle('open');
+});
+document.addEventListener('click', e => {
+  if (!mobileDrawer.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+    hamburgerBtn.classList.remove('open'); mobileDrawer.classList.remove('open');
+  }
+});
+mobileDrawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  hamburgerBtn.classList.remove('open'); mobileDrawer.classList.remove('open');
+}));
+
+/* ═══ HELPERS ═══ */
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = String(s || '');
+  return d.innerHTML;
+}
+
+/* ═══ BOOT ═══ */
+const dataScript = document.createElement('script');
+dataScript.src = 'data.js';
+dataScript.onload  = setupMap;
+dataScript.onerror = setupMap;
+document.head.appendChild(dataScript);
+
+</script>
+</body>
+</html>

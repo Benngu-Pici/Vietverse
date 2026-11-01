@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vietverse | Admin – Quản lý AR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet"/>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, getDocs, deleteDoc, doc,
+      query, orderBy, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+      authDomain: "vvss-b7a49.firebaseapp.com",
+      projectId: "vvss-b7a49",
+      storageBucket: "vvss-b7a49.firebasestorage.app",
+      messagingSenderId: "562837285603",
+      appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6",
+      measurementId: "G-BRSGSK6MSM"
+    });
+    const db = getFirestore(app);
+
+    /* ============================================================
+       PATTERN TRAINER — sinh file .patt (chuẩn ARToolKit/AR.js)
+       hoàn toàn trong trình duyệt, từ 1 ảnh marker, không cần lib ngoài.
+       ============================================================ */
+    const GRID = 16;        // độ phân giải pattern chuẩn AR.js (16x16 ô)
+    const SUPERSAMPLE = 6;  // lấy mẫu phụ mỗi ô để tính màu trung bình mượt hơn
+
+    function loadImageEl(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Không tải được ảnh marker (kiểm tra link)."));
+        img.src = url;
+      });
+    }
+
+    function imageToGrid(img) {
+      const big = GRID * SUPERSAMPLE;
+      const canvas = document.createElement('canvas');
+      canvas.width = big; canvas.height = big;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      // crop ảnh thành hình vuông ở giữa trước khi vẽ, tránh méo pattern
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      const sx = (img.naturalWidth - side) / 2, sy = (img.naturalHeight - side) / 2;
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, big, big);
+
+      let data;
+      try {
+        data = ctx.getImageData(0, 0, big, big).data;
+      } catch (e) {
+        throw new Error("CORS_BLOCKED");
+      }
+
+      const grid = [];
+      for (let gy = 0; gy < GRID; gy++) {
+        const row = [];
+        for (let gx = 0; gx < GRID; gx++) {
+          let r = 0, g = 0, b = 0, n = 0;
+          for (let sy2 = 0; sy2 < SUPERSAMPLE; sy2++) {
+            for (let sx2 = 0; sx2 < SUPERSAMPLE; sx2++) {
+              const px = gx * SUPERSAMPLE + sx2, py = gy * SUPERSAMPLE + sy2;
+              const idx = (py * big + px) * 4;
+              r += data[idx]; g += data[idx + 1]; b += data[idx + 2]; n++;
+            }
+          }
+          row.push([Math.round(r / n), Math.round(g / n), Math.round(b / n)]);
+        }
+        grid.push(row);
+      }
+      return grid;
+    }
+
+    function rotateGrid90(grid) {
+      const n = grid.length, res = [];
+      for (let y = 0; y < n; y++) {
+        const row = [];
+        for (let x = 0; x < n; x++) row.push(grid[n - 1 - x][y]);
+        res.push(row);
+      }
+      return res;
+    }
+
+    function gridToPattText(grid0) {
+      const g90 = rotateGrid90(grid0), g180 = rotateGrid90(g90), g270 = rotateGrid90(g180);
+      return [grid0, g90, g180, g270]
+        .map(g => g.map(row => row.map(c => c.join(' ')).join('  ')).join('\n'))
+        .join('\n\n');
+    }
+
+    async function generatePattFromUrl(url) {
+      const img = await loadImageEl(url);
+      const grid = imageToGrid(img);
+      return gridToPattText(grid);
+    }
+    window._generatePattFromUrl = generatePattFromUrl;
+
+    function renderPatternPreview(pattText, canvasEl) {
+      const nums = pattText.trim().split(/\s+/).map(Number);
+      const cell = canvasEl.width / GRID;
+      const ctx = canvasEl.getContext('2d');
+      let i = 0;
+      for (let y = 0; y < GRID; y++) {
+        for (let x = 0; x < GRID; x++) {
+          const r = nums[i++], g = nums[i++], b = nums[i++];
+          ctx.fillStyle = `rgb(${r},${g},${b})`;
+          ctx.fillRect(x * cell, y * cell, cell + 1, cell + 1);
+        }
+      }
+    }
+    window._renderPatternPreview = renderPatternPreview;
+
+    /* ============================================================
+       LINK HELPERS — tự chuyển link chia sẻ Google Drive sang
+       link truy cập trực tiếp (uc?...), giống cách Library đang dùng.
+       ============================================================ */
+    function normalizeDriveLink(url, kind) {
+      if (!url) return url;
+      let id = null;
+      let m = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+      if (m) id = m[1];
+      if (!id) { m = url.match(/[?&]id=([^&]+)/); if (m) id = m[1]; }
+      if (!id) return url; // không phải link Drive -> giữ nguyên
+      return kind === 'image'
+        ? `https://drive.google.com/uc?export=view&id=${id}`
+        : `https://drive.google.com/uc?export=download&id=${id}`;
+    }
+    window._normalizeDriveLink = normalizeDriveLink;
+
+    /* ---- LOAD LIST ---- */
+    async function loadList() {
+      const tbody = document.getElementById('arTbody');
+      tbody.innerHTML = '<tr><td colspan="5" class="loading-row"><div class="spinner"></div>Đang tải...</td></tr>';
+      try {
+        const snap = await getDocs(query(collection(db, "ar_items"), orderBy("createdAt", "desc")));
+        if (snap.empty) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Chưa có AR nào.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = '';
+        snap.forEach(d => {
+          const a = d.data();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="td-cover">
+              ${a.markerImageUrl
+                ? `<img src="${a.markerImageUrl}" alt="marker" class="cover-thumb">`
+                : `<div class="cover-placeholder-sm">${(a.name || '?')[0]}</div>`}
+            </td>
+            <td class="td-title">${a.name || '—'}</td>
+            <td><canvas class="patt-thumb" width="48" height="48"></canvas></td>
+            <td>Scale ${a.scale ?? '—'}</td>
+            <td class="td-actions">
+              ${a.modelUrl ? `<a href="${a.modelUrl}" target="_blank" class="btn-view">Model</a>` : '<span class="no-link">—</span>'}
+              <button class="btn-del" data-id="${d.id}">Xóa</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+          if (a.pattData) {
+            const cv = tr.querySelector('.patt-thumb');
+            try { renderPatternPreview(a.pattData, cv); } catch (e) {}
+          }
+        });
+
+        tbody.querySelectorAll('.btn-del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('Xóa AR item này?')) return;
+            btn.disabled = true; btn.textContent = '...';
+            await deleteDoc(doc(db, "ar_items", btn.dataset.id));
+            showToast('Đã xóa AR item.', 'success');
+            loadList();
+          });
+        });
+      } catch (e) {
+        console.error(e);
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-row" style="color:var(--red)">Lỗi tải dữ liệu: ${e.message}</td></tr>`;
+      }
+    }
+
+    /* ---- SUBMIT ---- */
+    window.handleSubmit = async function (e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const name = document.getElementById('f-name').value.trim();
+      const markerUrlRaw = document.getElementById('f-marker').value.trim();
+      const modelUrlRaw = document.getElementById('f-model').value.trim();
+      const scale = parseFloat(document.getElementById('f-scale').value) || 0.3;
+      const posY = parseFloat(document.getElementById('f-posy').value) || 0.5;
+      const loopAnim = document.getElementById('f-loop').checked;
+
+      if (!name || !markerUrlRaw || !modelUrlRaw) {
+        showToast('Vui lòng điền đủ Tên, Link ảnh marker và Link model.', 'error');
+        return;
+      }
+
+      const markerImageUrl = normalizeDriveLink(markerUrlRaw, 'image');
+      const modelUrl = normalizeDriveLink(modelUrlRaw, 'model');
+
+      btn.disabled = true; btn.textContent = 'Đang sinh pattern...';
+      try {
+        let pattData;
+        try {
+          pattData = await generatePattFromUrl(markerImageUrl);
+        } catch (err) {
+          if (err.message === 'CORS_BLOCKED') {
+            throw new Error('Không đọc được pixel ảnh marker do máy chủ ảnh chặn CORS (Google Drive thường gặp lỗi này). Hãy thử host ảnh marker ở nơi cho phép CORS (Imgur direct link, GitHub raw, Firebase Storage, ImgBB...) rồi thử lại.');
+          }
+          throw err;
+        }
+
+        btn.textContent = 'Đang lưu...';
+        await addDoc(collection(db, "ar_items"), {
+          name, markerImageUrl, modelUrl, pattData,
+          scale, positionY: posY, loopAnim,
+          createdAt: serverTimestamp()
+        });
+        showToast('✓ Thêm AR thành công! Pattern đã được train.', 'success');
+        e.target.reset();
+        document.getElementById('f-scale').value = 0.3;
+        document.getElementById('f-posy').value = 0.5;
+        updatePreview();
+        loadList();
+      } catch (err) {
+        console.error(err);
+        showToast('Lỗi: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Thêm vào hệ thống AR';
+      }
+    };
+
+    /* ---- PREVIEW (test pattern trước khi lưu) ---- */
+    window.testPattern = async function () {
+      const markerUrlRaw = document.getElementById('f-marker').value.trim();
+      if (!markerUrlRaw) { showToast('Nhập link ảnh marker trước.', 'error'); return; }
+      const url = normalizeDriveLink(markerUrlRaw, 'image');
+      const btn = document.getElementById('testBtn');
+      btn.disabled = true; btn.textContent = 'Đang xử lý...';
+      try {
+        const patt = await generatePattFromUrl(url);
+        const cv = document.getElementById('pattPreviewCanvas');
+        renderPatternPreview(patt, cv);
+        document.getElementById('pattPreviewWrap').style.display = 'flex';
+        showToast('✓ Train pattern thành công, xem preview bên dưới.', 'success');
+      } catch (err) {
+        const msg = err.message === 'CORS_BLOCKED'
+          ? 'Ảnh bị chặn CORS, không đọc được pixel. Hãy đổi nguồn ảnh (không dùng Drive).'
+          : err.message;
+        showToast('Lỗi: ' + msg, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Test train pattern';
+      }
+    };
+
+    window.updatePreview = function () {
+      const name = document.getElementById('f-name').value.trim();
+      const markerUrl = document.getElementById('f-marker').value.trim();
+      const prev = document.getElementById('previewCard');
+      prev.querySelector('.prev-title').textContent = name || 'Tên AR';
+      const img = prev.querySelector('.prev-img');
+      const fallback = prev.querySelector('.prev-fallback');
+      if (markerUrl) {
+        img.src = normalizeDriveLink(markerUrl, 'image'); img.style.display = 'block'; fallback.style.display = 'none';
+      } else {
+        img.style.display = 'none'; fallback.style.display = 'flex';
+        fallback.querySelector('span').textContent = name ? name[0].toUpperCase() : '?';
+      }
+    };
+
+    window.showToast = function (msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => t.className = 'toast', 4200);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadList();
+      ['f-name', 'f-marker'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', updatePreview);
+      });
+    });
+  </script>
+
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --red:#d32f2f; --red-dark:#b71c1c; --gold:#f5c842;
+      --bg:#f7f3f0; --card:#fff; --border:#ece5e0;
+      --text:#1a1a1a; --muted:#888; --nh:66px;
+    }
+    body{min-height:100vh;background:var(--bg);font-family:'Be Vietnam Pro',sans-serif;color:var(--text);}
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-thumb{background:var(--red);border-radius:8px;}
+
+    .topbar{
+      position:sticky;top:0;z-index:100;
+      background:#fff;border-bottom:2px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 32px;height:var(--nh);
+      box-shadow:0 2px 16px rgba(0,0,0,.06);
+    }
+    .topbar-left{display:flex;align-items:center;gap:14px;}
+    .topbar img.logo{height:34px;cursor:pointer;}
+    .topbar-title{font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:800;color:var(--red);}
+    .badge-admin{
+      background:var(--red);color:#fff;font-size:.7rem;font-weight:800;
+      padding:3px 10px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase;
+    }
+    .btn-goto-lib{
+      text-decoration:none;color:var(--red);font-weight:700;font-size:.9rem;
+      display:flex;align-items:center;gap:7px;
+      padding:8px 18px;border-radius:10px;border:2px solid rgba(211,47,47,.25);
+      transition:background .2s,border-color .2s;
+    }
+    .btn-goto-lib:hover{background:rgba(211,47,47,.07);border-color:var(--red);}
+
+    .main{max-width:1160px;margin:0 auto;padding:36px 24px 80px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;}
+    @media(max-width:860px){.main{grid-template-columns:1fr;}}
+
+    .card{background:var(--card);border-radius:20px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.07);border:1px solid var(--border);}
+    .card-title{
+      font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;color:var(--red);
+      margin-bottom:28px;display:flex;align-items:center;gap:10px;
+    }
+    .card-title svg{opacity:.75;}
+
+    .form-group{margin-bottom:20px;}
+    .form-group label{
+      display:block;font-size:.82rem;font-weight:700;color:var(--muted);
+      letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;
+    }
+    .form-group label span.req{color:var(--red);}
+    .form-control{
+      width:100%;padding:12px 16px;border-radius:12px;
+      border:2px solid var(--border);background:#faf8f6;
+      font-family:'Be Vietnam Pro',sans-serif;font-size:.97rem;color:var(--text);
+      transition:border-color .2s,box-shadow .2s;
+      outline:none;
+    }
+    .form-control:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(211,47,47,.1);background:#fff;}
+
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr;}}
+
+    .hint{font-size:.78rem;color:var(--muted);margin-top:6px;line-height:1.5;}
+    .checkbox-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+    .checkbox-row input{width:18px;height:18px;accent-color:var(--red);cursor:pointer;}
+    .checkbox-row label{font-size:.88rem;font-weight:600;color:var(--text);cursor:pointer;text-transform:none;letter-spacing:0;}
+
+    .btn-submit{
+      width:100%;padding:14px;border-radius:14px;
+      background:var(--red);color:#fff;border:none;
+      font-family:'Be Vietnam Pro',sans-serif;font-size:1rem;font-weight:800;
+      cursor:pointer;letter-spacing:.04em;
+      transition:background .2s,transform .2s,box-shadow .2s;
+      box-shadow:0 4px 16px rgba(211,47,47,.3);
+      margin-top:8px;
+    }
+    .btn-submit:hover:not(:disabled){background:var(--red-dark);transform:translateY(-2px);box-shadow:0 8px 22px rgba(211,47,47,.35);}
+    .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+    .btn-secondary{
+      width:100%;padding:11px;border-radius:14px;
+      background:#fff;color:var(--red);border:2px solid rgba(211,47,47,.3);
+      font-family:'Be Vietnam Pro',sans-serif;font-size:.9rem;font-weight:700;
+      cursor:pointer;transition:background .2s,border-color .2s;margin-top:10px;
+    }
+    .btn-secondary:hover:not(:disabled){background:rgba(211,47,47,.06);border-color:var(--red);}
+    .btn-secondary:disabled{opacity:.6;cursor:not-allowed;}
+
+    .preview-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding-top:12px;}
+    .preview-label{font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+    #previewCard{width:160px;display:flex;flex-direction:column;align-items:center;gap:12px;}
+    .prev-cover{
+      width:160px;height:160px;border-radius:12px;overflow:hidden;
+      box-shadow:0 8px 24px rgba(0,0,0,.15);position:relative;background:#f0e8d5;
+    }
+    .prev-img{width:100%;height:100%;object-fit:cover;display:none;}
+    .prev-fallback{
+      width:100%;height:100%;background:linear-gradient(145deg,#c62828,#ef5350);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .prev-fallback span{font-family:'Baloo 2',cursive;font-size:3rem;font-weight:800;color:#fff;}
+    .prev-title{font-size:.85rem;font-weight:700;color:var(--text);text-align:center;line-height:1.4;max-width:160px;}
+
+    #pattPreviewWrap{display:none;flex-direction:column;align-items:center;gap:8px;margin-top:6px;}
+    #pattPreviewCanvas{
+      width:128px;height:128px;border-radius:10px;border:2px solid var(--border);
+      image-rendering:pixelated;box-shadow:0 4px 14px rgba(0,0,0,.12);
+    }
+    .patt-thumb{width:48px;height:48px;border-radius:7px;border:1px solid var(--border);image-rendering:pixelated;}
+
+    .list-card{grid-column:1/-1;}
+    .table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);}
+    table{width:100%;border-collapse:collapse;}
+    thead tr{background:rgba(211,47,47,.06);}
+    th{padding:13px 16px;text-align:left;font-size:.78rem;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+    td{padding:12px 16px;border-top:1px solid var(--border);vertical-align:middle;}
+    tr:hover td{background:#fdf9f9;}
+
+    .td-cover{width:60px;}
+    .cover-thumb{width:44px;height:58px;object-fit:cover;border-radius:7px;display:block;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+    .cover-placeholder-sm{
+      width:44px;height:58px;border-radius:7px;
+      background:linear-gradient(135deg,var(--red),#ef5350);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#fff;
+    }
+    .td-title{font-weight:600;font-size:.9rem;max-width:220px;}
+    .td-actions{white-space:nowrap;display:flex;gap:8px;align-items:center;}
+
+    .btn-view{
+      text-decoration:none;background:#e8f4fd;color:#1565c0;
+      font-size:.8rem;font-weight:700;padding:5px 13px;border-radius:8px;
+      transition:background .2s;
+    }
+    .btn-view:hover{background:#bbdefb;}
+    .btn-del{
+      background:#fdecea;color:var(--red);border:none;
+      font-size:.8rem;font-weight:700;padding:5px 13px;border-radius:8px;
+      cursor:pointer;transition:background .2s;font-family:'Be Vietnam Pro',sans-serif;
+    }
+    .btn-del:hover{background:#ffcdd2;}
+    .no-link{color:#ccc;font-size:.85rem;}
+
+    .loading-row,.empty-row{
+      text-align:center;padding:40px!important;color:var(--muted);
+      font-weight:600;font-size:.9rem;
+    }
+    .loading-row{display:flex;align-items:center;justify-content:center;gap:12px;}
+    .spinner{width:22px;height:22px;border-radius:50%;border:2.5px solid #f0f0f0;border-top-color:var(--red);animation:spin .8s linear infinite;flex-shrink:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .toast{
+      position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);
+      background:#333;color:#fff;padding:13px 28px;border-radius:14px;
+      font-weight:700;font-size:.92rem;max-width:90vw;text-align:center;
+      opacity:0;pointer-events:none;transition:all .3s;
+      box-shadow:0 8px 28px rgba(0,0,0,.2);z-index:9999;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast.success{background:#1b5e20;}
+    .toast.error{background:var(--red-dark);}
+
+    .warn-box{
+      margin-top:32px;padding:18px;background:#fff8f0;border-radius:14px;border:1.5px solid #ffe0b2;
+    }
+    .warn-box p.warn-title{font-size:.82rem;font-weight:800;color:#e65100;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+    .warn-box ol,.warn-box ul{font-size:.8rem;color:#555;line-height:1.9;padding-left:18px;}
+    .warn-box .small{font-size:.78rem;color:#888;margin-top:10px;}
+    .warn-box code{background:#ffe;padding:2px 6px;border-radius:4px;}
+
+    @media(max-width:600px){
+      .topbar{padding:0 16px;}
+      .topbar-title{font-size:1rem;}
+      .card{padding:22px 18px;}
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <img src="logo.png" alt="Vietverse" class="logo" onclick="location.href='index.html'"/>
+    <span class="badge-admin">Admin · AR</span>
+  </div>
+  <a href="ar.html" class="btn-goto-lib">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    Xem trang AR
+  </a>
+</header>
+
+<div class="main">
+
+  <!-- FORM CARD -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Thêm AR mới
+    </div>
+
+    <form onsubmit="handleSubmit(event)">
+      <div class="form-group">
+        <label>Tên AR <span class="req">*</span></label>
+        <input id="f-name" class="form-control" type="text" placeholder="VD: Trống Đồng Đông Sơn" required />
+      </div>
+
+      <div class="form-group">
+        <label>Link ảnh marker <span class="req">*</span></label>
+        <input id="f-marker" class="form-control" type="url" placeholder="https://..." required />
+        <p class="hint">Ảnh nên là hình vuông, tương phản cao, hoa văn KHÔNG đối xứng (để tránh nhận diện sai góc xoay). Hệ thống sẽ tự "train" pattern (.patt) ngay khi bạn bấm Thêm.</p>
+      </div>
+
+      <button type="button" class="btn-secondary" id="testBtn" onclick="testPattern()">Test train pattern</button>
+      <div id="pattPreviewWrap">
+        <canvas id="pattPreviewCanvas" width="64" height="64"></canvas>
+        <span class="hint" style="margin:0;">Pattern đã train (xem thử trước khi lưu)</span>
+      </div>
+
+      <div class="form-group" style="margin-top:20px;">
+        <label>Link model 3D (.glb/.gltf) <span class="req">*</span></label>
+        <input id="f-model" class="form-control" type="url" placeholder="https://..." required />
+        <p class="hint">Hỗ trợ Google Drive (link chia sẻ "Bất kỳ ai có link" → hệ thống tự chuyển sang link tải trực tiếp).</p>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Scale model</label>
+          <input id="f-scale" class="form-control" type="number" step="0.01" value="0.3" />
+        </div>
+        <div class="form-group">
+          <label>Vị trí Y (độ cao)</label>
+          <input id="f-posy" class="form-control" type="number" step="0.05" value="0.5" />
+        </div>
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="f-loop" checked />
+        <label for="f-loop">Lặp animation của model (nếu có)</label>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Thêm vào hệ thống AR</button>
+    </form>
+
+    <div class="warn-box">
+      <p class="warn-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Lưu ý quan trọng về nguồn ảnh/model
+      </p>
+      <ul>
+        <li>Việc tự sinh pattern cần <b>đọc trực tiếp pixel ảnh</b> trong trình duyệt (CORS). Google Drive đôi khi chặn việc này.</li>
+        <li>Nếu "Test train pattern" báo lỗi CORS, hãy đổi ảnh marker sang nguồn cho phép CORS: Imgur (link ảnh trực tiếp .jpg/.png), GitHub raw, ImgBB, Firebase Storage...</li>
+        <li>Model 3D cũng cần nguồn cho phép tải cross-origin để hiển thị được trong camera AR ở trang AR.html.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PREVIEW CARD -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Xem trước marker
+    </div>
+    <div class="preview-wrap">
+      <div class="preview-label">Ảnh marker đang nhập</div>
+      <div id="previewCard">
+        <div class="prev-cover">
+          <img class="prev-img" src="" alt=""/>
+          <div class="prev-fallback"><span>?</span></div>
+        </div>
+        <div class="prev-title">Tên AR</div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);text-align:center;max-width:220px;line-height:1.6;">
+        Đây là ảnh marker người dùng sẽ cần quét bằng camera ở trang AR để xem mô hình 3D hiện lên.
+      </p>
+    </div>
+
+    <div class="warn-box">
+      <p class="warn-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Cách hoạt động
+      </p>
+      <ol>
+        <li>Bạn dán link ảnh marker + link model 3D đã upload lên bên thứ 3.</li>
+        <li>Hệ thống tự đọc ảnh, chia lưới 16×16, lấy mẫu màu từng ô → sinh ra dữ liệu pattern (giống file .patt) và lưu thẳng vào Firestore (không cần host file .patt riêng).</li>
+        <li>Trang AR công khai (ar.html) sẽ tải toàn bộ pattern này về và dùng AR.js để nhận diện nhiều marker cùng lúc.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <div class="card list-card">
+    <div class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Danh sách AR trong hệ thống
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Marker</th>
+            <th>Tên AR</th>
+            <th>Pattern</th>
+            <th>Scale</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="arTbody">
+          <tr><td colspan="5" class="loading-row"><div class="spinner"></div>Đang tải...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+</body>
+</html>

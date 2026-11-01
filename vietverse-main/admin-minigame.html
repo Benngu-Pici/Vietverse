@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vietverse | Quản trị</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #FFB300; --gold-dark: #c98a00;
+    --red: #d32f2f; --red-dark: #b71c1c;
+    --bg: #fff5f5; --bg2: #ffffff; --bg3: #fff0ef;
+    --accent: #d32f2f; --accent2: #c2410c;
+    --text: #2b1212; --text-muted: #8a6a6a;
+    --border: rgba(211,47,47,0.14);
+    --danger: #e24b4a; --success: #2e7d32;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; font-family: 'Be Vietnam Pro', sans-serif; background: var(--bg); color: var(--text); }
+  body { padding-bottom: 60px; }
+
+  /* AUTH OVERLAY */
+  #auth-overlay {
+    position: fixed; inset: 0; z-index: 999; background: linear-gradient(160deg, #fff5f5 0%, #ffe2e2 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .auth-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 40px 36px; width: 360px; text-align: center;
+    box-shadow: 0 12px 40px rgba(211,47,47,0.12);
+  }
+  .auth-box h1 { font-family: 'Baloo 2', cursive; font-size: 20px; font-weight: 800; color: var(--red); letter-spacing: 2px; margin-bottom: 6px; }
+  .auth-box p { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+  .auth-input {
+    width: 100%; padding: 12px 16px; background: var(--bg3);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text); font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 15px; margin-bottom: 12px; outline: none;
+  }
+  .auth-input:focus { border-color: var(--accent); }
+  .auth-btn {
+    width: 100%; padding: 13px; background: linear-gradient(135deg, var(--red), var(--red-dark));
+    border: none; border-radius: 10px; color: #fff;
+    font-family: 'Be Vietnam Pro', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .auth-error { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 18px; }
+
+  /* NAVBAR */
+  #app { display: none; }
+  .navbar {
+    position: sticky; top: 0; z-index: 50;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    padding: 0 24px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-family: 'Baloo 2', cursive; font-size: 17px; font-weight: 800; color: var(--red); letter-spacing: 1px; }
+  .nav-logo span { color: var(--text-muted); font-weight: 600; font-size: 12px; margin-left: 8px; font-family: 'Be Vietnam Pro', sans-serif; }
+  .nav-back-btn {
+    padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 700;
+    cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+  }
+  .nav-back-btn:hover { border-color: var(--accent); color: var(--text); }
+
+  .page { max-width: 1000px; margin: 0 auto; padding: 28px 24px; }
+
+  /* TABS */
+  .admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .admin-tab {
+    padding: 9px 20px; border-radius: 10px; border: none;
+    background: var(--bg2); color: var(--text-muted);
+    font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer;
+    border: 1px solid var(--border); transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 2px 10px rgba(211,47,47,0.06);
+  }
+  .admin-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .admin-tab .count-badge {
+    background: rgba(0,0,0,0.12); border-radius: 10px; padding: 1px 7px; font-size: 11px;
+  }
+  .admin-tab.active .count-badge { background: rgba(255,255,255,0.25); }
+  .admin-section { display: none; }
+  .admin-section.active { display: block; }
+  .section-title { font-family: 'Baloo 2', cursive; font-size: 17px; font-weight: 800; margin-bottom: 4px; color: var(--red); }
+  .section-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+
+  /* MAP ROW */
+  .map-row {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 10px;
+    box-shadow: 0 2px 10px rgba(211,47,47,0.05);
+  }
+  .map-row-thumb {
+    width: 56px; height: 56px; border-radius: 10px; object-fit: cover;
+    background: var(--bg3); flex-shrink: 0;
+  }
+  .map-row-thumb-ph {
+    width: 56px; height: 56px; border-radius: 10px;
+    background: var(--bg3); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .map-row-info { flex: 1; min-width: 0; }
+  .map-row-name { font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .map-row-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  .map-row-meta b { color: var(--text); }
+  .map-row-status {
+    display: inline-block; font-size: 10px; font-weight: 800;
+    padding: 2px 9px; border-radius: 20px; margin-left: 8px; vertical-align: middle;
+  }
+  .map-row-status.approved { background: rgba(46,125,50,0.13); color: var(--success); }
+  .map-row-status.pending { background: rgba(255,179,0,0.15); color: var(--gold-dark); }
+  .map-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .ar-btn {
+    padding: 8px 14px; border-radius: 9px; border: none;
+    font-family: 'Be Vietnam Pro', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer;
+    transition: opacity 0.2s; white-space: nowrap;
+  }
+  .ar-btn.approve { background: var(--success); color: #fff; }
+  .ar-btn.reject { background: rgba(255,179,0,0.15); color: var(--gold-dark); }
+  .ar-btn.delete { background: rgba(226,75,74,0.18); color: var(--danger); }
+  .ar-btn.unpublish { background: var(--bg3); border: 1px solid var(--border); color: var(--text-muted); }
+  .ar-btn:hover { opacity: 0.8; }
+  .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); font-size: 14px; }
+  .empty-state span { display: block; font-size: 36px; margin-bottom: 10px; }
+
+  /* WEEKLY CHALLENGE GRID */
+  .challenge-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px;
+  }
+  .challenge-col {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 10px; text-align: center;
+    box-shadow: 0 2px 10px rgba(211,47,47,0.05);
+  }
+  .challenge-col-label { font-size: 13px; font-weight: 900; color: var(--red); margin-bottom: 10px; }
+  .challenge-col-thumb {
+    width: 100%; height: 64px; border-radius: 8px; object-fit: cover;
+    background: var(--bg3); margin-bottom: 8px;
+  }
+  .challenge-col-thumb-ph {
+    width: 100%; height: 64px; border-radius: 8px; background: var(--bg3);
+    margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .challenge-col-mapname {
+    font-size: 11px; font-weight: 700; margin-bottom: 10px; min-height: 28px;
+    overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  }
+  .challenge-col select {
+    width: 100%; padding: 7px 6px; border-radius: 8px;
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    font-family: 'Be Vietnam Pro', sans-serif; font-size: 11px; outline: none;
+  }
+  @media (max-width: 900px) {
+    .challenge-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .challenge-grid { grid-template-columns: repeat(2, 1fr); }
+    .page { padding: 20px 14px; }
+    .map-row { flex-wrap: wrap; }
+    .map-row-actions { width: 100%; }
+  }
+
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 22px; font-size: 14px; font-weight: 700;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 9999; white-space: nowrap;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+  }
+  #toast.show { opacity: 1; }
+  #toast.success { border-color: var(--success); color: var(--success); }
+  #toast.error { border-color: var(--danger); color: var(--danger); }
+  #toast.info { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div style="font-size:40px;margin-bottom:8px">🛡️</div>
+    <h1>VIETVERSE ADMIN</h1>
+    <p>Đăng nhập để vào trang quản trị</p>
+    <input class="auth-input" id="auth-email" type="email" placeholder="Email">
+    <input class="auth-input" id="auth-password" type="password" placeholder="Mật khẩu">
+    <button class="auth-btn" id="auth-action-btn">Đăng nhập</button>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<div id="app">
+  <nav class="navbar">
+    <div class="nav-logo">🛡️ ADMIN<span>Quản trị hệ thống Vietverse Minigame</span></div>
+    <button class="nav-back-btn" onclick="window.location.href='minigame.html'">← Trang chủ</button>
+  </nav>
+
+  <div class="page">
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="pending">⏳ Chờ duyệt <span class="count-badge" id="count-pending">0</span></button>
+      <button class="admin-tab" data-tab="all">🗺️ Tất cả Map <span class="count-badge" id="count-all">0</span></button>
+      <button class="admin-tab" data-tab="challenge">🔥 Thử thách tuần</button>
+    </div>
+
+    <!-- PENDING TAB -->
+    <div class="admin-section active" id="tab-pending">
+      <div class="section-title">Map chờ duyệt</div>
+      <div class="section-sub">Map mới đăng phải được duyệt ở đây trước khi hiển thị công khai cho mọi người.</div>
+      <div id="pending-list"></div>
+    </div>
+
+    <!-- ALL MAPS TAB -->
+    <div class="admin-section" id="tab-all">
+      <div class="section-title">Tất cả Map</div>
+      <div class="section-sub">Quản lý / xóa bất kỳ map nào trong hệ thống.</div>
+      <div id="all-list"></div>
+    </div>
+
+    <!-- WEEKLY CHALLENGE TAB -->
+    <div class="admin-section" id="tab-challenge">
+      <div class="section-title">Thử thách tuần</div>
+      <div class="section-sub">Chọn 1 map cho mỗi thứ trong tuần. Lựa chọn này lặp lại mỗi tuần (không cần set lại). Chỉ map đã duyệt mới chọn được.</div>
+      <div class="challenge-grid" id="challenge-grid"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+  authDomain: "vvss-b7a49.firebaseapp.com",
+  databaseURL: "https://vvss-b7a49-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "vvss-b7a49",
+  storageBucket: "vvss-b7a49.firebasestorage.app",
+  messagingSenderId: "562837285603",
+  appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6"
+};
+firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// NOTE ON ACCESS CONTROL
+// ════════════════════════════════════════════════════════════════
+// This page is reachable by any signed-in user who knows the URL — it is not linked from the
+// main navigation, but the URL itself is not a security boundary. The same is true of the
+// underlying Firebase Realtime Database, which currently has no security rules restricting
+// writes to `maps/*` or `weeklyChallenge/*`. For real protection, add Firebase Realtime
+// Database rules that check the requesting user's UID/custom claim against an admin allowlist
+// before allowing writes to those paths.
+// ════════════════════════════════════════════════════════════════
+
+const DAY_LABELS_FULL = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
+
+let currentUser = null;
+let allMapsData = {};
+let weeklyChallengeData = {};
+
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(t._to);
+  t._to = setTimeout(() => { t.className = ''; }, 2800);
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────
+document.getElementById('auth-action-btn').addEventListener('click', async () => {
+  const email = document.getElementById('auth-email').value.trim();
+  const pass = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Nhập email và mật khẩu.'; return; }
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, pass);
+  } catch(e) {
+    errEl.textContent = e.message;
+  }
+});
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('auth-overlay').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    listenMaps();
+    listenWeeklyChallenge();
+  } else {
+    currentUser = null;
+    document.getElementById('auth-overlay').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ─── TABS ─────────────────────────────────────────────────────
+document.querySelectorAll('.admin-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ─── DATA ─────────────────────────────────────────────────────
+function listenMaps() {
+  firebase.database().ref('maps').on('value', snap => {
+    allMapsData = snap.val() || {};
+    renderPendingList();
+    renderAllList();
+    renderChallengeGrid();
+  });
+}
+
+function listenWeeklyChallenge() {
+  firebase.database().ref('weeklyChallenge').on('value', snap => {
+    weeklyChallengeData = snap.val() || {};
+    renderChallengeGrid();
+  });
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function thumbHtml(map, sizeClass) {
+  return map.imageUrl
+    ? `<img class="${sizeClass}" src="${escapeHtml(map.imageUrl)}" onerror="this.outerHTML='<div class=&quot;${sizeClass}-ph&quot;>🗺️</div>'">`
+    : `<div class="${sizeClass}-ph">🗺️</div>`;
+}
+
+// ─── PENDING TAB ──────────────────────────────────────────────
+function renderPendingList() {
+  const list = document.getElementById('pending-list');
+  const entries = Object.entries(allMapsData).filter(([,m]) => m.status === 'pending');
+  document.getElementById('count-pending').textContent = entries.length;
+
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="empty-state"><span>✅</span>Không có map nào đang chờ duyệt.</div>';
+    return;
+  }
+
+  entries.sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
+  list.innerHTML = '';
+  entries.forEach(([id, map]) => {
+    const row = document.createElement('div');
+    row.className = 'map-row';
+    row.innerHTML = `
+      ${thumbHtml(map, 'map-row-thumb')}
+      <div class="map-row-info">
+        <div class="map-row-name">${escapeHtml(map.name || 'Không tên')}</div>
+        <div class="map-row-meta">bởi <b>${escapeHtml(map.creatorName || 'Ẩn danh')}</b> · ${map.gridWidth||'?'}×${map.gridHeight||'?'} ô</div>
+      </div>
+      <div class="map-row-actions">
+        <button class="ar-btn approve">✅ Duyệt</button>
+        <button class="ar-btn delete">🗑️ Xóa</button>
+      </div>
+    `;
+    row.querySelector('.approve').addEventListener('click', () => approveMap(id));
+    row.querySelector('.delete').addEventListener('click', () => deleteMap(id, map.name));
+    list.appendChild(row);
+  });
+}
+
+async function approveMap(id) {
+  try {
+    await firebase.database().ref(`maps/${id}/status`).set('approved');
+    showToast('✅ Đã duyệt map!', 'success');
+  } catch(e) { showToast('Lỗi: ' + e.message, 'error'); }
+}
+
+// ─── ALL MAPS TAB ─────────────────────────────────────────────
+function renderAllList() {
+  const list = document.getElementById('all-list');
+  const entries = Object.entries(allMapsData);
+  document.getElementById('count-all').textContent = entries.length;
+
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="empty-state"><span>🌐</span>Chưa có map nào trong hệ thống.</div>';
+    return;
+  }
+
+  entries.sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
+  list.innerHTML = '';
+  entries.forEach(([id, map]) => {
+    const isApproved = map.status === 'approved' || map.status === undefined;
+    const statusBadge = isApproved
+      ? '<span class="map-row-status approved">✅ Đã duyệt</span>'
+      : '<span class="map-row-status pending">⏳ Chờ duyệt</span>';
+    const row = document.createElement('div');
+    row.className = 'map-row';
+    row.innerHTML = `
+      ${thumbHtml(map, 'map-row-thumb')}
+      <div class="map-row-info">
+        <div class="map-row-name">${escapeHtml(map.name || 'Không tên')} ${statusBadge}</div>
+        <div class="map-row-meta">bởi <b>${escapeHtml(map.creatorName || 'Ẩn danh')}</b> · ${map.playCount||0} lượt chơi · ${map.gridWidth||'?'}×${map.gridHeight||'?'} ô</div>
+      </div>
+      <div class="map-row-actions">
+        ${isApproved
+          ? '<button class="ar-btn unpublish">⏸️ Gỡ duyệt</button>'
+          : '<button class="ar-btn approve">✅ Duyệt</button>'}
+        <button class="ar-btn delete">🗑️ Xóa</button>
+      </div>
+    `;
+    const approveBtn = row.querySelector('.approve');
+    if (approveBtn) approveBtn.addEventListener('click', () => approveMap(id));
+    const unpublishBtn = row.querySelector('.unpublish');
+    if (unpublishBtn) unpublishBtn.addEventListener('click', () => unpublishMap(id));
+    row.querySelector('.delete').addEventListener('click', () => deleteMap(id, map.name));
+    list.appendChild(row);
+  });
+}
+
+async function unpublishMap(id) {
+  try {
+    await firebase.database().ref(`maps/${id}/status`).set('pending');
+    showToast('⏸️ Đã gỡ duyệt map (chuyển về chờ duyệt).', 'info');
+  } catch(e) { showToast('Lỗi: ' + e.message, 'error'); }
+}
+
+async function deleteMap(id, name) {
+  if (!confirm(`Xóa map "${name || 'Không tên'}"? Hành động này không thể hoàn tác.`)) return;
+  try {
+    await firebase.database().ref(`maps/${id}`).remove();
+    // Also clear it from any weekday slot it might be assigned to
+    const updates = {};
+    Object.entries(weeklyChallengeData).forEach(([dayIdx, ch]) => {
+      if (ch && ch.mapId === id) updates[`weeklyChallenge/${dayIdx}`] = null;
+    });
+    if (Object.keys(updates).length > 0) await firebase.database().ref().update(updates);
+    showToast('🗑️ Đã xóa map!', 'success');
+  } catch(e) { showToast('Lỗi: ' + e.message, 'error'); }
+}
+
+// ─── WEEKLY CHALLENGE TAB ─────────────────────────────────────
+function renderChallengeGrid() {
+  const grid = document.getElementById('challenge-grid');
+  const approvedMaps = Object.entries(allMapsData).filter(([,m]) => m.status === 'approved' || m.status === undefined);
+
+  grid.innerHTML = '';
+  DAY_LABELS_FULL.forEach((label, dayIdx) => {
+    const current = weeklyChallengeData[dayIdx];
+    const currentMap = current && current.mapId ? allMapsData[current.mapId] : null;
+
+    const col = document.createElement('div');
+    col.className = 'challenge-col';
+
+    const thumb = currentMap
+      ? thumbHtml(currentMap, 'challenge-col-thumb')
+      : '<div class="challenge-col-thumb-ph">🔥</div>';
+
+    let optionsHtml = '<option value="">— Chưa chọn —</option>';
+    approvedMaps.forEach(([id, m]) => {
+      const sel = current && current.mapId === id ? 'selected' : '';
+      optionsHtml += `<option value="${id}" ${sel}>${escapeHtml(m.name || 'Không tên')}</option>`;
+    });
+
+    col.innerHTML = `
+      <div class="challenge-col-label">${label}</div>
+      ${thumb}
+      <div class="challenge-col-mapname">${currentMap ? escapeHtml(currentMap.name || '') : 'Chưa có map'}</div>
+      <select data-day="${dayIdx}">${optionsHtml}</select>
+    `;
+    col.querySelector('select').addEventListener('change', (e) => setChallengeDay(dayIdx, e.target.value));
+    grid.appendChild(col);
+  });
+}
+
+async function setChallengeDay(dayIdx, mapId) {
+  try {
+    if (!mapId) {
+      await firebase.database().ref(`weeklyChallenge/${dayIdx}`).remove();
+      showToast(`Đã bỏ chọn thử thách cho ${DAY_LABELS_FULL[dayIdx]}.`, 'info');
+      return;
+    }
+    const map = allMapsData[mapId];
+    await firebase.database().ref(`weeklyChallenge/${dayIdx}`).set({
+      mapId,
+      mapName: (map && map.name) || 'Map',
+    });
+    showToast(`🔥 Đã đặt thử thách cho ${DAY_LABELS_FULL[dayIdx]}!`, 'success');
+  } catch(e) { showToast('Lỗi: ' + e.message, 'error'); }
+}
+</script>
+</body>
+</html>

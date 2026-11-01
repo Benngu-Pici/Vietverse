@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Vietverse | Chơi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #FFB300; --gold-dark: #c98a00;
+      --red: #d32f2f; --red-dark: #b71c1c;
+      --bg: #efefef; --bg2: #ffffff; --bg3: #f5f0ef;
+      --accent: #d32f2f; --accent2: #ff8a3d;
+      --text: #2b1212; --text-muted: #8a6a6a;
+      --border: rgba(211,47,47,0.16);
+      --danger: #e24b4a; --success: #2e7d32;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%; width: 100%; overflow: hidden; position: fixed;
+      font-family: 'Be Vietnam Pro', sans-serif; background: #d8d8d8; color: var(--text);
+    }
+
+    /* ── AUTH OVERLAY ── */
+    #auth-overlay {
+      position: fixed; inset: 0; z-index: 999; background: linear-gradient(160deg, #fff5f5 0%, #ffe2e2 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .auth-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; width: 360px; text-align: center; box-shadow: 0 12px 40px rgba(211,47,47,0.12); }
+    .auth-box h1 { font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 800; color: var(--red); letter-spacing: 2px; margin-bottom: 6px; }
+    .auth-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+    .auth-input { width: 100%; padding: 12px 16px; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'Be Vietnam Pro', sans-serif; font-size: 15px; margin-bottom: 12px; outline: none; }
+    .auth-input:focus { border-color: var(--accent); }
+    .auth-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, var(--red), var(--red-dark)); border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
+    .auth-btn.google { background: linear-gradient(135deg, #ea4335, #cc2c20); }
+    .auth-divider { color: var(--text-muted); font-size: 13px; margin: 10px 0; display: flex; align-items: center; gap: 10px; }
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .auth-error { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 20px; }
+
+    /* ── LOADING MAP ── */
+    #map-loading {
+      position: fixed; inset: 0; z-index: 800; background: var(--bg);
+      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+    }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #map-loading p { color: var(--text-muted); font-size: 14px; font-weight: 700; }
+
+    /* ── CAMERA ── */
+    .camera-wrapper { position: fixed; inset: 0; overflow: hidden; pointer-events: none; background: #c9c9c9; }
+    .camera-pan { position: absolute; top: 0; left: 0; pointer-events: auto; will-change: transform; }
+    .game-container {
+      position: relative;
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      transform-origin: top left;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; pointer-events: none;
+    }
+    .topbar > * { pointer-events: auto; }
+    .tb-left { display: flex; align-items: center; gap: 8px; }
+    .tb-back {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      color: var(--red); font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(6px); box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .tb-mapname {
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 14px; backdrop-filter: blur(6px);
+      font-size: 13px; font-weight: 800; color: var(--red);
+      max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .tb-right { display: flex; align-items: center; gap: 8px; }
+    .tb-coins {
+      background: rgba(255,255,255,0.92); border: 1px solid var(--gold);
+      border-radius: 10px; padding: 8px 14px; backdrop-filter: blur(6px);
+      font-size: 14px; font-weight: 800; color: var(--gold-dark);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    /* ── COORD DISPLAY ── */
+    .coord-display {
+      position: fixed; bottom: 10px; right: 10px;
+      background: rgba(255,255,255,0.92); color: var(--red);
+      font-family: 'Be Vietnam Pro', monospace; font-size: 11px;
+      padding: 4px 10px; border-radius: 8px; z-index: 199;
+      border: 1px solid var(--border); font-weight: bold; letter-spacing: 1px;
+    }
+
+    /* ── JOYSTICK ── */
+    .joystick-container { position: fixed; bottom: 30px; left: 24px; z-index: 200; display: none; }
+    .joystick-base {
+      width: 110px; height: 110px; background: rgba(0,0,0,0.45);
+      border-radius: 50%; backdrop-filter: blur(8px);
+      border: 3px solid rgba(255,215,0,0.6);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .joystick-thumb {
+      width: 48px; height: 48px;
+      background: radial-gradient(circle, #ffd700 0%, #ffaa00 100%);
+      border-radius: 50%; transition: transform 0.05s linear;
+      box-shadow: 0 0 15px rgba(255,215,0,0.6); border: 2px solid rgba(255,255,255,0.5);
+    }
+    @media (max-width: 900px) { .joystick-container { display: block; } }
+
+    /* ── CHARACTERS / COINS (same as original) ── */
+    .grid-cell { position: absolute; width: 16px; height: 16px; }
+    .Character { position: absolute; }
+    .Character.you { z-index: 2; }
+    .Character.you .Character_you-arrow { display: block; }
+    .Character_you-arrow { display: none; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); width: 7px; height: 5px; background: url(images/arrow.png) no-repeat; }
+    .Character_sprite { overflow: hidden; top: -3px; background: url(images/characters.png); position: absolute; width: 16px; height: 16px; }
+    .Character[data-direction="right"] .Character_sprite { background-position-x: 16px; }
+    .Character[data-color="blue"] .Character_sprite { background-position-y: 0px; }
+    .Character[data-color="red"] .Character_sprite { background-position-y: -16px; }
+    .Character[data-color="orange"] .Character_sprite { background-position-y: -32px; }
+    .Character[data-color="yellow"] .Character_sprite { background-position-y: -48px; }
+    .Character[data-color="green"] .Character_sprite { background-position-y: -64px; }
+    .Character[data-color="purple"] .Character_sprite { background-position-y: -80px; }
+    .Character_shadow { background: url(images/shadow.png) no-repeat; position: absolute; width: 16px; height: 16px; }
+    .Character_name-container {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 5px;
+      padding: 1px 2px 1px; border-radius: 3px; background: #333; color: white;
+      font-weight: bold; text-transform: uppercase; white-space: nowrap; z-index: 10;
+    }
+    .Character_coins { margin-left: 1px; color: gold; }
+    .Coin { position: absolute; }
+    .Coin_sprite { background: url(images/coin.png) no-repeat; animation: coinFloat 0.8s linear infinite alternate-reverse; position: absolute; width: 16px; height: 16px; }
+    @keyframes coinFloat { from { transform: translateY(0); } to { transform: translateY(5px); } }
+    .Coin_shadow { background: url(images/coin-shadow.png) no-repeat; position: absolute; width: 16px; height: 16px; }
+
+    /* ── CHAT BUBBLE (above head) ── */
+    .chat-bubble {
+      position: absolute;
+      top: -34px; left: 50%;
+      transform: translateX(-50%) scale(0);
+      transform-origin: bottom center;
+      background: #fff; color: #1a1a2e;
+      font-size: 5px; font-weight: 700;
+      padding: 2.5px 5px; border-radius: 4px;
+      white-space: nowrap; max-width: 140px;
+      overflow: hidden; text-overflow: ellipsis;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      z-index: 20; pointer-events: none;
+      transition: transform 0.15s cubic-bezier(.34,1.56,.64,1);
+    }
+    .chat-bubble::after {
+      content: ''; position: absolute; bottom: -3px; left: 50%;
+      transform: translateX(-50%); width: 0; height: 0;
+      border-left: 3px solid transparent; border-right: 3px solid transparent;
+      border-top: 3px solid #fff;
+    }
+    .chat-bubble.visible { transform: translateX(-50%) scale(1); }
+
+    /* ── MAP / WORLD CHAT (embedded inside Friends panel) ── */
+    #fp-chat-section {
+      display: none; flex-direction: column;
+      max-height: 50vh;
+    }
+    #fp-chat-section.active { display: flex; }
+    .chat-tabs { display: flex; gap: 4px; padding: 8px 10px 0; }
+    .chat-tab {
+      padding: 5px 14px; border-radius: 7px; border: none;
+      background: transparent; color: var(--text-muted);
+      font-size: 12px; font-weight: 800; cursor: pointer;
+      font-family: 'Be Vietnam Pro', sans-serif; transition: all 0.2s;
+    }
+    .chat-tab.active { background: var(--accent); color: #fff; }
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 8px 10px;
+      display: flex; flex-direction: column; gap: 5px;
+      min-height: 120px; max-height: 220px;
+    }
+    .chat-messages::-webkit-scrollbar { width: 5px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+    .chat-msg { font-size: 12.5px; line-height: 1.4; word-break: break-word; }
+    .chat-msg .cm-name { font-weight: 800; margin-right: 5px; }
+    .chat-msg .cm-name.me { color: var(--gold-dark); }
+    .chat-msg .cm-name.other { color: var(--accent2); }
+    .chat-msg .cm-text { color: var(--text); }
+    .chat-msg .cm-time { font-size: 9px; color: var(--text-muted); margin-left: 5px; }
+    .chat-empty { color: var(--text-muted); font-size: 12px; text-align: center; padding: 20px 0; }
+    .chat-input-row { display: flex; gap: 6px; padding: 8px 10px; border-top: 1px solid var(--border); }
+    .chat-input {
+      flex: 1; padding: 8px 12px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 20px;
+      color: var(--text); font-family: 'Be Vietnam Pro', sans-serif; font-size: 13px; outline: none;
+    }
+    .chat-input:focus { border-color: var(--accent); }
+    .chat-send-btn {
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: var(--accent); color: #fff; font-size: 14px; cursor: pointer;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    }
+    .chat-send-btn:hover { opacity: 0.85; }
+    .chat-countdown { font-size: 9px; color: var(--text-muted); margin-left: 4px; }
+
+    @media (max-width: 768px) {
+      .joystick-container { left: 16px; bottom: 165px; }
+      .tb-mapname { max-width: 130px; font-size: 12px; }
+    }
+
+    /* ── MERCHANT MODAL ── */
+    .modal { display: none; position: fixed; z-index: 1000; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(3px); align-items: center; justify-content: center; }
+    .modal-content { background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%); border-radius: 16px; width: 90%; max-width: 550px; border: 3px solid #ffd700; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: modalSlideIn 0.3s ease-out; }
+    @keyframes modalSlideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 2px solid #ffd700; background: linear-gradient(135deg, #3a2a0a 0%, #2a1a0a 100%); border-radius: 13px 13px 0 0; }
+    .modal-header h2 { margin: 0; color: #ffd700; font-size: 1.3rem; text-shadow: 2px 2px 2px rgba(0,0,0,0.5); letter-spacing: 2px; }
+    .close { color: #ffd700; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
+    .close:hover { color: #ff6600; }
+    .modal-body { padding: 20px; }
+    .merchant-message { text-align: center; color: #ffd700; font-weight: bold; margin-bottom: 20px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; font-size: 0.9rem; }
+    .skin-shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; }
+    .skin-item { background: rgba(0,0,0,0.6); border-radius: 12px; padding: 12px; text-align: center; border: 2px solid #444; }
+    .skin-item:hover { border-color: #ffd700; }
+    .skin-preview { position: relative; width: 48px; height: 48px; margin: 0 auto 10px; transform: scale(2); image-rendering: pixelated; }
+    .skin-preview .Character_sprite { top: -3px; left: 0; }
+    .skin-preview .Character_shadow { top: 0; left: 0; }
+    .skin-name { color: white; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 8px; }
+    .skin-buy-btn { background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%); border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem; color: #333; width: 100%; }
+    .skin-buy-btn:disabled { background: #555; cursor: not-allowed; color: #999; }
+
+    /* ── NPC DIALOGUE ── */
+    #npc-dialogue-box { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 500; }
+    .poke-dialogue-inner { margin: 0 12px 12px; background: #f0f0f0; border: 4px solid #1a1a2e; border-radius: 8px; padding: 14px 18px 12px; position: relative; box-shadow: 0 -4px 0 #888, inset 0 2px 0 #fff; min-height: 90px; }
+    .poke-speaker { position: absolute; top: -18px; left: 18px; background: #1a1a2e; color: #fff; font-weight: bold; font-size: 12px; padding: 2px 10px; border-radius: 4px 4px 0 0; letter-spacing: 1px; }
+    .poke-text { font-size: 14px; color: #1a1a2e; line-height: 1.5; font-weight: bold; min-height: 50px; }
+    .poke-arrow { position: absolute; bottom: 10px; right: 14px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 10px solid #1a1a2e; animation: pokeArrowBlink 0.6s step-end infinite; }
+    @keyframes pokeArrowBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .poke-dialogue-inner.last-line .poke-arrow { display: none; }
+
+    #toast {
+      position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px 20px; font-size: 13px; font-weight: 700;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 9999; white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+    #toast.error { border-color: var(--danger); color: var(--danger); }
+    #toast.success { border-color: var(--success); color: var(--success); }
+
+    /* ── NPC TAG (badge trên đầu NPC) ── */
+    .npc-tag {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #2e7d32, #1b5e20);
+      color: #a5d6a7;
+      font-size: 4.5px;
+      font-weight: 900;
+      padding: 1.5px 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      border: 0.5px solid #4caf50;
+      pointer-events: none;
+      z-index: 15;
+      text-transform: uppercase;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    /* Exclamation mark indicator for clickable NPC (when in range) */
+    .npc-interact-hint {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--gold);
+      color: #1a1200;
+      font-size: 6px;
+      font-weight: 900;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: bounceHint 0.5s ease-in-out infinite alternate;
+      z-index: 16;
+      pointer-events: none;
+    }
+    .npc-interact-hint.visible { display: flex; }
+    @keyframes bounceHint {
+      from { transform: translateX(-50%) translateY(0); }
+      to { transform: translateX(-50%) translateY(-2px); }
+    }
+    .npc-elder { cursor: pointer; }
+    .npc-elder:hover .npc-tag { background: linear-gradient(135deg, #388e3c, #2e7d32); color: #c8e6c9; }
+
+    /* ── PLAYER PROFILE MODAL ── */
+    #player-profile-modal {
+      display: none; position: fixed; inset: 0; z-index: 800;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    #player-profile-modal.open { display: flex; }
+    .profile-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px; width: 320px; max-width: 95vw;
+      animation: profileSlideIn 0.25s ease-out;
+      position: relative;
+    }
+    @keyframes profileSlideIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .profile-close-btn {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; color: var(--text-muted);
+      font-size: 20px; cursor: pointer; line-height: 1;
+    }
+    .profile-close-btn:hover { color: var(--danger); }
+    .profile-avatar-wrap {
+      width: 64px; height: 64px; margin: 0 auto 14px;
+      position: relative; image-rendering: pixelated;
+    }
+    .profile-sprite {
+      background: url(images/characters.png) no-repeat;
+      width: 16px; height: 16px;
+      transform: scale(4); transform-origin: top left;
+      position: absolute;
+    }
+    .profile-shadow {
+      background: url(images/shadow.png) no-repeat;
+      width: 16px; height: 16px;
+      transform: scale(4); transform-origin: top left;
+      position: absolute;
+    }
+    .profile-name { text-align: center; font-size: 18px; font-weight: 900; margin-bottom: 4px; }
+    .profile-coins { text-align: center; color: var(--gold); font-size: 14px; font-weight: 700; margin-bottom: 20px; }
+    .friend-status-row { text-align: center; margin-bottom: 14px; }
+    .friend-badge {
+      display: inline-block; padding: 4px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 800;
+      background: rgba(63,185,80,0.15); color: var(--success); border: 1px solid var(--success);
+    }
+    .friend-badge.pending { background: rgba(255,215,0,0.1); color: var(--gold); border-color: var(--gold); }
+    .friend-btn {
+      width: 100%; padding: 11px; border-radius: 10px; border: none;
+      font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 800;
+      cursor: pointer; transition: all 0.2s;
+      background: linear-gradient(135deg, var(--red), var(--red-dark)); color: #fff;
+    }
+    .friend-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .friend-btn.danger { background: rgba(226,75,74,0.15); color: var(--danger); border: 1px solid rgba(226,75,74,0.3); }
+    .friend-btn.danger:hover { background: rgba(226,75,74,0.25); }
+    .friend-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── FRIEND REQUEST WINDOWS-STYLE NOTIFICATION (top-right) ── */
+    #friend-req-toast-stack {
+      position: fixed; top: 16px; right: 12px; z-index: 900;
+      display: flex; flex-direction: column; gap: 10px;
+      pointer-events: none;
+    }
+    .friend-req-toast {
+      pointer-events: auto;
+      width: 280px; max-width: 88vw;
+      background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 14px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+      padding: 12px 14px;
+      animation: friendToastIn 0.25s ease-out;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .friend-req-toast.hide { opacity: 0; transform: translateX(20px); }
+    @keyframes friendToastIn {
+      from { opacity: 0; transform: translateX(24px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .frt-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .frt-icon { font-size: 18px; }
+    .frt-text { font-size: 12.5px; font-weight: 700; color: var(--text); flex: 1; line-height: 1.35; }
+    .frt-text b { color: var(--red); }
+    .frt-actions { display: flex; gap: 8px; }
+    .frt-btn {
+      flex: 1; padding: 7px 0; border-radius: 8px; border: none;
+      font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; font-weight: 800;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .frt-btn.accept { background: var(--success); color: #fff; }
+    .frt-btn.deny { background: rgba(226,75,74,0.15); color: var(--danger); border: 1px solid rgba(226,75,74,0.3); }
+    .frt-btn:hover { opacity: 0.85; }
+
+    /* ── FRIENDS & MESSAGES PANEL (top right button) ── */
+    .tb-friends-btn {
+      position: relative;
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      color: var(--red); font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(6px); transition: border-color 0.2s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .tb-friends-btn:hover { border-color: var(--accent); }
+    .tb-friends-badge {
+      position: absolute; top: -4px; right: -4px;
+      background: var(--danger); color: #fff; font-size: 9px; font-weight: 900;
+      width: 16px; height: 16px; border-radius: 50%;
+      display: none; align-items: center; justify-content: center;
+    }
+    .tb-friends-badge.show { display: flex; }
+
+    /* ── FRIENDS PANEL ── */
+    #friends-panel {
+      position: fixed; top: 58px; right: 10px; z-index: 400;
+      width: 300px; max-width: 94vw;
+      background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 16px;
+      display: none; flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      max-height: 70vh;
+    }
+    #friends-panel.open { display: flex; }
+    .fp-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border-bottom: 1px solid var(--border);
+    }
+    .fp-title { font-size: 14px; font-weight: 800; color: var(--red); }
+    .fp-close { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
+    .fp-tabs { display: flex; padding: 8px 8px 0; gap: 4px; border-bottom: 1px solid var(--border); }
+    .fp-tab {
+      flex: 1; padding: 8px 2px; border-radius: 8px 8px 0 0; border: none;
+      font-size: 12px; font-weight: 800; cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+      background: transparent; color: var(--text-muted); transition: all 0.2s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .fp-tab.active { background: var(--accent); color: #fff; }
+    .fp-body { flex: 1; overflow-y: auto; padding: 10px; min-height: 100px; }
+    .fp-body::-webkit-scrollbar { width: 4px; }
+    .fp-body::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+    .friend-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      margin-bottom: 6px; cursor: pointer; transition: border-color 0.2s;
+    }
+    .friend-item:hover { border-color: var(--accent); }
+    .friend-item-avatar {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: #fff; border: 1px solid var(--border); position: relative; image-rendering: pixelated; flex-shrink: 0;
+    }
+    .friend-item-avatar .fi-sprite {
+      background: url(images/characters.png) no-repeat;
+      width: 8px; height: 8px;
+      transform: scale(2); transform-origin: top left;
+      position: absolute;
+    }
+    .friend-item-avatar .fi-shadow {
+      background: url(images/shadow.png) no-repeat;
+      width: 8px; height: 8px;
+      transform: scale(2); transform-origin: top left;
+      position: absolute;
+    }
+    .friend-item-name { font-size: 13px; font-weight: 800; flex: 1; }
+    .friend-item-action {
+      padding: 4px 10px; border-radius: 6px; border: none;
+      font-size: 11px; font-weight: 800; cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    .friend-item-action.accept { background: var(--success); color: #fff; }
+    .friend-item-action.deny { background: rgba(226,75,74,0.15); color: var(--danger); border: 1px solid rgba(226,75,74,0.3); }
+    .friend-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 24px 10px; }
+
+    /* ── BẠN BÈ TAB: danh sách bạn (để bấm chọn chat) ── */
+    .dm-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      margin-bottom: 6px; cursor: pointer; transition: border-color 0.2s;
+    }
+    .dm-item:hover { border-color: var(--accent); }
+    .dm-item-name { font-size: 13px; font-weight: 800; flex: 1; }
+    .dm-item-preview { font-size: 11px; color: var(--text-muted); }
+
+    /* ── DM THREAD (mở inline bên trong panel, thay cho popup riêng) ── */
+    #dm-thread {
+      display: none; flex-direction: column; max-height: 50vh;
+    }
+    #dm-thread.active { display: flex; }
+    .dm-thread-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    .dm-back-btn {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      width: 28px; height: 28px; flex-shrink: 0; cursor: pointer;
+      color: var(--text); font-size: 14px; display: flex; align-items: center; justify-content: center;
+    }
+    .dm-back-btn:hover { border-color: var(--accent); }
+    .dm-thread-name { font-size: 13px; font-weight: 800; flex: 1; }
+    .dm-win-msgs {
+      flex: 1; overflow-y: auto; padding: 8px 10px;
+      display: flex; flex-direction: column; gap: 5px;
+      min-height: 140px; max-height: 220px;
+    }
+    .dm-win-msgs::-webkit-scrollbar { width: 4px; }
+    .dm-msg { font-size: 12.5px; line-height: 1.4; word-break: break-word; }
+    .dm-msg .dm-sender { font-weight: 800; margin-right: 5px; }
+    .dm-msg .dm-sender.me { color: var(--gold-dark); }
+    .dm-msg .dm-sender.other { color: var(--accent2); }
+    .dm-msg .dm-txt { color: var(--text); }
+    .dm-empty { color: var(--text-muted); font-size: 12px; text-align: center; padding: 20px 0; }
+    .dm-input-row { display: flex; gap: 6px; padding: 8px 10px; border-top: 1px solid var(--border); }
+    .dm-input {
+      flex: 1; padding: 8px 12px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 20px;
+      color: var(--text); font-family: 'Be Vietnam Pro', sans-serif; font-size: 13px; outline: none;
+    }
+    .dm-input:focus { border-color: var(--accent); }
+    .dm-send-btn {
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: var(--accent); color: #fff; font-size: 14px; cursor: pointer;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    }
+    .dm-send-btn:hover { opacity: 0.85; }
+
+    @media (max-width: 768px) {
+      #friends-panel { right: 5px; width: calc(100vw - 10px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div style="font-size:44px;margin-bottom:8px">🏮</div>
+    <h1>VIETVERSE</h1>
+    <p>Đăng nhập để vào map</p>
+    <input class="auth-input" id="auth-email" type="email" placeholder="Email">
+    <input class="auth-input" id="auth-password" type="password" placeholder="Mật khẩu">
+    <button class="auth-btn" id="auth-action-btn">Đăng nhập</button>
+    <div class="auth-divider">hoặc</div>
+    <button class="auth-btn google" id="google-btn">🔵 Tiếp tục với Google</button>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- MAP LOADING -->
+<div id="map-loading">
+  <div class="spinner"></div>
+  <p id="loading-text">Đang tải map...</p>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="tb-left">
+    <button class="tb-back" id="back-btn">←</button>
+    <div class="tb-mapname" id="tb-mapname">—</div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-coins">💰 <span id="player-coins">0</span></div>
+    <button class="tb-friends-btn" id="friends-btn" title="Bạn bè & Chat">
+      👥
+    </button>
+  </div>
+</div>
+
+<!-- CAMERA -->
+<div class="camera-wrapper">
+  <div class="camera-pan" id="camera-pan">
+    <div class="game-container" id="game-container"></div>
+  </div>
+</div>
+
+<!-- COORD DISPLAY -->
+<div class="coord-display" id="coord-display">📍 X: -- | Y: --</div>
+
+<!-- JOYSTICK -->
+<div class="joystick-container" id="joystick-container">
+  <div class="joystick-base" id="joystick-base">
+    <div class="joystick-thumb" id="joystick-thumb"></div>
+  </div>
+</div>
+
+<!-- MERCHANT MODAL -->
+<div id="merchant-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🎨 CỬA HÀNG SKIN 🎨</h2>
+      <span id="close-modal" class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <p id="merchant-message" class="merchant-message">Chào mừng! Mua skin bằng xu của bạn!</p>
+      <div class="skin-shop-grid" id="skin-shop-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NPC DIALOGUE -->
+<div id="npc-dialogue-box">
+  <div class="poke-dialogue-inner" id="poke-inner">
+    <div class="poke-speaker">🎋 LÃO NHÂN</div>
+    <p class="poke-text" id="poke-text"></p>
+    <div class="poke-arrow" id="poke-arrow"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- FRIEND REQUEST NOTIFICATIONS (Windows-style, top-right) -->
+<div id="friend-req-toast-stack"></div>
+
+<!-- PLAYER PROFILE MODAL -->
+<div id="player-profile-modal">
+  <div class="profile-card">
+    <button class="profile-close-btn" id="profile-close-btn">✕</button>
+    <div class="profile-avatar-wrap">
+      <div class="profile-shadow"></div>
+      <div class="profile-sprite" id="profile-sprite"></div>
+    </div>
+    <div class="profile-name" id="profile-name-display">—</div>
+    <div class="profile-coins" id="profile-coins-display">💰 0</div>
+    <div class="friend-status-row" id="friend-status-row"></div>
+    <button class="friend-btn" id="profile-friend-btn">💬 Nhắn tin</button>
+  </div>
+</div>
+
+<!-- FRIENDS PANEL -->
+<div id="friends-panel">
+  <div class="fp-header">
+    <span class="fp-title">👥 Bạn bè & Chat</span>
+    <button class="fp-close" id="fp-close">✕</button>
+  </div>
+  <div class="fp-tabs">
+    <button class="fp-tab active" id="fp-tab-chat">💬 ChatMap</button>
+    <button class="fp-tab" id="fp-tab-dms">👤 Nhắn tin bạn bè</button>
+  </div>
+
+  <!-- MAP / WORLD CHAT -->
+  <div id="fp-chat-section" class="active">
+    <div class="chat-tabs">
+      <button class="chat-tab active" id="tab-map">🗺️ Map</button>
+      <button class="chat-tab" id="tab-world">🌐 Thế giới</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-empty">Chưa có tin nhắn nào...</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" maxlength="100" placeholder="Nhập tin nhắn... (tự xóa sau 20s)">
+      <button class="chat-send-btn" id="chat-send">➤</button>
+    </div>
+  </div>
+
+  <!-- DANH SÁCH BẠN BÈ (để chọn nhắn tin) -->
+  <div class="fp-body" id="fp-body"></div>
+
+  <!-- DM THREAD (mở inline khi chọn 1 người bạn) -->
+  <div id="dm-thread">
+    <div class="dm-thread-header">
+      <button class="dm-back-btn" id="dm-back-btn">←</button>
+      <span class="dm-thread-name" id="dm-thread-name">—</span>
+    </div>
+    <div class="dm-win-msgs" id="dm-win-msgs"></div>
+    <div class="dm-input-row">
+      <input class="dm-input" id="dm-input" maxlength="200" placeholder="Nhắn tin...">
+      <button class="dm-send-btn" id="dm-send">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="vv-learn.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+  authDomain: "vvss-b7a49.firebaseapp.com",
+  databaseURL: "https://vvss-b7a49-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "vvss-b7a49",
+  storageBucket: "vvss-b7a49.firebasestorage.app",
+  messagingSenderId: "562837285603",
+  appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6"
+};
+firebase.initializeApp(firebaseConfig);
+</script>
+
+<!-- Joystick & KeyPressListener (unchanged from original) -->
+<script>
+class Joystick {
+  constructor(baseElement, thumbElement, callback) {
+    this.base = baseElement; this.thumb = thumbElement; this.callback = callback;
+    this.active = false; this.centerX = 0; this.centerY = 0; this.maxDistance = 40;
+    this.init();
+  }
+  init() {
+    this.base.addEventListener('touchstart', (e) => {
+      e.preventDefault(); this.active = true;
+      const rect = this.base.getBoundingClientRect();
+      this.centerX = rect.left + rect.width/2; this.centerY = rect.top + rect.height/2;
+      this.handleMove(e.touches[0]);
+    });
+    this.base.addEventListener('touchmove', (e) => { e.preventDefault(); if (this.active) this.handleMove(e.touches[0]); });
+    this.base.addEventListener('touchend', (e) => { e.preventDefault(); this.active = false; this.reset(); });
+    this.base.addEventListener('mousedown', (e) => {
+      e.preventDefault(); this.active = true;
+      const rect = this.base.getBoundingClientRect();
+      this.centerX = rect.left + rect.width/2; this.centerY = rect.top + rect.height/2;
+      this.handleMove(e);
+    });
+    window.addEventListener('mousemove', (e) => { if (this.active) this.handleMove(e); });
+    window.addEventListener('mouseup', () => { this.active = false; this.reset(); });
+  }
+  handleMove(event) {
+    let dx = event.clientX - this.centerX, dy = event.clientY - this.centerY;
+    const distance = Math.sqrt(dx*dx + dy*dy);
+    if (distance > this.maxDistance) { dx = dx/distance*this.maxDistance; dy = dy/distance*this.maxDistance; }
+    this.thumb.style.transform = `translate(${dx}px, ${dy}px)`;
+    let normX = dx/this.maxDistance, normY = dy/this.maxDistance;
+    if (Math.abs(normX) < 0.1) normX = 0;
+    if (Math.abs(normY) < 0.1) normY = 0;
+    this.callback(normX, normY);
+  }
+  reset() { this.thumb.style.transform = `translate(0px,0px)`; this.callback(0,0); }
+}
+
+class KeyPressListener {
+  constructor(keyCode, callback) {
+    let keySafe = true;
+    this.keydownFunction = (e) => { if (e.code === keyCode && keySafe) { keySafe = false; callback(); } };
+    this.keyupFunction = (e) => { if (e.code === keyCode) keySafe = true; };
+    document.addEventListener("keydown", this.keydownFunction);
+    document.addEventListener("keyup", this.keyupFunction);
+  }
+  unbind() { document.removeEventListener("keydown", this.keydownFunction); document.removeEventListener("keyup", this.keyupFunction); }
+}
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// CONFIG / CONSTANTS
+// ════════════════════════════════════════════════════════════════
+const playerColors = ["blue", "red", "orange", "yellow", "green", "purple"];
+const SKIN_PRICES = { red: 10, orange: 15, yellow: 20, green: 25, purple: 30 };
+const CAMERA_SCALE = 4;
+const SPRITE_SIZE = 16; // kích thước cố định của spritesheet nhân vật/coin, KHÔNG phụ thuộc tileSize của map
+const MAX_SPEED = 1.5, ACCEL = 0.4, FRICTION = 0.75, CAMERA_LERP = 1.0;
+const HITBOX = 6;
+const FB_THROTTLE = 100;
+const CHAT_MAX_AGE = 20000; // 20s
+const BUBBLE_DURATION = 4000; // 4s on-screen
+
+const NPC_SPEAKER_DEFAULT = "NPC";
+const NPC_INTERACT_RADIUS = 3; // ô lưới, bán kính để click nói chuyện với NPC
+
+// ════════════════════════════════════════════════════════════════
+// URL PARAMS — which map to load
+// ════════════════════════════════════════════════════════════════
+const urlParams = new URLSearchParams(window.location.search);
+const MAP_ID = urlParams.get('map');
+
+if (!MAP_ID) {
+  document.getElementById('loading-text').textContent = 'Không tìm thấy map! Đang quay về trang chủ...';
+  setTimeout(() => { window.location.href = 'minigame.html'; }, 1800);
+}
+
+document.getElementById('back-btn').addEventListener('click', () => {
+  window.location.href = 'minigame.html';
+});
+
+// ════════════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════════════
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `show ${type}`;
+  clearTimeout(t._to); t._to = setTimeout(() => { t.className = ''; }, 2500);
+}
+
+// ════════════════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════════════════
+document.getElementById('auth-action-btn').addEventListener('click', async () => {
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Nhập email và mật khẩu.'; return; }
+  try { await firebase.auth().signInWithEmailAndPassword(email, pass); }
+  catch(e) {
+    try { await firebase.auth().createUserWithEmailAndPassword(email, pass); }
+    catch(e2) { errEl.textContent = e2.message; }
+  }
+});
+document.getElementById('google-btn').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try { await firebase.auth().signInWithPopup(provider); }
+  catch(e) { document.getElementById('auth-error').textContent = e.message; }
+});
+
+// ════════════════════════════════════════════════════════════════
+// MAIN GAME (runs after auth + map loaded)
+// ════════════════════════════════════════════════════════════════
+(function() {
+  let TILE = 16;
+  let mapInfo = null; // { name, imageUrl, tileSize, gridWidth, gridHeight, blockedSpaces, spawnPoints }
+
+  let playerId, playerRef;
+  let players = {}, playerElements = {};
+  let coins = {}, coinElements = {};
+  let chatBubbleTimers = {};
+
+  // Nội suy mượt vị trí cho người chơi khác (remote players).
+  // remoteRender[uid] = vị trí ĐANG HIỂN THỊ (lerp dần tới target mỗi frame)
+  // remoteTarget[uid] = vị trí ĐÍCH mới nhất nhận được từ Firebase
+  let remoteRender = {};
+  let remoteTarget = {};
+  const REMOTE_LERP_SPEED = 0.25; // 0..1, càng cao càng bám sát nhưng càng giật; càng thấp càng mượt nhưng càng trễ
+
+  const gameContainer = document.getElementById("game-container");
+  const cameraPan     = document.getElementById("camera-pan");
+  const merchantModal    = document.querySelector("#merchant-modal");
+  const closeModalBtn    = document.querySelector("#close-modal");
+  const skinShopList     = document.querySelector("#skin-shop-list");
+  const merchantMessage  = document.querySelector("#merchant-message");
+  const playerCoinsDisplay = document.querySelector("#player-coins");
+  const coordDisplay     = document.querySelector("#coord-display");
+  const npcDialogueBox   = document.querySelector("#npc-dialogue-box");
+  const pokeText         = document.querySelector("#poke-text");
+  const pokeInner        = document.querySelector("#poke-inner");
+
+  let localX = 0, localY = 0;
+  let velX = 0, velY = 0;
+  let camX = 0, camY = 0;
+  const keys = {};
+  let joyX = 0, joyY = 0;
+  let lastFirebaseSend = 0;
+  let chatInputFocused = false;
+
+  function randomFromArray(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function getKeyString(x, y) { return `${x}x${y}`; }
+  function createName() {
+    const prefix = randomFromArray(["COOL","SUPER","HIP","SMUG","SILKY","GOOD","SAFE","DEAR","WARM","RICH","DARK","SOFT"]);
+    const animal = randomFromArray(["BEAR","DOG","CAT","FOX","LAMB","LION","BOAR","GOAT","SEAL","PUMA","BULL","BIRD"]);
+    return `${prefix} ${animal}`;
+  }
+
+  function isSolidGrid(gx, gy) {
+    const key = getKeyString(gx, gy);
+    if (mapInfo.blockedSpaces && mapInfo.blockedSpaces[key]) return true;
+    if (gx >= mapInfo.gridWidth || gx < 0) return true;
+    if (gy >= mapInfo.gridHeight || gy < 0) return true;
+    return false;
+  }
+  function isSolidPixel(px, py) {
+    const gx = Math.floor(px / TILE), gy = Math.floor(py / TILE);
+    return isSolidGrid(gx, gy);
+  }
+  function moveAndSlide(cx, cy, dx, dy) {
+    let nx = cx + dx, ny = cy + dy;
+    const testX = nx, testY = cy;
+    if (isSolidPixel(testX-HITBOX, testY-HITBOX) || isSolidPixel(testX+HITBOX-1, testY-HITBOX) ||
+        isSolidPixel(testX-HITBOX, testY+HITBOX-1) || isSolidPixel(testX+HITBOX-1, testY+HITBOX-1)) nx = cx;
+    const testX2 = nx, testY2 = ny;
+    if (isSolidPixel(testX2-HITBOX, testY2-HITBOX) || isSolidPixel(testX2+HITBOX-1, testY2-HITBOX) ||
+        isSolidPixel(testX2-HITBOX, testY2+HITBOX-1) || isSolidPixel(testX2+HITBOX-1, testY2+HITBOX-1)) ny = cy;
+    return { x: nx, y: ny };
+  }
+
+  function getRandomSafeSpot() {
+    if (mapInfo.spawnPoints && mapInfo.spawnPoints.length > 0) {
+      return randomFromArray(mapInfo.spawnPoints);
+    }
+    // Fallback: find any non-blocked cell
+    return getRandomMapSpot();
+  }
+
+  // Ô ngẫu nhiên bất kỳ trên TOÀN BẢN ĐỒ (không bị block), dùng để spawn coin —
+  // KHÔNG dùng spawnPoints (đó là điểm spawn riêng cho người chơi).
+  function getRandomMapSpot() {
+    for (let tries = 0; tries < 200; tries++) {
+      const x = Math.floor(Math.random() * mapInfo.gridWidth);
+      const y = Math.floor(Math.random() * mapInfo.gridHeight);
+      if (!isSolidGrid(x, y)) return { x, y };
+    }
+    return { x: 0, y: 0 };
+  }
+
+  // ─── HANOI TIME HELPERS (thử thách tuần / streak luôn tính theo giờ Hà Nội) ───
+  const HANOI_OFFSET_MS = 7 * 60 * 60 * 1000;
+  function getHanoiNow() {
+    const now = new Date();
+    const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utcMs + HANOI_OFFSET_MS);
+  }
+  function getHanoiDayIndex() { // 0=Mon..6=Sun
+    return (getHanoiNow().getDay() + 6) % 7;
+  }
+  function getHanoiDateKey() {
+    const d = getHanoiNow();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  // ─── WEEKLY CHALLENGE / STREAK RECORDING ──────────────────────
+  // Nếu map đang chơi là thử thách của "hôm nay" (theo lịch lặp lại mỗi tuần do admin set),
+  // thắp lửa ngày hôm nay cho người chơi và cập nhật chuỗi streak + nhật ký hành trình.
+  async function recordWeeklyChallengeIfApplicable(uid) {
+    try {
+      const todayIdx = getHanoiDayIndex();
+      const dateKey = getHanoiDateKey();
+      const chSnap = await firebase.database().ref(`weeklyChallenge/${todayIdx}`).once('value');
+      const challenge = chSnap.val();
+      if (!challenge || challenge.mapId !== MAP_ID) return; // map này không phải thử thách của hôm nay
+
+      const streakRef = firebase.database().ref(`playerStreaks/${uid}`);
+      const flameKey = `completedFlames/${MAP_ID}_${todayIdx}_${dateKey}`;
+      const alreadySnap = await firebase.database().ref(`playerStreaks/${uid}/${flameKey}`).once('value');
+      if (alreadySnap.val()) return; // đã thắp lửa hôm nay rồi, tránh cộng streak trùng lặp
+
+      const snap = await streakRef.once('value');
+      const data = snap.val() || {};
+      const lastDate = data.lastPlayedDate;
+
+      // Tính streak: nếu ngày chơi gần nhất là "hôm qua" (giờ Hà Nội) thì +1, nếu là hôm nay (đã xử lý ở trên) giữ nguyên,
+      // nếu bị gián đoạn (>1 ngày) thì reset về 1.
+      let newStreak = 1;
+      if (lastDate) {
+        const prev = new Date(lastDate + 'T00:00:00');
+        const today = new Date(dateKey + 'T00:00:00');
+        const diffDays = Math.round((today - prev) / 86400000);
+        if (diffDays === 1) newStreak = (data.currentStreak || 0) + 1;
+        else if (diffDays === 0) newStreak = data.currentStreak || 1;
+        else newStreak = 1;
+      }
+
+      const updates = {
+        currentStreak: newStreak,
+        lastPlayedDate: dateKey,
+        [flameKey]: true,
+        [`history/${MAP_ID}_${dateKey}`]: {
+          mapId: MAP_ID,
+          mapName: mapInfo.name || 'Map',
+          imageUrl: mapInfo.imageUrl || '',
+          playedAt: Date.now(),
+          stars: 5,
+        },
+      };
+      await streakRef.update(updates);
+      showToast(`🔥 Đã thắp lửa thử thách hôm nay! Streak: ${newStreak}`, 'success');
+    } catch (e) {
+      console.warn('recordWeeklyChallengeIfApplicable error:', e);
+    }
+  }
+
+  // ─── LOAD MAP DATA ───────────────────────────────────────────
+  async function loadMapData(viewerUid) {
+    const snap = await firebase.database().ref(`maps/${MAP_ID}`).once('value');
+    const data = snap.val();
+    if (!data) {
+      showToast('Map không tồn tại!', 'error');
+      setTimeout(() => { window.location.href = 'minigame.html'; }, 1500);
+      return null;
+    }
+    // Maps with no `status` field are legacy maps — treat as approved for backward compatibility.
+    const isApproved = data.status === 'approved' || data.status === undefined;
+    const isOwner = data.creatorId === viewerUid;
+    if (!isApproved && !isOwner) {
+      showToast('Map này chưa được duyệt!', 'error');
+      setTimeout(() => { window.location.href = 'minigame.html'; }, 1500);
+      return null;
+    }
+    return data;
+  }
+
+  function setupMapVisuals() {
+    TILE = mapInfo.tileSize || 16;
+    const w = mapInfo.gridWidth * TILE;
+    const h = mapInfo.gridHeight * TILE;
+    gameContainer.style.width = w + 'px';
+    gameContainer.style.height = h + 'px';
+    if (mapInfo.imageUrl) {
+      gameContainer.style.backgroundImage = `url(${mapInfo.imageUrl})`;
+      gameContainer.style.backgroundSize = `${w}px ${h}px`;
+    }
+    gameContainer.style.transform = `scale(${CAMERA_SCALE})`;
+    document.getElementById('tb-mapname').textContent = mapInfo.name || 'Map';
+  }
+
+  // ─── CAMERA ──────────────────────────────────────────────────
+  function renderCamera() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const tx = vw / 2 - camX * CAMERA_SCALE;
+    const ty = vh / 2 - camY * CAMERA_SCALE;
+    cameraPan.style.transform = `translate(${tx}px, ${ty}px)`;
+  }
+
+  // ─── GAME LOOP ───────────────────────────────────────────────
+  let lastTime = null;
+  function gameLoop(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    lastTime = timestamp;
+
+    let inputX = 0, inputY = 0;
+    if (!chatInputFocused) {
+      if (keys["ArrowLeft"]  || keys["KeyA"]) inputX -= 1;
+      if (keys["ArrowRight"] || keys["KeyD"]) inputX += 1;
+      if (keys["ArrowUp"]    || keys["KeyW"]) inputY -= 1;
+      if (keys["ArrowDown"]  || keys["KeyS"]) inputY += 1;
+    }
+    if (Math.abs(joyX) > 0.1 || Math.abs(joyY) > 0.1) { inputX = joyX; inputY = joyY; }
+    if (inputX !== 0 && inputY !== 0) { inputX *= 0.707; inputY *= 0.707; }
+
+    if (inputX !== 0 || inputY !== 0) {
+      velX += inputX * ACCEL; velY += inputY * ACCEL;
+      const speed = Math.sqrt(velX*velX + velY*velY);
+      if (speed > MAX_SPEED) { velX = velX/speed*MAX_SPEED; velY = velY/speed*MAX_SPEED; }
+    }
+    velX *= FRICTION; velY *= FRICTION;
+    if (Math.abs(velX) < 0.01) velX = 0;
+    if (Math.abs(velY) < 0.01) velY = 0;
+
+    if ((velX !== 0 || velY !== 0) && playerId && players[playerId]) {
+      const result = moveAndSlide(localX, localY, velX, velY);
+      if (result.x === localX) velX = 0;
+      if (result.y === localY) velY = 0;
+      localX = result.x; localY = result.y;
+
+      if (velX > 0.05) players[playerId].direction = "right";
+      else if (velX < -0.05) players[playerId].direction = "left";
+
+      const el = playerElements[playerId];
+      if (el) {
+        el.style.transform = `translate3d(${localX - SPRITE_SIZE/2}px, ${localY - SPRITE_SIZE/2 - 4}px, 0)`;
+        el.setAttribute("data-direction", players[playerId].direction);
+      }
+
+      const now = performance.now();
+      if (now - lastFirebaseSend > FB_THROTTLE) {
+        lastFirebaseSend = now;
+        const gx = Math.floor(localX / TILE), gy = Math.floor(localY / TILE);
+        players[playerId].x = gx; players[playerId].y = gy;
+        players[playerId].px = localX; players[playerId].py = localY;
+        playerRef.update({ x: gx, y: gy, px: localX, py: localY, direction: players[playerId].direction });
+        attemptGrabCoin(gx, gy);
+        checkNpcInteraction(gx, gy);
+        updateCoordDisplay(gx, gy);
+      }
+    }
+
+    // ─── Nội suy mượt vị trí người chơi khác (remote players) ───
+    // Mỗi frame, di chuyển vị trí ĐANG HIỂN THỊ tiến dần về vị trí ĐÍCH
+    // mới nhất nhận từ Firebase, thay vì nhảy thẳng tới đó (gây giật).
+    for (const uid of Object.keys(remoteTarget)) {
+      if (uid === playerId) continue;
+      const render = remoteRender[uid];
+      const target = remoteTarget[uid];
+      const el = playerElements[uid];
+      if (!render || !target || !el) continue;
+
+      render.x += (target.x - render.x) * REMOTE_LERP_SPEED;
+      render.y += (target.y - render.y) * REMOTE_LERP_SPEED;
+
+      // Khi đã đủ gần đích, snap hẳn vào để tránh dao động vô hạn cực nhỏ
+      if (Math.abs(target.x - render.x) < 0.05) render.x = target.x;
+      if (Math.abs(target.y - render.y) < 0.05) render.y = target.y;
+
+      el.style.transform = `translate3d(${render.x - SPRITE_SIZE/2}px, ${render.y - SPRITE_SIZE/2 - 4}px, 0)`;
+    }
+
+    camX += (localX - camX) * CAMERA_LERP;
+    camY += (localY - camY) * CAMERA_LERP;
+    renderCamera();
+    requestAnimationFrame(gameLoop);
+  }
+
+  function updatePlayerCoinsDisplay(c) { if (playerCoinsDisplay) playerCoinsDisplay.textContent = c; }
+  function updateCoordDisplay(gx, gy) { if (coordDisplay) coordDisplay.innerHTML = `📍 X: ${gx} | Y: ${gy}`; }
+
+  // ─── COINS ───────────────────────────────────────────────────
+  const MAX_COINS_PER_MAP = 40;
+  let isCoinLeader = false;
+  let coinLoopStarted = false;
+
+  // Chỉ 1 người chơi (uid nhỏ nhất đang online trong map) chịu trách nhiệm
+  // sinh coin, để tốc độ spawn không tăng theo số người chơi online.
+  // Khi leader rời map (onDisconnect xóa player), uid nhỏ nhất tiếp theo
+  // sẽ tự động trở thành leader ở lần cập nhật danh sách kế tiếp.
+  function updateCoinLeadership() {
+    const ids = Object.keys(players);
+    if (ids.length === 0) { isCoinLeader = false; return; }
+    const leaderId = ids.sort()[0];
+    isCoinLeader = (leaderId === playerId);
+    if (isCoinLeader && !coinLoopStarted) {
+      coinLoopStarted = true;
+      placeCoin();
+    }
+  }
+
+  // Sinh coin mới cho toàn map, giới hạn tối đa MAX_COINS_PER_MAP cùng lúc.
+  // Dùng transaction trên toàn bộ node để tránh race condition.
+  function placeCoin() {
+    if (!isCoinLeader) { coinLoopStarted = false; return; } // leadership đã đổi, dừng vòng lặp cũ
+
+    const { x, y } = getRandomMapSpot();
+    const key = getKeyString(x, y);
+    const mapCoinsRef = firebase.database().ref(`mapCoins/${MAP_ID}`);
+
+    mapCoinsRef.transaction((current) => {
+      const coinsObj = current || {};
+      const keys = Object.keys(coinsObj);
+
+      // Nếu ô này đã có coin, không thêm trùng — bỏ qua lần spawn này
+      if (coinsObj[key]) return coinsObj;
+
+      // Nếu đã đạt giới hạn, xóa coin CŨ NHẤT (theo timestamp createdAt) để nhường chỗ
+      if (keys.length >= MAX_COINS_PER_MAP) {
+        let oldestKey = null, oldestTs = Infinity;
+        for (const k of keys) {
+          const ts = coinsObj[k].createdAt || 0;
+          if (ts < oldestTs) { oldestTs = ts; oldestKey = k; }
+        }
+        if (oldestKey) delete coinsObj[oldestKey];
+      }
+
+      coinsObj[key] = { x, y, createdAt: Date.now() };
+      return coinsObj;
+    });
+
+    setTimeout(placeCoin, randomFromArray([2500, 3500, 4500, 6000]));
+  }
+  function attemptGrabCoin(gx, gy) {
+    const key = getKeyString(gx, gy);
+    if (coins[key]) {
+      firebase.database().ref(`mapCoins/${MAP_ID}/${key}`).remove();
+      const p = players[playerId];
+      if (p) playerRef.update({ coins: (p.coins||0) + 1 });
+    }
+  }
+
+  // ─── NPC (dynamic, từ dữ liệu map) ────────────────────────────
+  let npcElements = {};       // index -> dom element
+  let activeDialogueNpc = null; // npc object currently talking
+  let currentDialogueIndex = 0;
+  let isInDialogue = false;
+  let lastNpcCheck = "";
+
+  function createNpcElements() {
+    // clear any old
+    document.querySelectorAll(".npc-elder").forEach(el => el.remove());
+    npcElements = {};
+    const npcList = mapInfo.npcs || [];
+    npcList.forEach((npc, idx) => {
+      const el = document.createElement("div");
+      el.classList.add("Character", "grid-cell", "npc-elder");
+      el.innerHTML = `
+        <div class="Character_shadow grid-cell"></div>
+        <div class="Character_sprite grid-cell"></div>
+        <div class="Character_name-container"><span class="Character_name">${escapeHtml(npc.name || NPC_SPEAKER_DEFAULT)}</span></div>
+        <div class="npc-tag">${(npc.quiz && npc.quiz.length) ? '🎓 QUIZ' : 'NPC'}</div>
+        <div class="npc-interact-hint" id="npc-hint-${idx}">!</div>`;
+      el.setAttribute("data-color", "green");
+      el.setAttribute("data-direction", "right");
+      el.style.transform = `translate3d(${TILE*npc.x}px, ${TILE*npc.y - 4}px, 0)`;
+      el.style.position = "absolute"; el.style.left = "0"; el.style.top = "0";
+      // Click to interact (only when in range)
+      el.addEventListener("click", () => {
+        const dist = Math.max(Math.abs(Math.floor(localX/TILE) - npc.x), Math.abs(Math.floor(localY/TILE) - npc.y));
+        if (dist <= NPC_INTERACT_RADIUS && !isInDialogue) {
+          openNpcDialogue(npc);
+        } else if (dist > NPC_INTERACT_RADIUS) {
+          showToast('Đến gần hơn để nói chuyện! 👣', 'info');
+        }
+      });
+      gameContainer.appendChild(el);
+      npcElements[idx] = el;
+    });
+  }
+
+  function checkNpcInteraction(gx, gy) {
+    const npcList = mapInfo.npcs || [];
+    if (npcList.length === 0) return;
+    // Show/hide hint indicators based on proximity
+    npcList.forEach((npc, idx) => {
+      const dist = Math.max(Math.abs(gx - npc.x), Math.abs(gy - npc.y));
+      const hint = document.getElementById(`npc-hint-${idx}`);
+      if (hint) {
+        if (dist <= NPC_INTERACT_RADIUS && !isInDialogue) {
+          hint.classList.add('visible');
+        } else {
+          hint.classList.remove('visible');
+        }
+      }
+    });
+  }
+
+  function openNpcDialogue(npc) {
+    activeDialogueNpc = npc;
+    currentDialogueIndex = 0; isInDialogue = true;
+    document.querySelector('.poke-speaker').textContent = `🎋 ${(npc.name || NPC_SPEAKER_DEFAULT).toUpperCase()}`;
+    showDialogueLine(); npcDialogueBox.style.display = "block";
+    document.addEventListener("keydown", onDialogueKey);
+    npcDialogueBox.addEventListener("click", advanceDialogue);
+  }
+  function closeNpcDialogue() {
+    // Clear any running typewriter
+    if (typewriterTimer) { clearTimeout(typewriterTimer); typewriterTimer = null; }
+    isTyping = false;
+    npcDialogueBox.style.display = "none"; isInDialogue = false; currentDialogueIndex = 0;
+    activeDialogueNpc = null;
+    document.removeEventListener("keydown", onDialogueKey);
+    npcDialogueBox.removeEventListener("click", advanceDialogue);
+    // Re-check hints
+    const gx = Math.floor(localX/TILE), gy = Math.floor(localY/TILE);
+    checkNpcInteraction(gx, gy);
+  }
+  // Hết thoại → nếu NPC có câu hỏi thì mở quiz (điểm cộng vào mapPlayers/.../coins, EXP vào players/{uid}/exp)
+  function startNpcQuiz(npc) {
+    if (!npc || !npc.quiz || !npc.quiz.length || NpcQuiz.isOpen()) return;
+    NpcQuiz.open({
+      db: firebase.database(),
+      user: firebase.auth().currentUser,
+      mapId: MAP_ID,
+      npc: npc,
+      map: mapInfo,
+      grantCoins: (n) => playerRef.child('coins').transaction(v => (v || 0) + n)
+    });
+  }
+  function onDialogueKey(e) {
+    if (e.code === "Space" || e.code === "Enter" || e.code === "KeyZ") { e.preventDefault(); advanceDialogue(); }
+    if (e.code === "Escape") closeNpcDialogue();
+  }
+
+  let typewriterTimer = null;
+  let isTyping = false;
+
+  function showDialogueLine() {
+    if (!activeDialogueNpc) return;
+    const lines = activeDialogueNpc.dialogue || [];
+    const text = lines[currentDialogueIndex] || "";
+    const isLast = currentDialogueIndex === lines.length - 1;
+    pokeInner.classList.toggle("last-line", isLast);
+    // Typewriter effect
+    pokeText.textContent = "";
+    isTyping = true;
+    if (typewriterTimer) clearTimeout(typewriterTimer);
+    let i = 0;
+    const CHAR_DELAY = 28; // ms per character
+    function typeNext() {
+      if (i < text.length) {
+        pokeText.textContent += text[i];
+        i++;
+        typewriterTimer = setTimeout(typeNext, CHAR_DELAY);
+      } else {
+        isTyping = false;
+        typewriterTimer = null;
+      }
+    }
+    typeNext();
+  }
+
+  function advanceDialogue() {
+    if (!activeDialogueNpc) return;
+    // If still typing, skip to end of current line
+    if (isTyping) {
+      if (typewriterTimer) { clearTimeout(typewriterTimer); typewriterTimer = null; }
+      isTyping = false;
+      const lines = activeDialogueNpc.dialogue || [];
+      pokeText.textContent = lines[currentDialogueIndex] || "";
+      return;
+    }
+    const lines = activeDialogueNpc.dialogue || [];
+    if (currentDialogueIndex < lines.length - 1) { currentDialogueIndex++; showDialogueLine(); }
+    else { const doneNpc = activeDialogueNpc; closeNpcDialogue(); startNpcQuiz(doneNpc); }
+  }
+
+  // ─── SKIN SHOP ───────────────────────────────────────────────
+  function openMerchantModal() { renderSkinShop(); merchantModal.style.display = "flex"; }
+  function closeMerchantModal() { merchantModal.style.display = "none"; }
+
+  function renderSkinShop() {
+    const playerData = players[playerId];
+    if (!playerData) return;
+    const purchasedSkins = playerData.purchasedSkins || { blue: true };
+    const playerCoinsVal = playerData.coins || 0;
+    skinShopList.innerHTML = "";
+    playerColors.forEach((color) => {
+      const isOwned = purchasedSkins[color] === true;
+      const isCurrent = playerData.color === color;
+      const price = SKIN_PRICES[color] || 0;
+      const skinItem = document.createElement("div");
+      skinItem.className = "skin-item";
+      const buttonText = isCurrent ? "✓ ĐANG DÙNG" : (isOwned ? "SỬ DỤNG" : `MUA ${price} XU`);
+      skinItem.innerHTML = `
+        <div class="skin-preview Character" data-color="${color}" data-direction="right">
+          <div class="Character_shadow grid-cell"></div><div class="Character_sprite grid-cell"></div>
+        </div>
+        <div class="skin-name">${color.toUpperCase()}</div>
+        <button class="skin-buy-btn" ${isCurrent ? "disabled" : ""}>${buttonText}</button>`;
+      const btn = skinItem.querySelector(".skin-buy-btn");
+      if (!isCurrent) {
+        btn.addEventListener("click", () => {
+          if (isOwned) {
+            playerRef.update({ color });
+            merchantMessage.textContent = `✨ Đã trang bị skin ${color}! ✨`;
+          } else if (playerCoinsVal >= price) {
+            playerRef.update({ purchasedSkins: { ...purchasedSkins, [color]: true }, coins: playerCoinsVal - price, color });
+            merchantMessage.textContent = `🎉 Đã mua skin ${color} với giá ${price} xu! 🎉`;
+          } else {
+            merchantMessage.textContent = `❌ Không đủ xu! Cần thêm ${price - playerCoinsVal} xu. ❌`;
+          }
+          setTimeout(() => { merchantMessage.textContent = "Chào mừng! Mua skin bằng xu của bạn!"; }, 2000);
+          renderSkinShop();
+        });
+      }
+      skinShopList.appendChild(skinItem);
+    });
+  }
+
+  // ─── CHAT BUBBLE ─────────────────────────────────────────────
+  function showChatBubble(uid, text) {
+    const el = playerElements[uid];
+    if (!el) return;
+    let bubble = el.querySelector('.chat-bubble');
+    if (!bubble) {
+      bubble = document.createElement('div');
+      bubble.className = 'chat-bubble';
+      el.appendChild(bubble);
+    }
+    bubble.textContent = text;
+    // force reflow then add visible class for animation
+    bubble.classList.remove('visible');
+    void bubble.offsetWidth;
+    bubble.classList.add('visible');
+
+    clearTimeout(chatBubbleTimers[uid]);
+    chatBubbleTimers[uid] = setTimeout(() => {
+      bubble.classList.remove('visible');
+    }, BUBBLE_DURATION);
+  }
+
+  // ─── MOBILE CONTROLS ─────────────────────────────────────────
+  function setupMobileControls() {
+    const joystickBase  = document.getElementById("joystick-base");
+    const joystickThumb = document.getElementById("joystick-thumb");
+    if (joystickBase && joystickThumb) {
+      new Joystick(joystickBase, joystickThumb, (x, y) => { joyX = x; joyY = y; });
+    }
+  }
+
+  // ─── PLAYER RENDERING ────────────────────────────────────────
+  function createPlayerElement(p) {
+    const el = document.createElement("div");
+    el.classList.add("Character", "grid-cell");
+    if (p.id === playerId) el.classList.add("you");
+    el.innerHTML = `
+      <div class="Character_shadow grid-cell"></div>
+      <div class="Character_sprite grid-cell"></div>
+      <div class="Character_name-container">
+        <span class="Character_name"></span>
+        <span class="Character_coins">0</span>
+      </div>
+      <div class="Character_you-arrow"></div>`;
+    playerElements[p.id] = el;
+    el.querySelector(".Character_name").innerText = p.name;
+    el.querySelector(".Character_coins").innerText = p.coins;
+    el.setAttribute("data-color", p.color);
+    el.setAttribute("data-direction", p.direction);
+    const rpx = (p.px !== undefined) ? p.px : TILE * p.x + TILE/2;
+    const rpy = (p.py !== undefined) ? p.py : TILE * p.y + TILE/2;
+    if (p.id !== playerId) {
+      remoteRender[p.id] = { x: rpx, y: rpy };
+      remoteTarget[p.id] = { x: rpx, y: rpy };
+      // Click on other player to view profile
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openPlayerProfile(p.id);
+      });
+      el.style.cursor = "pointer";
+    }
+    el.style.transform = `translate3d(${rpx - SPRITE_SIZE/2}px, ${rpy - SPRITE_SIZE/2 - 4}px, 0)`;
+    gameContainer.appendChild(el);
+  }
+
+  // ─── INIT GAME ───────────────────────────────────────────────
+  function initGame() {
+    document.addEventListener("keydown", (e) => { keys[e.code] = true; });
+    document.addEventListener("keyup",   (e) => { keys[e.code] = false; });
+
+    const allPlayersRef = firebase.database().ref(`mapPlayers/${MAP_ID}`);
+    const allCoinsRef   = firebase.database().ref(`mapCoins/${MAP_ID}`);
+
+    allPlayersRef.on("value", (snapshot) => {
+      const newPlayers = snapshot.val() || {};
+      // update online count for the map listing
+      firebase.database().ref(`maps/${MAP_ID}/onlineCount`).set(Object.keys(newPlayers).length);
+      players = newPlayers;
+      Object.keys(players).forEach((key) => {
+        if (key === playerId) return;
+        const s = players[key];
+        const el = playerElements[key];
+        if (!el) return;
+        el.querySelector(".Character_name").innerText = s.name;
+        el.querySelector(".Character_coins").innerText = s.coins;
+        el.setAttribute("data-color", s.color);
+        el.setAttribute("data-direction", s.direction);
+        // Chỉ cập nhật điểm ĐÍCH — vị trí hiển thị thực tế được nội suy mượt mỗi frame trong gameLoop()
+        const tx = (s.px !== undefined) ? s.px : TILE * s.x + TILE/2;
+        const ty = (s.py !== undefined) ? s.py : TILE * s.y + TILE/2;
+        if (!remoteTarget[key]) remoteTarget[key] = { x: tx, y: ty };
+        else { remoteTarget[key].x = tx; remoteTarget[key].y = ty; }
+        if (!remoteRender[key]) remoteRender[key] = { x: tx, y: ty };
+      });
+      if (players[playerId] && playerCoinsDisplay) updatePlayerCoinsDisplay(players[playerId].coins);
+      updateCoinLeadership();
+    });
+
+    allPlayersRef.on("child_added", (snapshot) => {
+      const p = snapshot.val();
+      if (playerElements[p.id]) return;
+      createPlayerElement(p);
+    });
+
+    allPlayersRef.on("child_removed", (snapshot) => {
+      const removedKey = snapshot.val().id;
+      if (playerElements[removedKey]) {
+        gameContainer.removeChild(playerElements[removedKey]);
+        delete playerElements[removedKey];
+      }
+      delete remoteRender[removedKey];
+      delete remoteTarget[removedKey];
+    });
+
+    allCoinsRef.on("value", (snapshot) => { coins = snapshot.val() || {}; });
+
+    allCoinsRef.on("child_added", (snapshot) => {
+      const coin = snapshot.val();
+      const key = getKeyString(coin.x, coin.y);
+      coins[key] = true;
+      const el = document.createElement("div");
+      el.classList.add("Coin", "grid-cell");
+      el.innerHTML = `<div class="Coin_shadow grid-cell"></div><div class="Coin_sprite grid-cell"></div>`;
+      el.style.transform = `translate3d(${TILE*coin.x}px, ${TILE*coin.y - 4}px, 0)`;
+      coinElements[key] = el;
+      gameContainer.appendChild(el);
+    });
+
+    allCoinsRef.on("child_removed", (snapshot) => {
+      const { x, y } = snapshot.val();
+      const key = getKeyString(x, y);
+      if (coinElements[key]) { gameContainer.removeChild(coinElements[key]); delete coinElements[key]; }
+    });
+
+    closeModalBtn.addEventListener("click", closeMerchantModal);
+    window.addEventListener("click", (e) => { if (e.target === merchantModal) closeMerchantModal(); });
+    window.addEventListener("resize", () => renderCamera());
+
+    setTimeout(() => { createNpcElements(); }, 100);
+
+    setupMobileControls();
+    initChatSystem();
+    initFriendSystem();
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // CHAT SYSTEM
+  // ════════════════════════════════════════════════════════════
+  let currentChatTab = 'map'; // 'map' | 'world'
+  let chatMessages = { map: {}, world: {} };
+  let chatListeners = {};
+  let cleanupInterval = null;
+
+  function chatRefFor(tab) {
+    return tab === 'world'
+      ? firebase.database().ref('chatWorld')
+      : firebase.database().ref(`chatMap/${MAP_ID}`);
+  }
+
+  function initChatSystem() {
+    setupChatListener('map');
+    setupChatListener('world');
+    renderChatMessages();
+
+    // Periodic cleanup of expired messages (client-driven, only own-recent ones to keep db light)
+    cleanupInterval = setInterval(() => {
+      pruneExpiredMessages('map');
+      pruneExpiredMessages('world');
+      renderChatMessages(); // re-render to update relative "expired" view too
+    }, 2000);
+  }
+
+  function setupChatListener(tab) {
+    const ref = chatRefFor(tab);
+    ref.on('child_added', (snap) => {
+      const msg = snap.val();
+      const age = Date.now() - (msg.ts || 0);
+      if (age > CHAT_MAX_AGE) {
+        // already expired, just remove from db, don't show
+        snap.ref.remove().catch(()=>{});
+        return;
+      }
+      chatMessages[tab][snap.key] = msg;
+      if (tab === currentChatTab) renderChatMessages();
+      // show bubble above the sender if visible on this map
+      if (msg.uid && playerElements[msg.uid]) {
+        showChatBubble(msg.uid, msg.text);
+      }
+      // schedule its own removal from view + from DB
+      const remaining = CHAT_MAX_AGE - age;
+      setTimeout(() => {
+        delete chatMessages[tab][snap.key];
+        if (tab === currentChatTab) renderChatMessages();
+        snap.ref.remove().catch(()=>{});
+      }, Math.max(remaining, 0));
+    });
+    ref.on('child_removed', (snap) => {
+      delete chatMessages[tab][snap.key];
+      if (tab === currentChatTab) renderChatMessages();
+    });
+  }
+
+  function pruneExpiredMessages(tab) {
+    const now = Date.now();
+    let changed = false;
+    for (const key of Object.keys(chatMessages[tab])) {
+      const msg = chatMessages[tab][key];
+      if (now - (msg.ts || 0) > CHAT_MAX_AGE) {
+        delete chatMessages[tab][key];
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  function renderChatMessages() {
+    const box = document.getElementById('chat-messages');
+    const list = Object.values(chatMessages[currentChatTab] || {}).sort((a,b) => a.ts - b.ts);
+    if (list.length === 0) {
+      box.innerHTML = '<div class="chat-empty">Chưa có tin nhắn nào...</div>';
+      return;
+    }
+    box.innerHTML = list.map(m => {
+      const isMe = m.uid === playerId;
+      const secsLeft = Math.max(0, Math.ceil((CHAT_MAX_AGE - (Date.now() - m.ts)) / 1000));
+      return `<div class="chat-msg">
+        <span class="cm-name ${isMe ? 'me' : 'other'}">${escapeHtml(m.name)}:</span>
+        <span class="cm-text">${escapeHtml(m.text)}</span>
+        <span class="cm-time">${secsLeft}s</span>
+      </div>`;
+    }).join('');
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text || !playerId) return;
+    const msg = {
+      uid: playerId,
+      name: (players[playerId] && players[playerId].name) || 'Player',
+      text: text.slice(0, 100),
+      ts: Date.now(),
+    };
+    chatRefFor(currentChatTab).push(msg);
+    // Always show bubble locally instantly for self
+    if (playerElements[playerId]) showChatBubble(playerId, msg.text);
+    input.value = '';
+  }
+
+  document.getElementById('chat-send').addEventListener('click', sendChatMessage);
+  document.getElementById('chat-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); sendChatMessage(); }
+  });
+  document.getElementById('chat-input').addEventListener('focus', () => { chatInputFocused = true; });
+  document.getElementById('chat-input').addEventListener('blur', () => { chatInputFocused = false; });
+
+  document.getElementById('tab-map').addEventListener('click', () => {
+    currentChatTab = 'map';
+    document.getElementById('tab-map').classList.add('active');
+    document.getElementById('tab-world').classList.remove('active');
+    renderChatMessages();
+  });
+  document.getElementById('tab-world').addEventListener('click', () => {
+    currentChatTab = 'world';
+    document.getElementById('tab-world').classList.add('active');
+    document.getElementById('tab-map').classList.remove('active');
+    renderChatMessages();
+  });
+
+  // ════════════════════════════════════════════════════════════
+  // FRIEND SYSTEM & DIRECT MESSAGES
+  // ════════════════════════════════════════════════════════════
+  const COLOR_SPRITE_Y_MAP = { blue:0, red:-16, orange:-32, yellow:-48, green:-64, purple:-80 };
+  let friendsData = {};       // uid -> {name, color, ...}
+  let friendRequests = {};    // uid -> {name, color, fromUid}
+  let shownFriendReqToasts = {}; // uid -> true (đã hiện toast cho lời mời này rồi, tránh hiện lặp lại)
+  let currentFpTab = 'chat';  // 'chat' | 'dms'
+  let currentDmUid = null;
+  let friendsPanelOpen = false;
+
+  function getFriendsRef()         { return firebase.database().ref(`friends/${playerId}`); }
+  function getFriendRequestsRef()  { return firebase.database().ref(`friendRequests/${playerId}`); }
+  function getDmRef(uid1, uid2) {
+    // consistent key regardless of who initiated
+    const key = [uid1, uid2].sort().join('_');
+    return firebase.database().ref(`directMessages/${key}`);
+  }
+
+  function initFriendSystem() {
+    // Listen for friends
+    getFriendsRef().on('value', snap => {
+      friendsData = snap.val() || {};
+      if (friendsPanelOpen && currentFpTab === 'dms' && !currentDmUid) renderFriendsListTab();
+    });
+    // Listen for incoming requests -> Windows-style toast (kết bạn chỉ thực hiện ở trang Home)
+    getFriendRequestsRef().on('value', snap => {
+      friendRequests = snap.val() || {};
+      Object.entries(friendRequests).forEach(([uid, data]) => {
+        if (!shownFriendReqToasts[uid]) {
+          shownFriendReqToasts[uid] = true;
+          showFriendRequestToast(uid, data);
+        }
+      });
+    });
+
+    // Friends panel toggle
+    document.getElementById('friends-btn').addEventListener('click', () => {
+      friendsPanelOpen = !friendsPanelOpen;
+      document.getElementById('friends-panel').classList.toggle('open', friendsPanelOpen);
+      if (friendsPanelOpen) {
+        if (currentFpTab === 'chat') renderChatMessages();
+        else if (!currentDmUid) renderFriendsListTab();
+      }
+    });
+    document.getElementById('fp-close').addEventListener('click', () => {
+      friendsPanelOpen = false;
+      document.getElementById('friends-panel').classList.remove('open');
+    });
+
+    // Tabs (2 tabs: chat map + bạn bè)
+    ['chat','dms'].forEach(tab => {
+      document.getElementById(`fp-tab-${tab}`).addEventListener('click', () => {
+        currentFpTab = tab;
+        ['chat','dms'].forEach(t => {
+          document.getElementById(`fp-tab-${t}`).classList.toggle('active', t === tab);
+        });
+        const isChat = tab === 'chat';
+        document.getElementById('fp-chat-section').classList.toggle('active', isChat);
+        document.getElementById('fp-body').style.display = isChat ? 'none' : '';
+        document.getElementById('dm-thread').classList.remove('active');
+        currentDmUid = null;
+        if (isChat) {
+          document.getElementById('fp-body').style.display = 'none';
+          renderChatMessages();
+        } else {
+          document.getElementById('fp-body').style.display = '';
+          renderFriendsListTab();
+        }
+      });
+    });
+
+    // Profile modal close
+    document.getElementById('profile-close-btn').addEventListener('click', closePlayerProfile);
+    document.getElementById('player-profile-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('player-profile-modal')) closePlayerProfile();
+    });
+
+    // DM thread back button (quay lại danh sách bạn bè)
+    document.getElementById('dm-back-btn').addEventListener('click', () => {
+      currentDmUid = null;
+      if (currentDmUnsubscribe) { currentDmUnsubscribe(); currentDmUnsubscribe = null; }
+      document.getElementById('dm-thread').classList.remove('active');
+      document.getElementById('fp-body').style.display = '';
+      renderFriendsListTab();
+    });
+    document.getElementById('dm-send').addEventListener('click', sendDmMessage);
+    document.getElementById('dm-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); sendDmMessage(); }
+    });
+    document.getElementById('dm-input').addEventListener('focus', () => { chatInputFocused = true; });
+    document.getElementById('dm-input').addEventListener('blur', () => { chatInputFocused = false; });
+  }
+
+  // ─── Windows-style friend request notification (top-right, auto-hide sau 3s) ───
+  function showFriendRequestToast(uid, data) {
+    const stack = document.getElementById('friend-req-toast-stack');
+    const el = document.createElement('div');
+    el.className = 'friend-req-toast';
+    el.innerHTML = `
+      <div class="frt-top">
+        <span class="frt-icon">📨</span>
+        <span class="frt-text"><b>${escapeHtml(data.name || 'Player')}</b> muốn kết bạn với bạn</span>
+      </div>
+      <div class="frt-actions">
+        <button class="frt-btn accept">✓ Đồng ý</button>
+        <button class="frt-btn deny">✕ Từ chối</button>
+      </div>
+    `;
+    const dismiss = () => {
+      el.classList.add('hide');
+      setTimeout(() => el.remove(), 300);
+    };
+    el.querySelector('.accept').addEventListener('click', () => { acceptFriendRequest(uid, data); dismiss(); });
+    el.querySelector('.deny').addEventListener('click', () => { denyFriendRequest(uid); dismiss(); });
+    stack.appendChild(el);
+    setTimeout(dismiss, 3000);
+  }
+
+  // ─── TAB "Bạn bè" (đã loại bỏ kết bạn/lời mời — kết bạn thực hiện ở trang Home) ───
+  function renderFriendsListTab() {
+    const body = document.getElementById('fp-body');
+    body.innerHTML = '';
+    const entries = Object.entries(friendsData);
+    if (entries.length === 0) {
+      body.innerHTML = '<div class="friend-empty">Chưa có bạn bè nào.<br>Hãy kết bạn ở trang Home!</div>';
+      return;
+    }
+    entries.forEach(([uid, data]) => {
+      const sprY = COLOR_SPRITE_Y_MAP[data.color || 'blue'] || 0;
+      const item = document.createElement('div');
+      item.className = 'dm-item';
+      item.innerHTML = `
+        <div class="friend-item-avatar">
+          <div class="fi-shadow"></div>
+          <div class="fi-sprite" style="background-position-y:${sprY}px"></div>
+        </div>
+        <span class="dm-item-name">${escapeHtml(data.name || 'Player')}</span>
+      `;
+      item.addEventListener('click', () => openDmThread(uid, data.name || 'Player'));
+      body.appendChild(item);
+    });
+  }
+
+  async function openPlayerProfile(uid) {
+    if (uid === playerId) return;
+    const modal = document.getElementById('player-profile-modal');
+    const sprEl = document.getElementById('profile-sprite');
+    const nameEl = document.getElementById('profile-name-display');
+    const coinsEl = document.getElementById('profile-coins-display');
+    const statusRow = document.getElementById('friend-status-row');
+    const friendBtn = document.getElementById('profile-friend-btn');
+
+    // Get player data from online players or firebase
+    let pData = players[uid];
+    if (!pData) {
+      const snap = await firebase.database().ref(`players/${uid}`).once('value');
+      pData = snap.val() || {};
+    }
+
+    const name = pData.name || 'Player';
+    const color = pData.color || 'blue';
+    const coins = pData.coins || 0;
+    const sprY = COLOR_SPRITE_Y_MAP[color] || 0;
+
+    sprEl.style.backgroundPositionY = sprY + 'px';
+    nameEl.textContent = name;
+    coinsEl.textContent = `💰 ${coins} xu`;
+
+    // Determine friend status (chỉ xem trạng thái — kết bạn thực hiện ở trang Home)
+    const isFriend = !!friendsData[uid];
+
+    statusRow.innerHTML = '';
+    friendBtn.onclick = null;
+    friendBtn.disabled = false;
+    friendBtn.className = 'friend-btn';
+
+    if (isFriend) {
+      statusRow.innerHTML = '<span class="friend-badge">✓ Đã là bạn bè</span>';
+      friendBtn.textContent = '💬 Nhắn tin';
+      friendBtn.onclick = () => { closePlayerProfile(); openFriendsPanelToDm(uid, name); };
+    } else {
+      statusRow.innerHTML = '<span class="friend-badge pending">Chưa là bạn bè</span>';
+      friendBtn.textContent = 'Kết bạn ở trang Home';
+      friendBtn.disabled = true;
+    }
+
+    modal.classList.add('open');
+  }
+
+  function closePlayerProfile() {
+    document.getElementById('player-profile-modal').classList.remove('open');
+  }
+
+  async function acceptFriendRequest(fromUid, fromData) {
+    const myData = players[playerId] || {};
+    // Add each other as friends
+    await firebase.database().ref(`friends/${playerId}/${fromUid}`).set({
+      name: fromData.name || 'Player', color: fromData.color || 'blue',
+    });
+    await firebase.database().ref(`friends/${fromUid}/${playerId}`).set({
+      name: myData.name || 'Player', color: myData.color || 'blue',
+    });
+    // Remove request
+    await firebase.database().ref(`friendRequests/${playerId}/${fromUid}`).remove();
+    await firebase.database().ref(`friendRequestsSent/${fromUid}/${playerId}`).remove();
+    showToast(`🎉 Đã kết bạn với ${escapeHtml(fromData.name || 'Player')}!`, 'success');
+    if (friendsPanelOpen && currentFpTab === 'dms' && !currentDmUid) renderFriendsListTab();
+  }
+
+  async function denyFriendRequest(fromUid) {
+    await firebase.database().ref(`friendRequests/${playerId}/${fromUid}`).remove();
+    delete friendRequests[fromUid];
+  }
+
+  // ─── DIRECT MESSAGES (mở inline ngay trong panel, không còn popup riêng) ─────
+  let currentDmUnsubscribe = null;
+
+  // Mở panel bạn bè sẵn ở chế độ chat với 1 người (dùng từ profile modal)
+  function openFriendsPanelToDm(uid, name) {
+    friendsPanelOpen = true;
+    document.getElementById('friends-panel').classList.add('open');
+    currentFpTab = 'dms';
+    document.getElementById('fp-tab-chat').classList.remove('active');
+    document.getElementById('fp-tab-dms').classList.add('active');
+    document.getElementById('fp-chat-section').classList.remove('active');
+    document.getElementById('fp-body').style.display = '';
+    openDmThread(uid, name);
+  }
+
+  function openDmThread(uid, name) {
+    currentDmUid = uid;
+    document.getElementById('fp-body').style.display = 'none';
+    document.getElementById('dm-thread').classList.add('active');
+    document.getElementById('dm-thread-name').textContent = name;
+    document.getElementById('dm-win-msgs').innerHTML = '<div class="dm-empty">Đang tải...</div>';
+
+    // Unsubscribe previous listener
+    if (currentDmUnsubscribe) { currentDmUnsubscribe(); currentDmUnsubscribe = null; }
+
+    const ref = getDmRef(playerId, uid);
+    // Only last 50 messages
+    const query = ref.limitToLast(50);
+    const handler = query.on('value', snap => {
+      const msgs = snap.val() || {};
+      const list = Object.values(msgs).sort((a,b) => a.ts - b.ts);
+      const box = document.getElementById('dm-win-msgs');
+      if (list.length === 0) {
+        box.innerHTML = '<div class="dm-empty">Chưa có tin nhắn. Hãy bắt đầu cuộc trò chuyện!</div>';
+        return;
+      }
+      box.innerHTML = list.map(m => {
+        const isMe = m.uid === playerId;
+        return `<div class="dm-msg">
+          <span class="dm-sender ${isMe ? 'me' : 'other'}">${escapeHtml(m.name)}:</span>
+          <span class="dm-txt">${escapeHtml(m.text)}</span>
+        </div>`;
+      }).join('');
+      box.scrollTop = box.scrollHeight;
+    });
+    currentDmUnsubscribe = () => query.off('value', handler);
+  }
+
+  function sendDmMessage() {
+    if (!currentDmUid || !playerId) return;
+    const input = document.getElementById('dm-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const myData = players[playerId] || {};
+    getDmRef(playerId, currentDmUid).push({
+      uid: playerId,
+      name: myData.name || 'Player',
+      text: text.slice(0, 200),
+      ts: Date.now(),
+    });
+    input.value = '';
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // AUTH + STARTUP
+  // ════════════════════════════════════════════════════════════
+  firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+      document.getElementById('auth-overlay').style.display = 'none';
+
+      if (!MAP_ID) return;
+
+      mapInfo = await loadMapData(user.uid);
+      if (!mapInfo) return;
+
+      setupMapVisuals();
+      document.getElementById('map-loading').style.display = 'none';
+
+      // If today's (Hanoi time) weekly challenge points to this map, light the flame + bump streak.
+      recordWeeklyChallengeIfApplicable(user.uid);
+
+      playerId = user.uid;
+      playerRef = firebase.database().ref(`mapPlayers/${MAP_ID}/${playerId}`);
+
+      // fetch global player profile (name/color/coins/skins) to seed map-specific player
+      const globalSnap = await firebase.database().ref(`players/${playerId}`).once('value');
+      const globalData = globalSnap.val() || {};
+
+      const name = globalData.name || createName();
+      const color = globalData.color || 'blue';
+      const purchasedSkins = globalData.purchasedSkins || { blue: true };
+      const coinsVal = globalData.coins || 0;
+
+      const spot = getRandomSafeSpot();
+      localX = spot.x * TILE + TILE / 2;
+      localY = spot.y * TILE + TILE / 2;
+      camX = localX; camY = localY;
+
+      const initialPlayerData = {
+        id: playerId, name, direction: "right", color,
+        x: spot.x, y: spot.y, px: localX, py: localY,
+        coins: coinsVal, purchasedSkins,
+      };
+      playerRef.set(initialPlayerData);
+      players[playerId] = initialPlayerData;
+
+      playerRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data && playerCoinsDisplay) updatePlayerCoinsDisplay(data.coins);
+        if (data) {
+          players[playerId] = { ...players[playerId], ...data };
+          // sync coins/skins/color back to global profile
+          firebase.database().ref(`players/${playerId}`).update({
+            coins: data.coins, color: data.color, purchasedSkins: data.purchasedSkins, name: data.name
+          });
+        }
+      });
+
+      playerRef.onDisconnect().remove();
+
+      initGame();
+    } else {
+      document.getElementById('auth-overlay').style.display = 'flex';
+    }
+  });
+})();
+</script>
+</body>
+</html>

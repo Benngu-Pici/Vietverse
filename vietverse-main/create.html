@@ -1,0 +1,1884 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vietverse | Tạo Map</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #FFB300; --gold-dark: #c98a00;
+      --red: #d32f2f; --red-dark: #b71c1c;
+      --bg: #fff5f5; --bg2: #ffffff; --bg3: #fff0ef;
+      --accent: #d32f2f; --accent2: #c2410c;
+      --text: #2b1212; --text-muted: #8a6a6a;
+      --border: rgba(211,47,47,0.14);
+      --danger: #e24b4a; --success: #2e7d32;
+      --wall-color: rgba(220, 80, 80, 0.75);
+      --wall-border: rgba(255, 100, 100, 0.9);
+      --grid-line: rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%; font-family: 'Be Vietnam Pro', sans-serif;
+      background: var(--bg); color: var(--text); overflow: hidden;
+    }
+
+    /* ── AUTH OVERLAY ── */
+    #auth-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: linear-gradient(160deg, #fff5f5 0%, #ffe2e2 100%); display: flex; align-items: center; justify-content: center;
+    }
+    .auth-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 40px 36px; width: 360px; text-align: center;
+      box-shadow: 0 12px 40px rgba(211,47,47,0.12);
+    }
+    .auth-box h1 { font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 800; color: var(--red); letter-spacing: 2px; margin-bottom: 6px; }
+    .auth-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+    .auth-input {
+      width: 100%; padding: 12px 16px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 15px; margin-bottom: 12px; outline: none; transition: border 0.2s;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+    .auth-btn {
+      width: 100%; padding: 13px; background: linear-gradient(135deg, var(--red), var(--red-dark));
+      border: none; border-radius: 10px; color: #fff;
+      font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s; margin-bottom: 10px;
+    }
+    .auth-btn:hover { opacity: 0.9; }
+    .auth-btn.google { background: linear-gradient(135deg, #ea4335, #cc2c20); margin-top: 4px; }
+    .auth-divider {
+      color: var(--text-muted); font-size: 13px; margin: 10px 0;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .auth-error { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 20px; }
+
+    /* ── LAYOUT ── */
+    #app { display: none; height: 100vh; display: none; flex-direction: column; }
+
+    /* NAVBAR */
+    .navbar {
+      flex-shrink: 0; height: 58px;
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,.06);
+      padding: 0 20px; display: flex; align-items: center; justify-content: space-between;
+      z-index: 50;
+    }
+    .nav-logo { font-family: 'Baloo 2', cursive; font-size: 17px; font-weight: 800; color: var(--red); display: flex; align-items: center; gap: 8px; }
+    .nav-center { display: flex; gap: 0; background: var(--bg3); border-radius: 10px; padding: 3px; }
+    .step-tab {
+      padding: 6px 20px; border-radius: 7px; font-size: 13px; font-weight: 800;
+      color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+      border: none; background: transparent; font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    .step-tab.active { background: var(--accent); color: #fff; }
+    .step-tab.done { color: var(--success); }
+    .nav-right { display: flex; gap: 10px; align-items: center; }
+    .nav-back-btn {
+      padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif; transition: all 0.2s;
+    }
+    .nav-back-btn:hover { border-color: var(--accent); color: var(--text); }
+    .publish-btn {
+      padding: 7px 22px; border-radius: 8px; border: none;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #1a1200; font-size: 14px; font-weight: 900;
+      cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif; transition: opacity 0.2s;
+      display: none;
+    }
+    .publish-btn:hover { opacity: 0.85; }
+    .publish-btn.visible { display: block; }
+
+    /* ── BODY SPLIT ── */
+    .editor-body {
+      flex: 1; display: flex; overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 260px; flex-shrink: 0;
+      background: var(--bg2); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;
+    }
+    .sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-section h4 {
+      font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+      color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;
+    }
+    .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+    .form-input {
+      width: 100%; padding: 9px 12px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 13px; outline: none; transition: border 0.2s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input + .form-input, .form-label + .form-label { margin-top: 10px; }
+    .form-row { display: flex; gap: 8px; }
+    .form-row .form-input { flex: 1; }
+    .sidebar-btn {
+      width: 100%; padding: 10px; border-radius: 8px; border: none;
+      font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 800;
+      cursor: pointer; transition: all 0.2s; margin-top: 10px;
+    }
+    .sidebar-btn.primary { background: var(--accent); color: #fff; }
+    .sidebar-btn.primary:hover { opacity: 0.85; }
+    .sidebar-btn.danger { background: rgba(226,75,74,0.15); color: var(--danger); border: 1px solid rgba(226,75,74,0.3); }
+    .sidebar-btn.danger:hover { background: rgba(226,75,74,0.25); }
+    .sidebar-btn.secondary { background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border); }
+    .sidebar-btn.secondary:hover { color: var(--text); border-color: var(--accent); }
+
+    /* tile size slider */
+    .tile-slider { width: 100%; accent-color: var(--accent); margin: 8px 0; }
+    .tile-slider-row { display: flex; align-items: center; gap: 10px; }
+    .tile-slider-val {
+      font-family: 'Be Vietnam Pro', monospace; font-size: 14px;
+      font-weight: 700; color: var(--gold-dark); min-width: 40px; text-align: right;
+    }
+
+    /* grid overlay on the main canvas showing tile coordinates */
+    .grid-coord-toggle {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--text-muted); cursor: pointer; margin-top: 8px;
+      user-select: none;
+    }
+    .grid-coord-toggle input[type="checkbox"] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; }
+    .grid-coord-toggle label { cursor: pointer; font-weight: 700; }
+
+    /* tool selector */
+    .tool-row { display: flex; gap: 6px; }
+    .tool-btn {
+      flex: 1; padding: 9px 6px; border-radius: 8px;
+      border: 2px solid var(--border); background: var(--bg3);
+      color: var(--text-muted); font-size: 18px; cursor: pointer;
+      transition: all 0.2s; text-align: center; line-height: 1;
+    }
+    .tool-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(211,47,47,0.08); }
+    .tool-btn.erase.active { border-color: var(--danger); color: var(--danger); background: rgba(226,75,74,0.1); }
+    .tool-label { font-size: 10px; font-weight: 700; display: block; margin-top: 3px; color: inherit; }
+
+    /* info panel */
+    .info-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; padding: 4px 0;
+    }
+    .info-key { color: var(--text-muted); }
+    .info-val { font-weight: 700; font-family: 'Be Vietnam Pro', monospace; color: var(--accent2); }
+
+    /* spawn point indicator */
+    .spawn-legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .spawn-dot { width: 12px; height: 12px; border-radius: 50%; background: #2e7d32; flex-shrink: 0; }
+    .wall-legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .wall-dot { width: 12px; height: 12px; border-radius: 3px; background: var(--wall-color); border: 1px solid var(--wall-border); flex-shrink: 0; }
+    .npc-legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .npc-dot { width: 12px; height: 12px; border-radius: 3px; background: rgba(255, 180, 60, 0.75); border: 1px solid rgba(255, 200, 100, 0.9); flex-shrink: 0; }
+
+    /* ── CANVAS AREA ── */
+    .canvas-area {
+      flex: 1; position: relative; overflow: hidden;
+      background: repeating-conic-gradient(#dcdcdc 0% 25%, #d2d2d2 0% 50%) 0 0 / 20px 20px;
+    }
+    #canvas-viewport {
+      position: absolute; transform-origin: top left;
+      cursor: crosshair;
+    }
+    /* The layered canvas approach */
+    #canvas-viewport canvas { position: absolute; top: 0; left: 0; }
+    #canvas-map { z-index: 1; }   /* map image */
+    #canvas-grid { z-index: 2; }  /* grid lines */
+    #canvas-walls { z-index: 3; } /* walls */
+    #canvas-overlay { z-index: 4; cursor: crosshair; } /* interaction */
+
+    /* ── STEP 1 PANEL — full-screen split layout ── */
+    #step1-panel {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: row;
+      background: var(--bg);
+    }
+
+    /* Left column: form controls */
+    .setup-form-col {
+      width: 300px; flex-shrink: 0;
+      background: var(--bg2); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto; padding: 24px 18px;
+    }
+    .setup-form-col h2 {
+      font-size: 18px; font-weight: 900; margin-bottom: 4px; color: var(--text);
+    }
+    .setup-form-col h2 span { color: var(--gold); }
+    .setup-form-col > p { color: var(--text-muted); font-size: 12px; margin-bottom: 18px; line-height: 1.5; }
+
+    .setup-load-btn {
+      width: 100%; padding: 10px; border-radius: 8px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text-muted); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 14px;
+      transition: all 0.2s;
+    }
+    .setup-load-btn:hover { border-color: var(--accent); color: var(--text); }
+    .tile-setup-section { margin-bottom: 16px; }
+
+    .next-btn {
+      width: 100%; padding: 14px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      border: none; color: #fff; font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 15px; font-weight: 900; cursor: pointer; transition: opacity 0.2s;
+      margin-top: 16px;
+    }
+    .next-btn:hover { opacity: 0.9; }
+    .next-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Right column: interactive preview with grid */
+    .setup-preview-col {
+      flex: 1; position: relative; overflow: hidden;
+      background: repeating-conic-gradient(#dcdcdc 0% 25%, #d2d2d2 0% 50%) 0 0 / 20px 20px;
+    }
+    #setup-viewport {
+      position: absolute; transform-origin: top left;
+      cursor: grab;
+    }
+    #setup-viewport:active { cursor: grabbing; }
+    #setup-canvas-map  { position: absolute; top: 0; left: 0; z-index: 1; image-rendering: pixelated; display: block; }
+    #setup-canvas-grid { position: absolute; top: 0; left: 0; z-index: 2; pointer-events: none; display: block; }
+
+    #setup-placeholder {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; color: var(--text-muted); pointer-events: none;
+    }
+    #setup-placeholder span { font-size: 52px; }
+    #setup-placeholder p { font-size: 14px; font-weight: 700; }
+
+    .setup-preview-hud {
+      position: absolute; top: 10px; left: 10px; z-index: 10;
+      display: flex; flex-direction: column; gap: 6px; pointer-events: none;
+    }
+    .setup-hud-pill {
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      border-radius: 8px; padding: 5px 12px;
+      font-size: 11px; font-family: 'Be Vietnam Pro', monospace; color: var(--accent2);
+      font-weight: 700; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .setup-hud-pill.gold { color: var(--gold-dark); border-color: rgba(255,179,0,0.35); }
+    .setup-zoom-hint {
+      position: absolute; bottom: 10px; right: 10px; z-index: 10;
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      border-radius: 8px; padding: 5px 12px;
+      font-size: 11px; color: var(--text-muted); pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .setup-img-info { display: none; } /* kept for compat, unused */
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 11px 22px; font-size: 14px; font-weight: 700;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 9999; white-space: nowrap;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    }
+    #toast.show { opacity: 1; }
+    #toast.success { border-color: var(--success); color: var(--success); }
+    #toast.error { border-color: var(--danger); color: var(--danger); }
+    #toast.info { border-color: var(--accent); color: var(--accent); }
+
+    /* ── PUBLISH MODAL ── */
+    #publish-modal {
+      display: none; position: fixed; inset: 0; z-index: 900;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    #publish-modal.open { display: flex; }
+    .publish-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 32px; width: 400px; max-width: 95vw;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+    }
+    .publish-card h2 { font-family: 'Baloo 2', cursive; font-size: 20px; font-weight: 800; margin-bottom: 6px; color: var(--red); }
+    .publish-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .publish-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .pub-cancel { flex: 1; padding: 11px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .pub-confirm { flex: 2; padding: 11px; border-radius: 8px; border: none; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #1a1200; font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 900; cursor: pointer; transition: opacity 0.2s; }
+    .pub-confirm:hover { opacity: 0.85; }
+
+    /* zoom hint */
+    .zoom-hint {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 12px; font-size: 11px; color: var(--text-muted);
+      pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .zoom-val { font-family: 'Be Vietnam Pro', monospace; color: var(--accent2); }
+
+    /* grid-size warning */
+    .grid-warning { font-size: 12px; color: var(--gold-dark); margin-top: 6px; display: none; }
+
+    /* ── MY MAPS MODAL ── */
+    #my-maps-modal {
+      display: none; position: fixed; inset: 0; z-index: 900;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    #my-maps-modal.open { display: flex; }
+    .my-maps-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 26px 28px; width: 560px; max-width: 95vw;
+      max-height: 80vh; display: flex; flex-direction: column;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+    }
+    .my-maps-card h2 { font-family: 'Baloo 2', cursive; font-size: 19px; font-weight: 800; margin-bottom: 4px; color: var(--red); }
+    .my-maps-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+    .my-maps-list { overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; }
+    .my-map-row {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 12px;
+    }
+    .my-map-thumb {
+      width: 48px; height: 48px; border-radius: 8px; object-fit: cover;
+      background: var(--bg); flex-shrink: 0;
+    }
+    .my-map-info { flex: 1; min-width: 0; }
+    .my-map-name { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .my-map-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .my-map-status {
+      display: inline-block; font-size: 10px; font-weight: 800;
+      padding: 2px 8px; border-radius: 20px; margin-left: 6px;
+    }
+    .my-map-status.approved { background: rgba(63,185,80,0.15); color: var(--success); }
+    .my-map-status.pending { background: rgba(255,193,7,0.15); color: #ffc107; }
+    .my-map-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .my-map-edit-btn, .my-map-delete-btn {
+      padding: 6px 12px; border-radius: 8px; border: none;
+      font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; font-weight: 800; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .my-map-edit-btn { background: var(--accent); color: #fff; }
+    .my-map-delete-btn { background: rgba(226,75,74,0.15); color: var(--danger); }
+    .my-map-edit-btn:hover, .my-map-delete-btn:hover { opacity: 0.8; }
+    .my-maps-empty { text-align: center; color: var(--text-muted); padding: 30px; font-size: 13px; }
+    .my-maps-close-btn {
+      margin-top: 18px; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+
+    /* ── NPC EDIT MODAL ── */
+    #npc-modal {
+      display: none; position: fixed; inset: 0; z-index: 900;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    #npc-modal.open { display: flex; }
+    .npc-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px; width: 540px; max-width: 95vw;
+      max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+    }
+    .npc-card h2 { font-family: 'Baloo 2', cursive; font-size: 18px; font-weight: 800; margin-bottom: 4px; color: var(--red); }
+    .npc-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 18px; }
+    .npc-dialogue-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+    .npc-dialogue-row { display: flex; gap: 6px; align-items: flex-start; }
+    .npc-dialogue-row textarea {
+      flex: 1; padding: 8px 10px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 13px; outline: none; resize: vertical; min-height: 38px;
+      transition: border 0.2s;
+    }
+    .npc-dialogue-row textarea:focus { border-color: var(--accent); }
+    .npc-line-remove {
+      width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
+      background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.3);
+      color: var(--danger); cursor: pointer; font-size: 14px;
+    }
+    .npc-line-remove:hover { background: rgba(226,75,74,0.25); }
+    .npc-add-line-btn {
+      width: 100%; padding: 8px; border-radius: 8px;
+      background: var(--bg3); border: 1px dashed var(--border);
+      color: var(--text-muted); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 18px;
+      transition: all 0.2s;
+    }
+    .npc-add-line-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .npc-actions { display: flex; gap: 10px; margin-top: 4px; }
+    .npc-cancel { flex: 1; padding: 11px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .npc-delete { flex: 1; padding: 11px; border-radius: 8px; border: 1px solid rgba(226,75,74,0.3); background: rgba(226,75,74,0.1); color: var(--danger); font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .npc-delete:hover { background: rgba(226,75,74,0.2); }
+    .npc-save { flex: 2; padding: 11px; border-radius: 8px; border: none; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #1a1200; font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 900; cursor: pointer; transition: opacity 0.2s; }
+    .npc-save:hover { opacity: 0.85; }
+    /* ── QUIZ + TAGS ── */
+    .quiz-row { border:1px solid var(--border); background:var(--bg3); border-radius:12px; padding:10px; margin-bottom:10px; }
+    .quiz-row-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:12px; color:var(--text-muted); }
+    .quiz-row textarea, .quiz-row input[type=text], .quiz-a, .quiz-explain { width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-family:'Be Vietnam Pro',sans-serif; font-size:13px; outline:none; }
+    .quiz-row textarea { resize:vertical; min-height:48px; margin-bottom:6px; }
+    .quiz-opt { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+    .quiz-opt input[type=radio] { accent-color:#2e7d32; width:16px; height:16px; flex-shrink:0; cursor:pointer; }
+    .quiz-opt span { font-weight:900; color:var(--accent); width:14px; }
+    .quiz-explain { margin-top:2px; }
+    .quiz-hint { font-size:11px; color:var(--text-muted); margin:-2px 0 8px; }
+    .chip-input { display:flex; flex-wrap:wrap; gap:6px; padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:var(--bg3); }
+    .chip-input input { flex:1; min-width:120px; border:none; background:transparent; outline:none; font-family:'Be Vietnam Pro',sans-serif; font-size:13px; color:var(--text); padding:3px; }
+    .chip { display:inline-flex; align-items:center; gap:5px; background:rgba(211,47,47,.12); color:var(--accent); font-size:12px; font-weight:700; padding:3px 8px; border-radius:999px; }
+    .chip b { cursor:pointer; font-size:10px; opacity:.7; }
+    .chip-hint { font-size:11px; color:var(--text-muted); margin:6px 0 12px; }
+    .publish-card { max-height:92vh; overflow-y:auto; }
+  </style>
+</head>
+<body>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div style="font-size:44px;margin-bottom:8px">🏮</div>
+    <h1>VIETVERSE</h1>
+    <p>Đăng nhập để tạo map</p>
+    <input class="auth-input" id="auth-email" type="email" placeholder="Email">
+    <input class="auth-input" id="auth-password" type="password" placeholder="Mật khẩu">
+    <button class="auth-btn" id="auth-action-btn">Đăng nhập</button>
+    <div class="auth-divider">hoặc</div>
+    <button class="auth-btn google" id="google-btn">🔵 Tiếp tục với Google</button>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">✏️ TẠO MAP</div>
+    <div class="nav-center">
+      <button class="step-tab active" id="tab-step1">① Thiết lập</button>
+      <button class="step-tab" id="tab-step2" disabled>② Vẽ Map</button>
+    </div>
+    <div class="nav-right">
+      <button class="nav-back-btn" id="my-maps-btn">📂 Map của tôi</button>
+      <button class="nav-back-btn" onclick="window.location.href='minigame.html'">← Trang chủ</button>
+      <button class="publish-btn" id="publish-btn">🚀 Đăng Map</button>
+    </div>
+  </nav>
+
+  <!-- BODY -->
+  <div class="editor-body">
+
+    <!-- SIDEBAR (hidden in step1) -->
+    <div class="sidebar" id="sidebar" style="display:none">
+
+      <div class="sidebar-section">
+        <h4>🔧 Công cụ</h4>
+        <div class="tool-row">
+          <button class="tool-btn active" id="tool-wall" title="Vẽ tường">
+            🧱<span class="tool-label">Tường</span>
+          </button>
+          <button class="tool-btn erase" id="tool-erase" title="Xóa tường">
+            🧹<span class="tool-label">Xóa</span>
+          </button>
+          <button class="tool-btn" id="tool-spawn" title="Đặt điểm spawn">
+            🟢<span class="tool-label">Spawn</span>
+          </button>
+          <button class="tool-btn" id="tool-npc" title="Đặt NPC">
+            🧓<span class="tool-label">NPC</span>
+          </button>
+        </div>
+        <div class="wall-legend"><div class="wall-dot"></div>Ô tường (không thể đi qua)</div>
+        <div class="spawn-legend"><div class="spawn-dot"></div>Điểm xuất hiện của người chơi</div>
+        <div class="npc-legend"><div class="npc-dot"></div>NPC — click vào ô đã đặt để chỉnh thoại</div>
+      </div>
+
+      <div class="sidebar-section">
+        <h4>🔍 Màn hình</h4>
+        <div class="info-row">
+          <span class="info-key">Zoom</span>
+          <span class="info-val" id="info-zoom">100%</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Con trỏ</span>
+          <span class="info-val" id="info-cursor">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Tường đã vẽ</span>
+          <span class="info-val" id="info-walls">0</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Điểm spawn</span>
+          <span class="info-val" id="info-spawns">0</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">NPC</span>
+          <span class="info-val" id="info-npcs">0</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="sidebar-btn secondary" style="margin-top:0;flex:1;padding:8px" id="zoom-in-btn">＋</button>
+          <button class="sidebar-btn secondary" style="margin-top:0;flex:1;padding:8px" id="zoom-out-btn">－</button>
+          <button class="sidebar-btn secondary" style="margin-top:0;flex:1;padding:8px" id="zoom-reset-btn">⌂</button>
+        </div>
+        <!-- Hiển thị toạ độ lưới trên bản đồ -->
+        <div class="grid-coord-toggle" style="margin-top:10px">
+          <input type="checkbox" id="show-coords-toggle">
+          <label for="show-coords-toggle">📍 Hiện số toạ độ ô lưới</label>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h4>📐 Thông tin Map</h4>
+        <div class="info-row"><span class="info-key">Kích thước ảnh</span><span class="info-val" id="info-imgsize">—</span></div>
+        <div class="info-row"><span class="info-key">Kích thước ô</span><span class="info-val" id="info-tilesize">—</span></div>
+        <div class="info-row"><span class="info-key">Lưới (đơn vị)</span><span class="info-val" id="info-grid">—</span></div>
+      </div>
+
+      <div class="sidebar-section">
+        <h4>🗑️ Xóa</h4>
+        <button class="sidebar-btn danger" id="clear-walls-btn">Xóa toàn bộ tường</button>
+        <button class="sidebar-btn danger" style="margin-top:8px" id="clear-spawns-btn">Xóa điểm spawn</button>
+        <button class="sidebar-btn danger" style="margin-top:8px" id="clear-npcs-btn">Xóa toàn bộ NPC</button>
+      </div>
+
+    </div>
+
+    <!-- CANVAS AREA -->
+    <div class="canvas-area" id="canvas-area">
+
+      <!-- STEP 1: setup panel (shown until confirmed) -->
+      <div id="step1-panel">
+
+        <!-- Left: form controls -->
+        <div class="setup-form-col">
+          <h2>① Thiết lập <span>Map</span></h2>
+          <p>Nhập link ảnh, kéo thanh trượt để chọn kích thước ô lưới, rồi quan sát lưới bên phải để căn chỉnh chính xác.</p>
+
+          <label class="form-label">🔗 Link ảnh bản đồ (URL công khai)</label>
+          <input class="form-input" id="img-url-input" type="url" placeholder="https://example.com/map.png" style="margin-bottom:10px">
+          <button class="setup-load-btn" id="load-img-btn">📥 Tải ảnh</button>
+
+          <div class="tile-setup-section">
+            <label class="form-label">📏 Kích thước 1 ô lưới</label>
+            <div class="tile-slider-row">
+              <input type="range" class="tile-slider" id="tile-slider" min="4" max="128" value="16" step="1">
+              <span class="tile-slider-val"><span id="tile-val">16</span>px</span>
+            </div>
+            <div class="info-row" style="margin-top:6px">
+              <span class="info-key">→ Lưới</span>
+              <span class="info-val" id="grid-calc">? × ? ô</span>
+            </div>
+            <div class="grid-warning" id="grid-warning">⚠️ Lưới quá lớn, có thể chậm</div>
+          </div>
+
+          <label class="form-label" style="margin-bottom:6px">🏷️ Tên map</label>
+          <input class="form-input" id="map-name-input" type="text" maxlength="30" placeholder="Tên map của bạn..." style="margin-bottom:0">
+
+          <button class="next-btn" id="next-btn" disabled>➡️ Tiếp theo — Vẽ tường</button>
+        </div>
+
+        <!-- Right: zoomable/pannable map preview with live grid overlay -->
+        <div class="setup-preview-col" id="setup-preview-col">
+
+          <!-- Placeholder before image loads -->
+          <div id="setup-placeholder">
+            <span>🖼️</span>
+            <p>Ảnh bản đồ sẽ hiện ở đây</p>
+            <p style="font-size:12px;margin-top:-6px">Nhập URL và nhấn "Tải ảnh"</p>
+          </div>
+
+          <!-- Canvas viewport: map image + grid overlay -->
+          <div id="setup-viewport" style="display:none">
+            <canvas id="setup-canvas-map"></canvas>
+            <canvas id="setup-canvas-grid"></canvas>
+          </div>
+
+          <!-- HUD info overlays -->
+          <div class="setup-preview-hud" id="setup-hud" style="display:none">
+            <div class="setup-hud-pill" id="hud-imgsize">—</div>
+            <div class="setup-hud-pill gold" id="hud-tilesize">ô: 16px</div>
+            <div class="setup-hud-pill" id="hud-gridsize">—</div>
+            <div class="setup-hud-pill" id="hud-zoom">zoom: 100%</div>
+          </div>
+
+          <div class="setup-zoom-hint" id="setup-zoom-hint" style="display:none">
+            Scroll để zoom &nbsp;·&nbsp; Kéo chuột để pan
+          </div>
+        </div>
+      </div>
+
+      <!-- CANVAS LAYERS (hidden in step1) -->
+      <div id="canvas-viewport">
+        <canvas id="canvas-map"></canvas>
+        <canvas id="canvas-grid"></canvas>
+        <canvas id="canvas-walls"></canvas>
+        <canvas id="canvas-coords" id="canvas-coords" style="z-index:3;pointer-events:none;opacity:0.85;"></canvas>
+        <canvas id="canvas-overlay"></canvas>
+      </div>
+
+      <div class="zoom-hint" id="zoom-hint" style="display:none">
+        Zoom: <span class="zoom-val" id="zoom-display">100%</span> &nbsp;|&nbsp; Scroll để zoom &nbsp;|&nbsp; Chuột giữa để kéo
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div id="publish-modal">
+  <div class="publish-card">
+    <h2>🚀 Đăng Map Lên Hệ Thống</h2>
+    <p>Map của bạn sẽ xuất hiện ở trang chủ để mọi người có thể vào chơi.</p>
+    <label class="form-label">🏷️ Tên map</label>
+    <input class="form-input" id="pub-map-name" style="margin-bottom:12px">
+    <label class="form-label">🏷️ Tags nội dung (gõ rồi nhấn Enter)</label>
+    <div class="chip-input" id="pub-tags"><input placeholder="VD: lịch sử, lễ hội, ẩm thực..." list="vv-tag-suggest"></div>
+    <label class="form-label" style="margin-top:10px">📍 Tỉnh / thành liên quan</label>
+    <div class="chip-input" id="pub-provinces"><input placeholder="Chọn từ danh sách tỉnh..." list="vv-prov-suggest"></div>
+    <datalist id="vv-prov-suggest"></datalist>
+    <div class="chip-hint">Dùng để gợi ý sách & địa danh cùng chủ đề ở trang Thư viện / Khám phá (tối đa 8 mỗi loại).</div>
+    <datalist id="vv-tag-suggest"><option value="Lịch sử"><option value="Văn hóa"><option value="Lễ hội"><option value="Ẩm thực"><option value="Làng nghề"><option value="Di sản"><option value="Kiến trúc"><option value="Truyền thuyết"><option value="Âm nhạc dân gian"><option value="Danh nhân"><option value="Phong tục"></datalist>
+    <div class="info-row"><span class="info-key">Kích thước lưới</span><span class="info-val" id="pub-grid-info">—</span></div>
+    <div class="info-row" style="margin-top:4px"><span class="info-key">Số ô tường</span><span class="info-val" id="pub-wall-count">0</span></div>
+    <div class="info-row" style="margin-top:4px"><span class="info-key">Điểm spawn</span><span class="info-val" id="pub-spawn-count">0</span></div>
+    <div class="info-row" style="margin-top:4px"><span class="info-key">NPC</span><span class="info-val" id="pub-npc-count">0</span></div>
+    <div class="info-row" style="margin-top:4px"><span class="info-key">Câu hỏi quiz</span><span class="info-val" id="pub-quiz-count">0</span></div>
+    <div class="publish-actions">
+      <button class="pub-cancel" id="pub-cancel">Hủy</button>
+      <button class="pub-confirm" id="pub-confirm">✅ Đăng ngay</button>
+    </div>
+  </div>
+</div>
+
+<!-- MY MAPS MODAL -->
+<div id="my-maps-modal">
+  <div class="my-maps-card">
+    <h2>📂 Map của tôi</h2>
+    <p>Sửa lại map đã đăng (kể cả map đã duyệt hoặc đang chờ duyệt), hoặc xóa map.</p>
+    <div class="my-maps-list" id="my-maps-list">
+      <div class="my-maps-empty">Đang tải...</div>
+    </div>
+    <button class="my-maps-close-btn" id="my-maps-close-btn">Đóng</button>
+  </div>
+</div>
+
+<!-- NPC EDIT MODAL -->
+<div id="npc-modal">
+  <div class="npc-card">
+    <h2>🧓 Chỉnh sửa NPC</h2>
+    <p>Đặt tên và các dòng hội thoại sẽ hiện khi người chơi đến gần ô này.</p>
+    <label class="form-label">🏷️ Tên NPC</label>
+    <input class="form-input" id="npc-name-input" maxlength="20" placeholder="VD: LÃO NHÂN" style="margin-bottom:14px">
+    <label class="form-label" style="margin-bottom:8px">💬 Các dòng hội thoại</label>
+    <div class="npc-dialogue-list" id="npc-dialogue-list"></div>
+    <button class="npc-add-line-btn" id="npc-add-line-btn">➕ Thêm dòng thoại</button>
+    <label class="form-label" style="margin:16px 0 4px">🎓 Câu hỏi trắc nghiệm (tùy chọn)</label>
+    <div class="quiz-hint">Người chơi trả lời đúng lần đầu → +10 điểm, +20 EXP. Chọn nút tròn ở đáp án đúng.</div>
+    <div id="npc-quiz-list"></div>
+    <button class="npc-add-line-btn" id="npc-add-q-btn">➕ Thêm câu hỏi</button>
+    <div class="npc-actions">
+      <button class="npc-cancel" id="npc-cancel">Hủy</button>
+      <button class="npc-delete" id="npc-delete">🗑️ Xóa NPC</button>
+      <button class="npc-save" id="npc-save">💾 Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="vv-learn.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+  authDomain: "vvss-b7a49.firebaseapp.com",
+  databaseURL: "https://vvss-b7a49-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "vvss-b7a49",
+  storageBucket: "vvss-b7a49.firebasestorage.app",
+  messagingSenderId: "562837285603",
+  appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6"
+};
+firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+let currentUser = null;
+let playerData = null;
+
+// Map config
+let mapImageUrl = '';
+let mapImageWidth = 0;
+let mapImageHeight = 0;
+let tileSize = 16;
+let gridW = 0, gridH = 0;
+let mapName = '';
+
+// Editor state
+let currentStep = 1;
+let editingMapId = null; // null = creating a new map, otherwise the Firebase key of the map being edited
+let currentTool = 'wall';   // 'wall' | 'erase' | 'spawn'
+let walls = {};              // "x,y" -> true
+let spawnPoints = [];        // [{x,y}, ...]
+let npcs = [];                // [{x,y,name,dialogue:[...]}, ...]
+let editingNpcIndex = -1;     // index in npcs[] currently being edited, -1 = new
+
+// Canvas + zoom/pan
+let zoom = 1;
+let panX = 0, panY = 0;
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
+let isDrawing = false;
+let lastDrawCell = null;
+
+// Cached image element
+let mapImg = null;
+
+// Canvas elements
+let cMap, cGrid, cWalls, cCoords, cOverlay;
+let ctxMap, ctxGrid, ctxWalls, ctxCoords, ctxOver;
+let showCoords = false;
+
+// ──────────────────────────────────────────────
+// TOAST
+// ──────────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(t._to);
+  t._to = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+// ──────────────────────────────────────────────
+// AUTH
+// ──────────────────────────────────────────────
+document.getElementById('auth-action-btn').addEventListener('click', async () => {
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Nhập email và mật khẩu.'; return; }
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, pass);
+  } catch(e) {
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(email, pass);
+    } catch(e2) {
+      errEl.textContent = e2.message;
+    }
+  }
+});
+document.getElementById('google-btn').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try { await firebase.auth().signInWithPopup(provider); }
+  catch(e) { document.getElementById('auth-error').textContent = e.message; }
+});
+
+firebase.auth().onAuthStateChanged(async (user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('auth-overlay').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    // load player data for name
+    const snap = await firebase.database().ref(`players/${user.uid}`).once('value');
+    playerData = snap.val();
+  } else {
+    document.getElementById('auth-overlay').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ──────────────────────────────────────────────
+// STEP 1 — SETUP (interactive map preview)
+// ──────────────────────────────────────────────
+const imgUrlInput   = document.getElementById('img-url-input');
+const loadImgBtn    = document.getElementById('load-img-btn');
+const tileSlider    = document.getElementById('tile-slider');
+const tileValEl     = document.getElementById('tile-val');
+const gridCalcEl    = document.getElementById('grid-calc');
+const gridWarning   = document.getElementById('grid-warning');
+const nextBtn       = document.getElementById('next-btn');
+const mapNameInput  = document.getElementById('map-name-input');
+
+// Step-1 preview state
+let previewZoom = 1;
+let previewPanX = 0, previewPanY = 0;
+let previewIsPanning = false;
+let previewPanStart = { x: 0, y: 0 };
+let setupCMap = null, setupCGrid = null;
+let setupCtxMap = null, setupCtxGrid = null;
+
+function initSetupCanvases() {
+  setupCMap  = document.getElementById('setup-canvas-map');
+  setupCGrid = document.getElementById('setup-canvas-grid');
+  setupCtxMap  = setupCMap.getContext('2d');
+  setupCtxGrid = setupCGrid.getContext('2d');
+
+  setupCMap.width  = mapImageWidth;
+  setupCMap.height = mapImageHeight;
+  setupCGrid.width  = mapImageWidth;
+  setupCGrid.height = mapImageHeight;
+  setupCMap.style.width   = mapImageWidth + 'px';
+  setupCMap.style.height  = mapImageHeight + 'px';
+  setupCGrid.style.width  = mapImageWidth + 'px';
+  setupCGrid.style.height = mapImageHeight + 'px';
+
+  document.getElementById('setup-viewport').style.width  = mapImageWidth + 'px';
+  document.getElementById('setup-viewport').style.height = mapImageHeight + 'px';
+
+  // Draw the image
+  setupCtxMap.imageSmoothingEnabled = false;
+  setupCtxMap.drawImage(mapImg, 0, 0, mapImageWidth, mapImageHeight);
+
+  drawSetupGrid();
+
+  // Pan/zoom events on the preview column
+  const col = document.getElementById('setup-preview-col');
+  col.addEventListener('wheel', onSetupWheel, { passive: false });
+  col.addEventListener('mousedown', onSetupMouseDown);
+  window.addEventListener('mousemove', onSetupMouseMove);
+  window.addEventListener('mouseup', onSetupMouseUp);
+
+  // Fit to view initially
+  fitSetupToView();
+}
+
+function fitSetupToView() {
+  const col = document.getElementById('setup-preview-col');
+  const aW = col.clientWidth  - 40;
+  const aH = col.clientHeight - 40;
+  const scaleX = aW / mapImageWidth;
+  const scaleY = aH / mapImageHeight;
+  previewZoom = Math.min(scaleX, scaleY, 8);
+  previewPanX = (col.clientWidth  - mapImageWidth  * previewZoom) / 2;
+  previewPanY = (col.clientHeight - mapImageHeight * previewZoom) / 2;
+  applySetupViewport();
+}
+
+function applySetupViewport() {
+  const vp = document.getElementById('setup-viewport');
+  vp.style.transform = `translate(${previewPanX}px, ${previewPanY}px) scale(${previewZoom})`;
+  document.getElementById('hud-zoom').textContent = `zoom: ${Math.round(previewZoom * 100)}%`;
+}
+
+function drawSetupGrid() {
+  if (!setupCtxGrid) return;
+  const ts = parseInt(tileSlider.value);
+  const W = mapImageWidth, H = mapImageHeight;
+  setupCtxGrid.clearRect(0, 0, W, H);
+
+  // Draw grid lines
+  setupCtxGrid.strokeStyle = 'rgba(255, 230, 60, 0.55)';
+  setupCtxGrid.lineWidth = 0.75;
+  for (let x = 0; x <= W; x += ts) {
+    setupCtxGrid.beginPath(); setupCtxGrid.moveTo(x, 0); setupCtxGrid.lineTo(x, H); setupCtxGrid.stroke();
+  }
+  for (let y = 0; y <= H; y += ts) {
+    setupCtxGrid.beginPath(); setupCtxGrid.moveTo(0, y); setupCtxGrid.lineTo(W, y); setupCtxGrid.stroke();
+  }
+
+  // Shade alternating cells subtly so the grid feels solid
+  for (let gy = 0; gy < Math.ceil(H / ts); gy++) {
+    for (let gx = 0; gx < Math.ceil(W / ts); gx++) {
+      if ((gx + gy) % 2 === 0) {
+        setupCtxGrid.fillStyle = 'rgba(255, 230, 60, 0.04)';
+        setupCtxGrid.fillRect(gx * ts, gy * ts, ts, ts);
+      }
+    }
+  }
+
+  // Label coordinates at each cell (shown when tile is big enough)
+  const labelThreshold = 8; // px on screen (accounts for zoom)
+  if (ts >= labelThreshold) {
+    const fontSize = Math.max(3, Math.min(ts * 0.28, 9));
+    setupCtxGrid.font = `bold ${fontSize}px "Be Vietnam Pro", monospace`;
+    setupCtxGrid.textAlign = 'left';
+    setupCtxGrid.textBaseline = 'top';
+    const gW = Math.ceil(W / ts);
+    const gH = Math.ceil(H / ts);
+    for (let gy = 0; gy < gH; gy++) {
+      for (let gx = 0; gx < gW; gx++) {
+        const px = gx * ts + 1;
+        const py = gy * ts + 1;
+        setupCtxGrid.fillStyle = 'rgba(0,0,0,0.65)';
+        setupCtxGrid.fillText(`${gx},${gy}`, px + 0.5, py + 0.5);
+        setupCtxGrid.fillStyle = 'rgba(255,230,100,0.85)';
+        setupCtxGrid.fillText(`${gx},${gy}`, px, py);
+      }
+    }
+  }
+}
+
+function onSetupWheel(e) {
+  e.preventDefault();
+  const col = document.getElementById('setup-preview-col');
+  const rect = col.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+  const delta = e.deltaY > 0 ? 0.85 : 1.18;
+  const newZoom = Math.min(Math.max(previewZoom * delta, 0.1), 32);
+  previewPanX = mouseX - (mouseX - previewPanX) * (newZoom / previewZoom);
+  previewPanY = mouseY - (mouseY - previewPanY) * (newZoom / previewZoom);
+  previewZoom = newZoom;
+  applySetupViewport();
+}
+
+function onSetupMouseDown(e) {
+  if (e.button !== 0 && e.button !== 1) return;
+  previewIsPanning = true;
+  previewPanStart = { x: e.clientX - previewPanX, y: e.clientY - previewPanY };
+  document.getElementById('setup-preview-col').style.cursor = 'grabbing';
+}
+function onSetupMouseMove(e) {
+  if (!previewIsPanning) return;
+  previewPanX = e.clientX - previewPanStart.x;
+  previewPanY = e.clientY - previewPanStart.y;
+  applySetupViewport();
+}
+function onSetupMouseUp() {
+  if (previewIsPanning) {
+    previewIsPanning = false;
+    const col = document.getElementById('setup-preview-col');
+    if (col) col.style.cursor = 'grab';
+  }
+}
+
+function updateGridCalc() {
+  const ts = parseInt(tileSlider.value);
+  tileSize = ts;
+  tileValEl.textContent = ts;
+
+  // Redraw grid on the preview if image is loaded
+  drawSetupGrid();
+
+  if (mapImageWidth > 0) {
+    gridW = Math.floor(mapImageWidth / ts);
+    gridH = Math.floor(mapImageHeight / ts);
+    gridCalcEl.textContent = `${gridW} × ${gridH} ô`;
+    const total = gridW * gridH;
+    gridWarning.style.display = total > 10000 ? 'block' : 'none';
+    document.getElementById('hud-tilesize').textContent = `ô: ${ts}px`;
+    document.getElementById('hud-gridsize').textContent = `${gridW} × ${gridH} ô`;
+    checkCanProceed();
+  } else {
+    gridCalcEl.textContent = '? × ? ô';
+  }
+}
+
+function checkCanProceed() {
+  const hasImg = mapImageWidth > 0;
+  const hasName = mapNameInput.value.trim().length > 0;
+  nextBtn.disabled = !(hasImg && hasName);
+}
+
+tileSlider.addEventListener('input', updateGridCalc);
+mapNameInput.addEventListener('input', checkCanProceed);
+
+loadImgBtn.addEventListener('click', () => {
+  const url = imgUrlInput.value.trim();
+  if (!url) { showToast('Nhập URL ảnh trước!', 'error'); return; }
+  loadImgBtn.textContent = '⏳ Đang tải...';
+  loadImgBtn.disabled = true;
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    mapImageUrl = url;
+    mapImageWidth = img.naturalWidth;
+    mapImageHeight = img.naturalHeight;
+    mapImg = img;
+
+    loadImgBtn.textContent = '✅ Đã tải';
+    loadImgBtn.disabled = false;
+
+    // Show the preview canvas
+    document.getElementById('setup-placeholder').style.display = 'none';
+    document.getElementById('setup-viewport').style.display = 'block';
+    document.getElementById('setup-hud').style.display = 'flex';
+    document.getElementById('setup-zoom-hint').style.display = 'block';
+
+    document.getElementById('hud-imgsize').textContent = `${mapImageWidth} × ${mapImageHeight} px`;
+
+    initSetupCanvases();
+    updateGridCalc();
+    showToast('Ảnh đã tải — kéo thanh trượt để điều chỉnh lưới!', 'success');
+  };
+  img.onerror = () => {
+    loadImgBtn.textContent = '📥 Tải ảnh';
+    loadImgBtn.disabled = false;
+    showToast('Không thể tải ảnh. Kiểm tra URL hoặc CORS!', 'error');
+  };
+  img.src = url;
+});
+
+nextBtn.addEventListener('click', () => {
+  mapName = mapNameInput.value.trim();
+  tileSize = parseInt(tileSlider.value);
+  gridW = Math.floor(mapImageWidth / tileSize);
+  gridH = Math.floor(mapImageHeight / tileSize);
+  enterStep2();
+});
+
+// ──────────────────────────────────────────────
+// STEP 2 — EDITOR
+// ──────────────────────────────────────────────
+function enterStep2() {
+  currentStep = 2;
+
+  // Clean up step-1 preview pan/zoom listeners
+  window.removeEventListener('mousemove', onSetupMouseMove);
+  window.removeEventListener('mouseup', onSetupMouseUp);
+
+  // Switch UI
+  document.getElementById('step1-panel').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'flex';
+  document.getElementById('canvas-viewport').style.display = 'block';
+  document.getElementById('zoom-hint').style.display = 'block';
+  document.getElementById('publish-btn').classList.add('visible');
+
+  document.getElementById('tab-step1').classList.remove('active');
+  document.getElementById('tab-step1').classList.add('done');
+  document.getElementById('tab-step2').classList.add('active');
+  document.getElementById('tab-step2').disabled = false;
+
+  // Update sidebar info
+  document.getElementById('info-imgsize').textContent = `${mapImageWidth}×${mapImageHeight}`;
+  document.getElementById('info-tilesize').textContent = `${tileSize}px`;
+  document.getElementById('info-grid').textContent = `${gridW}×${gridH}`;
+
+  // Init canvases
+  initCanvases();
+  // Fit map to view initially
+  fitToView();
+  redrawAll();
+}
+
+function initCanvases() {
+  cMap     = document.getElementById('canvas-map');
+  cGrid    = document.getElementById('canvas-grid');
+  cWalls   = document.getElementById('canvas-walls');
+  cCoords  = document.getElementById('canvas-coords');
+  cOverlay = document.getElementById('canvas-overlay');
+
+  const W = mapImageWidth, H = mapImageHeight;
+  [cMap, cGrid, cWalls, cCoords, cOverlay].forEach(c => {
+    c.width = W; c.height = H;
+    c.style.width = W + 'px'; c.style.height = H + 'px';
+  });
+  // Make sure coords canvas is between walls and overlay in z-index
+  cCoords.style.position = 'absolute';
+  cCoords.style.top = '0';
+  cCoords.style.left = '0';
+  cCoords.style.zIndex = '3';
+  cCoords.style.pointerEvents = 'none';
+
+  document.getElementById('canvas-viewport').style.width = W + 'px';
+  document.getElementById('canvas-viewport').style.height = H + 'px';
+
+  ctxMap    = cMap.getContext('2d');
+  ctxGrid   = cGrid.getContext('2d');
+  ctxWalls  = cWalls.getContext('2d');
+  ctxCoords = cCoords.getContext('2d');
+  ctxOver   = cOverlay.getContext('2d');
+
+  // Draw map image once
+  ctxMap.clearRect(0, 0, W, H);
+  if (mapImg) {
+    ctxMap.imageSmoothingEnabled = false;
+    ctxMap.drawImage(mapImg, 0, 0, W, H);
+  } else {
+    ctxMap.fillStyle = '#252a45';
+    ctxMap.fillRect(0, 0, W, H);
+  }
+
+  // Interaction events
+  cOverlay.addEventListener('mousedown', onMouseDown);
+  cOverlay.addEventListener('mousemove', onMouseMove);
+  cOverlay.addEventListener('mouseup',   onMouseUp);
+  cOverlay.addEventListener('mouseleave', onMouseUp);
+  cOverlay.addEventListener('wheel', onWheel, { passive: false });
+  cOverlay.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Coordinate toggle
+  document.getElementById('show-coords-toggle').addEventListener('change', (e) => {
+    showCoords = e.target.checked;
+    redrawCoords();
+  });
+}
+
+function redrawCoords() {
+  if (!ctxCoords) return;
+  const W = mapImageWidth, H = mapImageHeight;
+  ctxCoords.clearRect(0, 0, W, H);
+  if (!showCoords) return;
+
+  // Determine a readable font size based on tile size
+  const fontSize = Math.max(4, Math.min(tileSize * 0.32, 10));
+  ctxCoords.font = `bold ${fontSize}px "Be Vietnam Pro", monospace`;
+  ctxCoords.textAlign = 'left';
+  ctxCoords.textBaseline = 'top';
+
+  for (let gy = 0; gy < gridH; gy++) {
+    for (let gx = 0; gx < gridW; gx++) {
+      const px = gx * tileSize;
+      const py = gy * tileSize;
+
+      // Only draw coords if tile is large enough to be readable
+      if (tileSize < 10) {
+        // At very small tile sizes, only draw every few tiles
+        if (gx % Math.ceil(12 / tileSize) !== 0 || gy % Math.ceil(12 / tileSize) !== 0) continue;
+      }
+
+      const label = `${gx},${gy}`;
+      // Dark shadow for readability
+      ctxCoords.fillStyle = 'rgba(0,0,0,0.7)';
+      ctxCoords.fillText(label, px + 1.5, py + 1.5);
+      // Bright text
+      ctxCoords.fillStyle = 'rgba(200,220,255,0.9)';
+      ctxCoords.fillText(label, px + 1, py + 1);
+    }
+  }
+}
+
+function fitToView() {
+  const area = document.getElementById('canvas-area');
+  const aW = area.clientWidth - 40;
+  const aH = area.clientHeight - 40;
+  const scaleX = aW / mapImageWidth;
+  const scaleY = aH / mapImageHeight;
+  zoom = Math.min(scaleX, scaleY, 4);
+  panX = (area.clientWidth  - mapImageWidth  * zoom) / 2;
+  panY = (area.clientHeight - mapImageHeight * zoom) / 2;
+  applyViewport();
+}
+
+function applyViewport() {
+  const vp = document.getElementById('canvas-viewport');
+  vp.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+  document.getElementById('info-zoom').textContent = Math.round(zoom * 100) + '%';
+  document.getElementById('zoom-display').textContent = Math.round(zoom * 100) + '%';
+}
+
+// ── REDRAW ──
+function redrawGrid() {
+  const W = mapImageWidth, H = mapImageHeight;
+  ctxGrid.clearRect(0, 0, W, H);
+  ctxGrid.strokeStyle = 'rgba(0,0,0,0.12)';
+  ctxGrid.lineWidth = 0.5;
+  for (let x = 0; x <= gridW; x++) {
+    ctxGrid.beginPath(); ctxGrid.moveTo(x * tileSize, 0); ctxGrid.lineTo(x * tileSize, H); ctxGrid.stroke();
+  }
+  for (let y = 0; y <= gridH; y++) {
+    ctxGrid.beginPath(); ctxGrid.moveTo(0, y * tileSize); ctxGrid.lineTo(W, y * tileSize); ctxGrid.stroke();
+  }
+}
+
+function redrawWalls() {
+  const W = mapImageWidth, H = mapImageHeight;
+  ctxWalls.clearRect(0, 0, W, H);
+
+  // Draw walls
+  ctxWalls.fillStyle = 'rgba(220, 80, 80, 0.65)';
+  ctxWalls.strokeStyle = 'rgba(255, 110, 110, 0.9)';
+  ctxWalls.lineWidth = 0.5;
+  for (const key of Object.keys(walls)) {
+    const [gx, gy] = key.split(',').map(Number);
+    const px = gx * tileSize, py = gy * tileSize;
+    ctxWalls.fillRect(px + 0.5, py + 0.5, tileSize - 1, tileSize - 1);
+    ctxWalls.strokeRect(px + 0.5, py + 0.5, tileSize - 1, tileSize - 1);
+  }
+
+  // Draw spawn points
+  for (const sp of spawnPoints) {
+    const cx = sp.x * tileSize + tileSize / 2;
+    const cy = sp.y * tileSize + tileSize / 2;
+    const r = tileSize * 0.35;
+    ctxWalls.beginPath();
+    ctxWalls.arc(cx, cy, r, 0, Math.PI * 2);
+    ctxWalls.fillStyle = 'rgba(46, 125, 50, 0.75)';
+    ctxWalls.fill();
+    ctxWalls.strokeStyle = '#2e7d32';
+    ctxWalls.lineWidth = 1;
+    ctxWalls.stroke();
+  }
+
+  // Draw NPCs
+  ctxWalls.font = `bold ${Math.min(tileSize * 0.6, 14)}px sans-serif`;
+  ctxWalls.textAlign = 'center';
+  ctxWalls.textBaseline = 'middle';
+  for (const npc of npcs) {
+    const px = npc.x * tileSize, py = npc.y * tileSize;
+    ctxWalls.fillStyle = 'rgba(255, 180, 60, 0.55)';
+    ctxWalls.fillRect(px + 0.5, py + 0.5, tileSize - 1, tileSize - 1);
+    ctxWalls.strokeStyle = 'rgba(255, 200, 100, 0.9)';
+    ctxWalls.lineWidth = 1;
+    ctxWalls.strokeRect(px + 0.5, py + 0.5, tileSize - 1, tileSize - 1);
+    ctxWalls.fillStyle = '#1a1200';
+    ctxWalls.fillText((npc.quiz && npc.quiz.length) ? '🎓' : '🧓', px + tileSize / 2, py + tileSize / 2);
+  }
+
+  // Update counters
+  document.getElementById('info-walls').textContent = Object.keys(walls).length;
+  document.getElementById('info-spawns').textContent = spawnPoints.length;
+  document.getElementById('info-npcs').textContent = npcs.length;
+}
+
+function redrawAll() { redrawGrid(); redrawWalls(); redrawCoords(); }
+
+// ── HOVER OVERLAY ──
+function drawHoverCell(gx, gy) {
+  const W = mapImageWidth, H = mapImageHeight;
+  ctxOver.clearRect(0, 0, W, H);
+  if (gx < 0 || gy < 0 || gx >= gridW || gy >= gridH) return;
+  const px = gx * tileSize, py = gy * tileSize;
+  if (currentTool === 'wall') {
+    ctxOver.fillStyle = 'rgba(220, 80, 80, 0.35)';
+  } else if (currentTool === 'erase') {
+    ctxOver.fillStyle = 'rgba(226, 75, 74, 0.25)';
+  } else if (currentTool === 'npc') {
+    ctxOver.fillStyle = 'rgba(255, 180, 60, 0.35)';
+  } else {
+    ctxOver.fillStyle = 'rgba(91, 227, 192, 0.35)';
+  }
+  ctxOver.fillRect(px, py, tileSize, tileSize);
+  ctxOver.strokeStyle = currentTool === 'erase' ? 'rgba(226,75,74,0.7)' : currentTool === 'spawn' ? '#2e7d32' : currentTool === 'npc' ? 'rgba(255,200,100,0.9)' : 'rgba(255,110,110,0.7)';
+  ctxOver.lineWidth = 1;
+  ctxOver.strokeRect(px + 0.5, py + 0.5, tileSize - 1, tileSize - 1);
+}
+
+// ── CANVAS COORDS ──
+function screenToCanvas(e) {
+  const rect = cOverlay.getBoundingClientRect();
+  // rect already accounts for zoom via CSS transform
+  const cx = (e.clientX - rect.left) / zoom * zoom; // = e.clientX - rect.left (raw canvas px)
+  const rawX = e.clientX - rect.left;
+  const rawY = e.clientY - rect.top;
+  // Canvas coord = rawX / zoom? No — getBoundingClientRect gives scaled size
+  // actual canvas pixel = rawX * (canvas.width / rect.width)
+  const scaleX = cOverlay.width / rect.width;
+  const scaleY = cOverlay.height / rect.height;
+  return { x: rawX * scaleX, y: rawY * scaleY };
+}
+
+function canvasToGrid(cx, cy) {
+  return { gx: Math.floor(cx / tileSize), gy: Math.floor(cy / tileSize) };
+}
+
+// ── INTERACTION ──
+function applyTool(gx, gy) {
+  if (gx < 0 || gy < 0 || gx >= gridW || gy >= gridH) return;
+  const key = `${gx},${gy}`;
+  if (currentTool === 'wall') {
+    walls[key] = true;
+    // can't have a wall on an NPC tile
+    npcs = npcs.filter(n => !(n.x === gx && n.y === gy));
+  } else if (currentTool === 'erase') {
+    delete walls[key];
+    // also remove spawn if any
+    spawnPoints = spawnPoints.filter(s => !(s.x === gx && s.y === gy));
+    npcs = npcs.filter(n => !(n.x === gx && n.y === gy));
+  } else if (currentTool === 'spawn') {
+    // Only one spawn per cell, add if not already
+    if (!spawnPoints.find(s => s.x === gx && s.y === gy)) {
+      spawnPoints.push({ x: gx, y: gy });
+    }
+  } else if (currentTool === 'npc') {
+    const existingIdx = npcs.findIndex(n => n.x === gx && n.y === gy);
+    if (existingIdx >= 0) {
+      openNpcModal(existingIdx);
+    } else {
+      openNpcModal(-1, gx, gy);
+    }
+    return; // don't redraw mid-modal-open from drag
+  }
+  redrawWalls();
+}
+
+function onMouseDown(e) {
+  if (e.button === 1 || e.button === 2) {
+    // Pan with middle/right mouse
+    isPanning = true;
+    panStart = { x: e.clientX - panX, y: e.clientY - panY };
+    cOverlay.style.cursor = 'grabbing';
+    return;
+  }
+  const { x, y } = screenToCanvas(e);
+  const { gx, gy } = canvasToGrid(x, y);
+  if (currentTool === 'npc') {
+    // single click only — opens modal, no drag-paint
+    applyTool(gx, gy);
+    return;
+  }
+  isDrawing = true;
+  lastDrawCell = `${gx},${gy}`;
+  applyTool(gx, gy);
+}
+
+function onMouseMove(e) {
+  if (isPanning) {
+    panX = e.clientX - panStart.x;
+    panY = e.clientY - panStart.y;
+    applyViewport();
+    return;
+  }
+  const { x, y } = screenToCanvas(e);
+  const { gx, gy } = canvasToGrid(x, y);
+  document.getElementById('info-cursor').textContent = `${gx}, ${gy}`;
+  drawHoverCell(gx, gy);
+
+  if (isDrawing) {
+    const key = `${gx},${gy}`;
+    if (key !== lastDrawCell) {
+      lastDrawCell = key;
+      applyTool(gx, gy);
+    }
+  }
+}
+
+function onMouseUp(e) {
+  if (isPanning) {
+    isPanning = false;
+    cOverlay.style.cursor = 'crosshair';
+    return;
+  }
+  isDrawing = false;
+  lastDrawCell = null;
+}
+
+function onWheel(e) {
+  e.preventDefault();
+  const area = document.getElementById('canvas-area');
+  const rect = area.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+
+  const delta = e.deltaY > 0 ? 0.85 : 1.18;
+  const newZoom = Math.min(Math.max(zoom * delta, 0.1), 16);
+
+  // Zoom towards mouse position
+  panX = mouseX - (mouseX - panX) * (newZoom / zoom);
+  panY = mouseY - (mouseY - panY) * (newZoom / zoom);
+  zoom = newZoom;
+  applyViewport();
+}
+
+// ── ZOOM BUTTONS ──
+document.getElementById('zoom-in-btn').addEventListener('click', () => {
+  zoom = Math.min(zoom * 1.3, 16); applyViewport();
+});
+document.getElementById('zoom-out-btn').addEventListener('click', () => {
+  zoom = Math.max(zoom * 0.77, 0.1); applyViewport();
+});
+document.getElementById('zoom-reset-btn').addEventListener('click', fitToView);
+
+// ── TOOLS ──
+document.getElementById('tool-wall').addEventListener('click', () => setTool('wall'));
+document.getElementById('tool-erase').addEventListener('click', () => setTool('erase'));
+document.getElementById('tool-spawn').addEventListener('click', () => setTool('spawn'));
+document.getElementById('tool-npc').addEventListener('click', () => setTool('npc'));
+
+function setTool(name) {
+  currentTool = name;
+  ['wall','erase','spawn','npc'].forEach(t => {
+    document.getElementById(`tool-${t}`).classList.remove('active');
+  });
+  document.getElementById(`tool-${name}`).classList.add('active');
+}
+
+// ── CLEAR ──
+document.getElementById('clear-walls-btn').addEventListener('click', () => {
+  if (!confirm('Xóa toàn bộ tường?')) return;
+  walls = {}; redrawWalls(); showToast('Đã xóa tất cả tường.', 'info');
+});
+document.getElementById('clear-spawns-btn').addEventListener('click', () => {
+  if (!confirm('Xóa toàn bộ điểm spawn?')) return;
+  spawnPoints = []; redrawWalls(); showToast('Đã xóa điểm spawn.', 'info');
+});
+document.getElementById('clear-npcs-btn').addEventListener('click', () => {
+  if (!confirm('Xóa toàn bộ NPC?')) return;
+  npcs = []; redrawWalls(); showToast('Đã xóa toàn bộ NPC.', 'info');
+});
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyW' || e.code === 'Digit1') setTool('wall');
+  if (e.code === 'KeyE' || e.code === 'Digit2') setTool('erase');
+  if (e.code === 'KeyS' || e.code === 'Digit3') setTool('spawn');
+  if (e.code === 'KeyN' || e.code === 'Digit4') setTool('npc');
+  if (e.code === 'Equal' || e.code === 'NumpadAdd') { zoom = Math.min(zoom * 1.2, 16); applyViewport(); }
+  if (e.code === 'Minus' || e.code === 'NumpadSubtract') { zoom = Math.max(zoom * 0.83, 0.1); applyViewport(); }
+  if (e.code === 'KeyF') fitToView();
+  if (e.code === 'KeyZ' && e.ctrlKey) { /* undo placeholder */ }
+});
+
+// ──────────────────────────────────────────────
+// NPC MODAL
+// ──────────────────────────────────────────────
+const npcModal = document.getElementById('npc-modal');
+const npcNameInput = document.getElementById('npc-name-input');
+const npcDialogueListEl = document.getElementById('npc-dialogue-list');
+
+function openNpcModal(index, gx, gy) {
+  editingNpcIndex = index;
+  if (index >= 0) {
+    const npc = npcs[index];
+    npcNameInput.value = npc.name;
+    renderNpcDialogueRows(npc.dialogue.slice());
+    document.getElementById('npc-delete').style.display = 'block';
+  } else {
+    npcNameInput.value = '';
+    renderNpcDialogueRows(['']);
+    document.getElementById('npc-delete').style.display = 'none';
+    // stash pending coords on the modal element
+    npcModal.dataset.pendingX = gx;
+    npcModal.dataset.pendingY = gy;
+  }
+  renderQuizRows(index >= 0 ? (npcs[index].quiz || []) : []);
+  npcModal.classList.add('open');
+}
+
+function closeNpcModal() {
+  npcModal.classList.remove('open');
+  editingNpcIndex = -1;
+}
+
+function renderNpcDialogueRows(lines) {
+  npcDialogueListEl.innerHTML = '';
+  lines.forEach((line) => addNpcDialogueRow(line));
+}
+
+function addNpcDialogueRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'npc-dialogue-row';
+  row.innerHTML = `
+    <textarea maxlength="200" placeholder="Nhập một câu thoại...">${escapeHtmlAttr(value)}</textarea>
+    <button class="npc-line-remove" title="Xóa dòng">✕</button>
+  `;
+  row.querySelector('.npc-line-remove').addEventListener('click', () => {
+    if (npcDialogueListEl.children.length <= 1) {
+      showToast('Cần ít nhất 1 dòng thoại!', 'error');
+      return;
+    }
+    row.remove();
+  });
+  npcDialogueListEl.appendChild(row);
+}
+
+function escapeHtmlAttr(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+document.getElementById('npc-add-line-btn').addEventListener('click', () => {
+  addNpcDialogueRow('');
+});
+
+document.getElementById('npc-cancel').addEventListener('click', closeNpcModal);
+
+document.getElementById('npc-delete').addEventListener('click', () => {
+  if (editingNpcIndex >= 0) {
+    npcs.splice(editingNpcIndex, 1);
+    redrawWalls();
+    showToast('Đã xóa NPC.', 'info');
+  }
+  closeNpcModal();
+});
+
+document.getElementById('npc-save').addEventListener('click', () => {
+  const name = npcNameInput.value.trim();
+  if (!name) { showToast('Nhập tên NPC!', 'error'); return; }
+  const dialogue = Array.from(npcDialogueListEl.querySelectorAll('textarea'))
+    .map(t => t.value.trim())
+    .filter(t => t.length > 0);
+  if (dialogue.length === 0) { showToast('Cần ít nhất 1 dòng thoại!', 'error'); return; }
+  const qr = collectQuiz();
+  if (qr.error) { showToast(qr.error, 'error'); return; }
+  const quiz = qr.quiz;
+
+  if (editingNpcIndex >= 0) {
+    npcs[editingNpcIndex].name = name;
+    npcs[editingNpcIndex].dialogue = dialogue;
+    npcs[editingNpcIndex].quiz = quiz;
+  } else {
+    const gx = parseInt(npcModal.dataset.pendingX);
+    const gy = parseInt(npcModal.dataset.pendingY);
+    npcs.push({ x: gx, y: gy, name, dialogue, quiz });
+  }
+  redrawWalls();
+  showToast('✅ Đã lưu NPC!', 'success');
+  closeNpcModal();
+});
+
+// ──────────────────────────────────────────────
+// PUBLISH
+// ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+// NPC QUIZ EDITOR
+// ──────────────────────────────────────────────
+const quizListEl = document.getElementById('npc-quiz-list');
+
+function renderQuizRows(list) {
+  quizListEl.innerHTML = '';
+  list.forEach(q => addQuizRow(q));
+}
+
+function addQuizRow(q = {}) {
+  const id = q.id || Math.random().toString(36).slice(2, 8);
+  const box = document.createElement('div');
+  box.className = 'quiz-row';
+  box.dataset.qid = id;
+  box.innerHTML = `
+    <div class="quiz-row-head"><b>❓ Câu hỏi</b><button class="npc-line-remove" type="button" title="Xóa câu hỏi">✕</button></div>
+    <textarea class="quiz-q" maxlength="200" placeholder="Nhập câu hỏi..."></textarea>
+    ${['A','B','C','D'].map((L, i) => `<div class="quiz-opt"><input type="radio" name="qc_${id}" value="${i}" title="Đáp án đúng"><span>${L}</span><input class="quiz-a" maxlength="100" placeholder="Đáp án ${L}"></div>`).join('')}
+    <input class="quiz-explain" maxlength="200" placeholder="💡 Giải thích (tùy chọn) — hiện sau khi trả lời">`;
+  box.querySelector('.quiz-q').value = q.q || '';
+  box.querySelectorAll('.quiz-a').forEach((inp, i) => { inp.value = (q.options || [])[i] || ''; });
+  box.querySelector('.quiz-explain').value = q.explain || '';
+  if (Number.isInteger(q.correct)) {
+    const r = box.querySelector(`input[type=radio][value="${q.correct}"]`);
+    if (r) r.checked = true;
+  }
+  box.querySelector('.npc-line-remove').addEventListener('click', () => box.remove());
+  quizListEl.appendChild(box);
+}
+
+function collectQuiz() {
+  const quiz = []; let error = '';
+  quizListEl.querySelectorAll('.quiz-row').forEach((box, i) => {
+    if (error) return;
+    const q = box.querySelector('.quiz-q').value.trim();
+    const options = Array.from(box.querySelectorAll('.quiz-a')).map(x => x.value.trim());
+    const checked = box.querySelector('input[type=radio]:checked');
+    const explain = box.querySelector('.quiz-explain').value.trim();
+    if (!q && options.every(o => !o)) return;              // dòng trống → bỏ qua
+    if (!q) error = `Câu ${i + 1}: thiếu nội dung câu hỏi`;
+    else if (options.some(o => !o)) error = `Câu ${i + 1}: cần nhập đủ 4 đáp án A–D`;
+    else if (!checked) error = `Câu ${i + 1}: hãy chọn đáp án đúng (nút tròn)`;
+    else quiz.push(Object.assign({ id: box.dataset.qid, q, options, correct: parseInt(checked.value) }, explain ? { explain } : {}));
+  });
+  return { quiz, error };
+}
+
+document.getElementById('npc-add-q-btn').addEventListener('click', () => addQuizRow());
+
+// ──────────────────────────────────────────────
+// MAP TAGS / PROVINCES (chip input)
+// ──────────────────────────────────────────────
+const mapTags = [];
+const mapProvinces = [];
+
+function setupChipInput(rootId, arr) {
+  const rootEl = document.getElementById(rootId);
+  const input = rootEl.querySelector('input');
+  function draw() {
+    rootEl.querySelectorAll('.chip').forEach(c => c.remove());
+    arr.forEach((t, i) => {
+      const c = document.createElement('span'); c.className = 'chip'; c.textContent = t;
+      const x = document.createElement('b'); x.textContent = '✕';
+      x.addEventListener('click', () => { arr.splice(i, 1); draw(); });
+      c.appendChild(x); rootEl.insertBefore(c, input);
+    });
+  }
+  function add() {
+    const v = input.value.trim().replace(/^#/, '');
+    input.value = '';
+    if (!v) return;
+    if (v.length > 24) { showToast('Tag tối đa 24 ký tự', 'error'); return; }
+    if (arr.length >= 8) { showToast('Tối đa 8 mục', 'error'); return; }
+    if (arr.some(t => VV.norm(t) === VV.norm(v))) return;
+    arr.push(v); draw();
+  }
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); }
+    else if (e.key === 'Backspace' && !input.value && arr.length) { arr.pop(); draw(); }
+  });
+  input.addEventListener('blur', add);
+  draw();
+  return draw;
+}
+const drawTagChips = setupChipInput('pub-tags', mapTags);
+const drawProvChips = setupChipInput('pub-provinces', mapProvinces);
+function redrawChips() { drawTagChips(); drawProvChips(); }
+
+// Gợi ý tên tỉnh lấy từ Firestore (collection 'provinces') để tên khớp với trang Khám phá
+(async function loadProvinceSuggestions() {
+  try {
+    const snap = await firebase.firestore().collection('provinces').get();
+    const dl = document.getElementById('vv-prov-suggest');
+    const names = [];
+    snap.forEach(d => {
+      const x = d.data() || {};
+      names.push(x.name || x.title || d.id.replace(/([a-z])([A-Z])/g, '$1 $2'));   // 'HaiPhong' → 'Hai Phong' nếu doc chưa có trường name
+    });
+    names.sort((a, b) => a.localeCompare(b, 'vi')).forEach(n => {
+      const o = document.createElement('option'); o.value = n; dl.appendChild(o);
+    });
+  } catch (e) { console.warn('Không tải được danh sách tỉnh:', e.message); }
+})();
+
+document.getElementById('publish-btn').addEventListener('click', openPublishModal);
+document.getElementById('pub-cancel').addEventListener('click', closePublishModal);
+
+function openPublishModal() {
+  if (currentStep < 2) { showToast('Hoàn thiện bước 1 trước!', 'error'); return; }
+  document.getElementById('pub-map-name').value = mapName;
+  document.getElementById('pub-grid-info').textContent = `${gridW} × ${gridH} ô`;
+  document.getElementById('pub-wall-count').textContent = Object.keys(walls).length;
+  document.getElementById('pub-spawn-count').textContent = spawnPoints.length;
+  document.getElementById('pub-npc-count').textContent = npcs.length;
+  document.getElementById('pub-quiz-count').textContent = npcs.reduce((n, x) => n + ((x.quiz || []).length), 0);
+  redrawChips();
+
+  const card = document.querySelector('#publish-modal .publish-card h2');
+  const desc = document.querySelector('#publish-modal .publish-card p');
+  const confirmBtn = document.getElementById('pub-confirm');
+  if (editingMapId) {
+    card.textContent = '💾 Lưu Thay Đổi Map';
+    desc.textContent = 'Bản chỉnh sửa sẽ cập nhật ngay cho map đã đăng.';
+    confirmBtn.textContent = '✅ Lưu thay đổi';
+  } else {
+    card.textContent = '🚀 Đăng Map Lên Hệ Thống';
+    desc.textContent = 'Map của bạn sẽ được gửi cho quản trị viên duyệt trước khi hiển thị công khai.';
+    confirmBtn.textContent = '✅ Đăng ngay';
+  }
+
+  document.getElementById('publish-modal').classList.add('open');
+}
+
+function closePublishModal() {
+  document.getElementById('publish-modal').classList.remove('open');
+}
+
+document.getElementById('pub-confirm').addEventListener('click', async () => {
+  if (!currentUser) { showToast('Cần đăng nhập!', 'error'); return; }
+  const finalName = document.getElementById('pub-map-name').value.trim() || 'Không tên';
+  if (spawnPoints.length === 0) {
+    showToast('⚠️ Chưa có điểm spawn! Hãy thêm ít nhất 1 điểm spawn.', 'error');
+    closePublishModal(); return;
+  }
+
+  const btn = document.getElementById('pub-confirm');
+  const originalLabel = btn.textContent;
+  btn.textContent = '⏳ Đang lưu...'; btn.disabled = true;
+
+  // Convert walls to Firebase-safe object: "x_y": true
+  const blockedSpaces = {};
+  for (const key of Object.keys(walls)) {
+    const safe = key.replace(',', 'x');  // "3,7" → "3x7"
+    blockedSpaces[safe] = true;
+  }
+
+  try {
+    if (editingMapId) {
+      // ── EDIT MODE: update the existing map in place. Status/playCount/createdAt are preserved
+      // (an already-approved map stays approved and visible immediately — no re-review needed).
+      const updateData = {
+        name: finalName,
+        imageUrl: mapImageUrl,
+        tileSize: tileSize,
+        gridWidth: gridW,
+        gridHeight: gridH,
+        blockedSpaces,
+        spawnPoints,
+        npcs,
+        tags: mapTags,
+        provinces: mapProvinces,
+        updatedAt: Date.now(),
+      };
+      await firebase.database().ref(`maps/${editingMapId}`).update(updateData);
+      showToast('💾 Đã lưu thay đổi map!', 'success');
+      closePublishModal();
+      btn.textContent = originalLabel; btn.disabled = false;
+      setTimeout(() => { window.location.href = 'minigame.html'; }, 1500);
+    } else {
+      // ── CREATE MODE: new maps start as 'pending' and need admin approval before going public.
+      const mapData = {
+        name: finalName,
+        imageUrl: mapImageUrl,
+        tileSize: tileSize,
+        gridWidth: gridW,
+        gridHeight: gridH,
+        blockedSpaces,
+        spawnPoints,
+        npcs,
+        tags: mapTags,
+        provinces: mapProvinces,
+        creatorId: currentUser.uid,
+        creatorName: (playerData && playerData.name) || currentUser.email || 'Ẩn danh',
+        createdAt: Date.now(),
+        playCount: 0,
+        onlineCount: 0,
+        status: 'pending',
+      };
+      await firebase.database().ref('maps').push(mapData);
+      showToast('🎉 Map đã được gửi để chờ duyệt!', 'success');
+      closePublishModal();
+      btn.textContent = originalLabel; btn.disabled = false;
+      setTimeout(() => { window.location.href = 'minigame.html'; }, 1800);
+    }
+  } catch(e) {
+    showToast('Lỗi: ' + e.message, 'error');
+    btn.textContent = originalLabel; btn.disabled = false;
+  }
+});
+
+// ── STEP TAB CLICKS ──
+document.getElementById('tab-step1').addEventListener('click', () => {
+  if (currentStep === 2) {
+    // go back to step 1 to adjust
+    currentStep = 1;
+    document.getElementById('step1-panel').style.display = 'flex';
+    document.getElementById('sidebar').style.display = 'none';
+    document.getElementById('canvas-viewport').style.display = 'none';
+    document.getElementById('zoom-hint').style.display = 'none';
+    document.getElementById('publish-btn').classList.remove('visible');
+    document.getElementById('tab-step1').classList.add('active');
+    document.getElementById('tab-step1').classList.remove('done');
+    document.getElementById('tab-step2').classList.remove('active');
+    // Restore step-1 preview pan/zoom listeners
+    window.addEventListener('mousemove', onSetupMouseMove);
+    window.addEventListener('mouseup', onSetupMouseUp);
+  }
+});
+
+// ──────────────────────────────────────────────
+// MY MAPS — list / edit / delete maps the current user has uploaded
+// ──────────────────────────────────────────────
+document.getElementById('my-maps-btn').addEventListener('click', openMyMapsModal);
+document.getElementById('my-maps-close-btn').addEventListener('click', closeMyMapsModal);
+
+function openMyMapsModal() {
+  if (!currentUser) { showToast('Cần đăng nhập!', 'error'); return; }
+  document.getElementById('my-maps-modal').classList.add('open');
+  loadMyMapsList();
+}
+function closeMyMapsModal() {
+  document.getElementById('my-maps-modal').classList.remove('open');
+}
+
+async function loadMyMapsList() {
+  const listEl = document.getElementById('my-maps-list');
+  listEl.innerHTML = '<div class="my-maps-empty">Đang tải...</div>';
+  try {
+    const snap = await firebase.database().ref('maps').orderByChild('creatorId').equalTo(currentUser.uid).once('value');
+    const data = snap.val() || {};
+    const entries = Object.entries(data).sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+
+    if (entries.length === 0) {
+      listEl.innerHTML = '<div class="my-maps-empty">Bạn chưa đăng map nào.</div>';
+      return;
+    }
+
+    listEl.innerHTML = '';
+    entries.forEach(([id, map]) => {
+      const isApproved = map.status === 'approved' || map.status === undefined;
+      const statusLabel = isApproved ? '<span class="my-map-status approved">✅ Đã duyệt</span>' : '<span class="my-map-status pending">⏳ Chờ duyệt</span>';
+      const row = document.createElement('div');
+      row.className = 'my-map-row';
+      const thumbHtml = map.imageUrl
+        ? `<img class="my-map-thumb" src="${escapeHtmlAttr(map.imageUrl)}" onerror="this.style.visibility='hidden'">`
+        : `<div class="my-map-thumb"></div>`;
+      row.innerHTML = `
+        ${thumbHtml}
+        <div class="my-map-info">
+          <div class="my-map-name">${escapeHtmlAttr(map.name || 'Không tên')} ${statusLabel}</div>
+          <div class="my-map-meta">${map.gridWidth || '?'}×${map.gridHeight || '?'} ô · ${map.playCount || 0} lượt chơi</div>
+        </div>
+        <div class="my-map-actions">
+          <button class="my-map-edit-btn">✏️ Sửa</button>
+          <button class="my-map-delete-btn">🗑️ Xóa</button>
+        </div>
+      `;
+      row.querySelector('.my-map-edit-btn').addEventListener('click', () => loadMapForEdit(id, map));
+      row.querySelector('.my-map-delete-btn').addEventListener('click', () => deleteMyMap(id, map.name));
+      listEl.appendChild(row);
+    });
+  } catch (e) {
+    listEl.innerHTML = `<div class="my-maps-empty">Lỗi tải danh sách: ${escapeHtmlAttr(e.message)}</div>`;
+  }
+}
+
+async function deleteMyMap(id, name) {
+  if (!confirm(`Xóa map "${name || 'Không tên'}"? Hành động này không thể hoàn tác.`)) return;
+  try {
+    await firebase.database().ref(`maps/${id}`).remove();
+    showToast('🗑️ Đã xóa map!', 'success');
+    loadMyMapsList();
+  } catch (e) {
+    showToast('Lỗi: ' + e.message, 'error');
+  }
+}
+
+// Load an existing map's data into the editor (works for both approved and pending maps)
+// and jump straight to step 2 so the creator can re-draw walls/spawns/NPCs and re-publish.
+function loadMapForEdit(id, map) {
+  closeMyMapsModal();
+
+  if (!map.imageUrl) {
+    showToast('Map này không có ảnh, không thể chỉnh sửa!', 'error');
+    return;
+  }
+
+  editingMapId = id;
+  mapName = map.name || 'Không tên';
+  tileSize = map.tileSize || 16;
+  gridW = map.gridWidth || 0;
+  gridH = map.gridHeight || 0;
+
+  // Convert Firebase-safe blockedSpaces ("3x7": true) back to in-memory walls format ("3,7": true)
+  walls = {};
+  const blocked = map.blockedSpaces || {};
+  for (const key of Object.keys(blocked)) {
+    const [gx, gy] = key.split('x');
+    if (gx !== undefined && gy !== undefined) walls[`${gx},${gy}`] = true;
+  }
+  spawnPoints = Array.isArray(map.spawnPoints) ? JSON.parse(JSON.stringify(map.spawnPoints)) : [];
+  npcs = Array.isArray(map.npcs) ? JSON.parse(JSON.stringify(map.npcs)) : [];
+  mapTags.length = 0; mapProvinces.length = 0;
+  mapTags.push(...VV.toArr(map.tags)); mapProvinces.push(...VV.toArr(map.provinces));
+
+  showToast(`✏️ Đang tải "${mapName}" để chỉnh sửa...`, 'info');
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    mapImageUrl = map.imageUrl;
+    mapImageWidth = img.naturalWidth;
+    mapImageHeight = img.naturalHeight;
+    mapImg = img;
+
+    // Recompute grid from actual image size in case it doesn't match stored values exactly
+    gridW = Math.floor(mapImageWidth / tileSize);
+    gridH = Math.floor(mapImageHeight / tileSize);
+
+    mapNameInput.value = mapName;
+    tileSlider.value = tileSize;
+    tileValEl.textContent = tileSize;
+
+    document.getElementById('setup-placeholder').style.display = 'none';
+    document.getElementById('setup-viewport').style.display = 'block';
+    document.getElementById('setup-hud').style.display = 'flex';
+    document.getElementById('hud-imgsize').textContent = `${mapImageWidth} × ${mapImageHeight} px`;
+
+    initSetupCanvases();
+    updateGridCalc();
+    enterStep2();
+    showToast(`✏️ Đã tải "${mapName}" — chỉnh sửa rồi nhấn "Lưu thay đổi"!`, 'success');
+  };
+  img.onerror = () => {
+    showToast('Không thể tải ảnh map này. Kiểm tra URL hoặc CORS!', 'error');
+    editingMapId = null;
+  };
+  img.src = map.imageUrl;
+}
+</script>
+</body>
+</html>

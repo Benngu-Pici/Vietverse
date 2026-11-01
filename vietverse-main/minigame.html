@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vietverse | Trang Chủ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #FFB300;
+      --gold-dark: #c98a00;
+      --red: #d32f2f;
+      --red-dark: #b71c1c;
+      --bg: #fff5f5;
+      --bg2: #ffffff;
+      --bg3: #fff0ef;
+      --accent: #d32f2f;
+      --accent2: #ff8a3d;
+      --text: #2b1212;
+      --text-muted: #9a6a6a;
+      --border: rgba(211,47,47,0.14);
+      --card-glow: rgba(211,47,47,0.10);
+      --danger: #e24b4a;
+      --success: #2e7d32;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Be Vietnam Pro', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    /* ===== CUSTOM SCROLL ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 8px; }
+
+    /* ── SPLASH / INITIAL LOADING OVERLAY ── */
+    #loading-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+
+    /* ── AUTH OVERLAY ── */
+    #auth-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: linear-gradient(160deg, #fff5f5 0%, #ffe2e2 100%);
+      display: none; align-items: center; justify-content: center;
+    }
+    .auth-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(211,47,47,0.12);
+    }
+    .auth-logo {
+      font-size: 48px; margin-bottom: 8px;
+    }
+    .auth-box h1 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 24px; font-weight: 800; color: var(--red);
+      letter-spacing: 2px; margin-bottom: 6px;
+    }
+    .auth-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+    .auth-input {
+      width: 100%; padding: 12px 16px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 15px; margin-bottom: 12px; outline: none;
+      transition: border 0.2s;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+    .auth-btn {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      border: none; border-radius: 10px;
+      color: #fff; font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-bottom: 10px;
+    }
+    .auth-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .auth-btn.google {
+      background: linear-gradient(135deg, #ea4335, #cc2c20);
+      margin-top: 4px;
+    }
+    .auth-divider {
+      color: var(--text-muted); font-size: 13px; margin: 10px 0;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .auth-toggle { color: var(--text-muted); font-size: 13px; }
+    .auth-toggle span { color: var(--accent); cursor: pointer; font-weight: 700; }
+    .auth-error { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 20px; }
+
+    /* ── MAIN APP ── */
+    #app { display: none; min-height: 100vh; }
+
+    /* ===== NAVBAR (chuẩn, giống index.html) ===== */
+    :root { --nh:70px; }
+    .navbar{
+      position:sticky;top:0;left:0;width:100%;height:var(--nh);
+      background:#fff;display:flex;align-items:center;justify-content:space-between;
+      padding:0 36px 0 22px;
+      border-bottom-left-radius:22px;border-bottom-right-radius:22px;
+      z-index:1000;box-shadow:0 4px 24px rgba(0,0,0,.07);
+    }
+    .navbar.scrolled{box-shadow:0 4px 28px rgba(0,0,0,.1);}
+    .logo{height:38px;cursor:pointer;display:block;transition:opacity .2s;}
+    .logo:hover{opacity:.82;}
+
+    .nav-links{display:flex;align-items:center;gap:44px;}
+    .nav-links a{
+      text-decoration:none;color:var(--red);font-weight:700;font-size:.97rem;
+      position:relative;transition:opacity .2s,transform .2s;
+    }
+    .nav-links a:not(.nav-active)::after{
+      content:'';position:absolute;bottom:-5px;left:0;
+      width:0;height:2.5px;background:var(--red);border-radius:3px;
+      transition:width .25s cubic-bezier(.2,.9,.4,1.1);
+    }
+    .nav-links a:not(.nav-active):hover::after{width:100%;}
+    .nav-links a:not(.nav-active):hover{opacity:.72;transform:translateY(-1px);}
+    .nav-links a.nav-active{
+      background:var(--red);color:#fff!important;
+      padding:8px 24px;border-radius:999px;
+      animation:navPulse 2.4s infinite;
+    }
+    .nav-links a.nav-active::after{display:none;}
+    @keyframes navPulse{
+      0%{box-shadow:0 0 0 0 rgba(211,47,47,.35);}
+      70%{box-shadow:0 0 0 9px rgba(211,47,47,0);}
+      100%{box-shadow:0 0 0 0 rgba(211,47,47,0);}
+    }
+
+    /* Hamburger */
+    .hamburger{
+      display:none;flex-direction:column;justify-content:center;align-items:center;
+      gap:6px;width:38px;height:38px;
+      background:none;border:none;cursor:pointer;
+      padding:0;border-radius:10px;transition:background .2s;
+    }
+    .hamburger:hover{background:rgba(211,47,47,.09);}
+    .hamburger span{
+      display:block;width:22px;height:2.5px;
+      background:var(--red);border-radius:4px;
+      transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;
+      transform-origin:center;
+      flex-shrink:0;
+    }
+    .hamburger.open span:nth-child(1){transform:translateY(8.5px) rotate(45deg);}
+    .hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+    .hamburger.open span:nth-child(3){transform:translateY(-8.5px) rotate(-45deg);}
+
+    /* Mobile drawer */
+    .mobile-drawer{
+      position:fixed;top:0;left:0;width:100%;
+      background:#fff;z-index:997;
+      max-height:0;overflow:hidden;
+      transition:max-height .38s cubic-bezier(.4,0,.2,1),box-shadow .3s;
+      border-bottom-left-radius:28px;border-bottom-right-radius:28px;
+    }
+    .mobile-drawer.open{max-height:calc(var(--nh) + 440px);box-shadow:0 20px 48px rgba(0,0,0,.14);}
+    .drawer-inner{padding:16px 20px 28px;display:flex;flex-direction:column;gap:2px;
+      margin-top:var(--nh);}
+    .drawer-inner a{
+      text-decoration:none;color:var(--red);font-weight:700;font-size:1.05rem;
+      padding:11px 16px;border-radius:14px;
+      display:flex;align-items:center;gap:10px;
+      transition:background .18s,transform .18s;
+    }
+    .drawer-inner a:not(.nav-active):hover{background:rgba(211,47,47,.07);transform:translateX(4px);}
+    .drawer-inner a.nav-active{background:var(--red);color:#fff;box-shadow:0 4px 16px rgba(211,47,47,.3);}
+    .drawer-inner a.nav-active:hover{transform:none;}
+    .drawer-divider{height:1px;background:#f0f0f0;margin:5px 0;}
+
+    @media(max-width:860px){
+      .nav-links{display:none;}
+      .hamburger{display:flex;}
+    }
+
+    /* ===== BOTTOM UTILITY BAR (coins, bạn bè, đăng nhập/xuất) — đặt dưới phần main ===== */
+    .bottom-util-bar {
+      max-width: 1100px; margin: 0 auto; padding: 0 28px 36px;
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+    .bub-card {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 999px; padding: 9px 18px;
+      box-shadow: 0 2px 12px rgba(211,47,47,0.06);
+    }
+    .bub-coins { font-weight: 800; font-size: 14px; color: var(--gold-dark); }
+    .bub-friends-btn {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 999px;
+      padding: 9px 20px; font-size: 14px; font-weight: 700; color: var(--red);
+      cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif; transition: all 0.2s;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 2px 12px rgba(211,47,47,0.06);
+    }
+    .bub-friends-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .bub-logout-btn {
+      padding: 9px 20px; border-radius: 999px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+      transition: all 0.2s;
+    }
+    .bub-logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    @media (max-width: 768px) {
+      .bottom-util-bar { padding: 0 16px 28px; gap: 10px; }
+      .bub-card, .bub-friends-btn, .bub-logout-btn { padding: 7px 14px; font-size: 12.5px; }
+    }
+
+    /* ── PAGE CONTENT ── */
+    .page { display: none; padding: 32px 28px; max-width: 1100px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #ffece6 0%, #ffd9d0 50%, #ffe9cf 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      margin-bottom: 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px;
+    }
+    .hero-text h2 {
+      font-size: 28px; font-weight: 900; line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .hero-text h2 span { color: var(--gold); }
+    .hero-text p { color: var(--text-muted); font-size: 15px; }
+    .hero-stats {
+      display: flex; gap: 24px;
+    }
+    .hero-stat {
+      text-align: center;
+      background: var(--bg3); border-radius: 12px;
+      padding: 12px 20px; border: 1px solid var(--border);
+    }
+    .hero-stat-num { font-size: 24px; font-weight: 900; color: var(--gold); }
+    .hero-stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+    /* ── SECTION ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-header h3 {
+      font-size: 18px; font-weight: 900;
+    }
+    .filter-row {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .filter-btn {
+      padding: 6px 16px; border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted);
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: 'Be Vietnam Pro', sans-serif; transition: all 0.2s;
+    }
+    .filter-btn.active {
+      background: var(--accent); border-color: var(--accent); color: #fff;
+    }
+    .filter-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+
+    /* ── MAP CARDS ── */
+    .maps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .map-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 12px rgba(211,47,47,0.06);
+    }
+    .map-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 28px rgba(211,47,47,0.18);
+    }
+    .map-thumb {
+      width: 100%; height: 140px;
+      object-fit: cover; display: block;
+      background: var(--bg3);
+    }
+    .map-thumb-placeholder {
+      width: 100%; height: 140px;
+      background: linear-gradient(135deg, #ffe9e0 0%, #ffd6cf 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+    }
+    .map-info { padding: 14px 16px; }
+    .map-name {
+      font-size: 15px; font-weight: 800; margin-bottom: 6px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .map-meta {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .map-meta-item { display: flex; align-items: center; gap: 4px; }
+    .online-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--success); display: inline-block;
+    }
+    .map-footer {
+      padding: 0 16px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .map-creator { font-size: 11px; color: var(--text-muted); }
+    .play-btn {
+      padding: 6px 18px; border-radius: 8px;
+      background: var(--accent); border: none;
+      color: #fff; font-size: 13px; font-weight: 800;
+      cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .play-btn:hover { opacity: 0.85; }
+    .map-tag {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 700;
+      background: rgba(211,47,47,0.10); color: var(--accent);
+    }
+    .no-maps {
+      text-align: center; padding: 60px 20px; color: var(--text-muted);
+      font-size: 15px;
+    }
+    .no-maps span { font-size: 40px; display: block; margin-bottom: 12px; }
+
+    /* ── HOME LAYOUT: main + right profile sidebar ── */
+    .home-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+      align-items: start;
+    }
+    .home-main { min-width: 0; }
+
+    /* ── RIGHT PROFILE SIDEBAR ── */
+    .profile-sidebar {
+      background: linear-gradient(160deg, #e53935 0%, #b71c1c 100%);
+      border-radius: 20px;
+      padding: 22px 18px 24px;
+      text-align: center;
+      position: sticky;
+      top: 76px;
+      box-shadow: 0 12px 32px rgba(183,28,28,0.25);
+    }
+    .ps-label {
+      font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85);
+      margin-bottom: 14px;
+    }
+    .ps-avatar-ring {
+      width: 92px; height: 92px; border-radius: 50%;
+      margin: 0 auto 10px;
+      background: rgba(255,255,255,0.12);
+      border: 3px solid rgba(255,255,255,0.5);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .ps-avatar-sprite {
+      width: 16px; height: 16px;
+      background: url(images/characters.png) no-repeat;
+      transform: scale(3.4); transform-origin: center;
+      image-rendering: pixelated;
+    }
+    .ps-name {
+      font-size: 15px; font-weight: 900; color: #fff;
+      margin-bottom: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .ps-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px 6px; text-align: left; margin-bottom: 18px;
+    }
+    .ps-stat-label { font-size: 11px; color: rgba(255,255,255,0.75); font-weight: 600; }
+    .ps-stat-val { font-size: 14px; color: #fff; font-weight: 900; }
+    .ps-journey-title {
+      font-size: 12px; font-weight: 800; color: #fff;
+      text-align: left; margin-bottom: 10px; opacity: 0.9;
+    }
+    .ps-journey-list { display: flex; flex-direction: column; gap: 8px; }
+    .ps-journey-item {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 6px;
+      text-align: left;
+    }
+    .ps-journey-thumb {
+      width: 36px; height: 36px; border-radius: 6px;
+      object-fit: cover; flex-shrink: 0; background: rgba(0,0,0,0.2);
+    }
+    .ps-journey-info { min-width: 0; flex: 1; }
+    .ps-journey-name {
+      font-size: 11px; font-weight: 800; color: #fff;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ps-journey-meta {
+      font-size: 10px; color: rgba(255,255,255,0.75);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .ps-journey-stars { color: #ffd54f; font-size: 9px; letter-spacing: 1px; }
+    .ps-journey-empty { font-size: 11px; color: rgba(255,255,255,0.7); text-align: left; padding: 8px 2px; }
+
+    /* ── WEEKLY CHALLENGE BAR ── */
+    .challenge-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 18px; padding: 18px 18px 14px; margin-bottom: 28px;
+      box-shadow: 0 2px 14px rgba(211,47,47,0.07);
+    }
+    .challenge-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .challenge-header h3 {
+      font-size: 14px; font-weight: 900; letter-spacing: 0.5px;
+      color: var(--text);
+    }
+    .challenge-week-label {
+      font-size: 12px; font-weight: 800; color: var(--accent);
+    }
+    .challenge-days {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+    .challenge-day {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .challenge-day-label {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+    }
+    .challenge-day-label.is-today { color: var(--gold); }
+    .flame-badge {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; cursor: pointer; transition: transform 0.15s, border-color 0.15s;
+      filter: grayscale(1) opacity(0.45);
+    }
+    .flame-badge:hover { transform: translateY(-2px); }
+    .flame-badge.lit {
+      filter: none;
+      background: linear-gradient(135deg, #ff7a18, #c62828);
+      border-color: #ff9248;
+      box-shadow: 0 0 14px rgba(255,122,24,0.5);
+    }
+    .flame-badge.no-map { cursor: default; opacity: 0.25; }
+    .flame-badge.is-today-ring { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,215,0,0.25); }
+
+    /* ── EXPLORE / SEARCH HEADER ── */
+    .explore-title {
+      font-family: 'Baloo 2', cursive;
+      font-size: 22px; font-weight: 800; margin-bottom: 16px;
+      letter-spacing: 0.3px; color: var(--red);
+    }
+    .explore-search-row {
+      display: flex; gap: 10px; margin-bottom: 14px;
+    }
+    .explore-search-box {
+      flex: 1; display: flex; align-items: center; gap: 10px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 999px; padding: 0 18px; height: 46px;
+      box-shadow: 0 2px 10px rgba(211,47,47,0.06);
+    }
+    .explore-search-box input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px;
+    }
+    .explore-search-btn {
+      background: var(--accent); color: #fff; border: none;
+      border-radius: 999px; padding: 0 26px; font-weight: 800; font-size: 14px;
+      cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif; transition: opacity 0.2s;
+    }
+    .explore-search-btn:hover { opacity: 0.88; }
+
+    /* ── NEW-STYLE MAP CARDS (image-first, rating/time) ── */
+    .maps-grid.style-explore {
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    }
+    .map-card.style-explore { display: block; }
+    .map-card.style-explore .map-thumb,
+    .map-card.style-explore .map-thumb-placeholder {
+      height: 110px;
+    }
+    .map-card.style-explore .map-info { padding: 12px 14px 14px; }
+    .map-card-score {
+      font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;
+    }
+    .map-card-score b { color: var(--gold-dark); }
+    .map-card-stars {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .stars-row { color: #e0d2d2; font-size: 13px; letter-spacing: 1px; }
+    .stars-row .filled { color: #ffb300; }
+    .map-card-status {
+      position: absolute; top: 8px; left: 8px;
+      font-size: 10px; font-weight: 800; padding: 2px 8px;
+      border-radius: 20px; backdrop-filter: blur(4px);
+    }
+    .map-card-status.pending { background: rgba(255,193,7,0.85); color: #1a1200; }
+    .map-card-wrap { position: relative; }
+
+    /* ── LOADING ── */
+    .loading-spinner {
+      text-align: center; padding: 40px; color: var(--text-muted);
+      font-size: 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 30px; height: 30px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 22px;
+      font-size: 14px; font-weight: 700;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+      z-index: 9999; white-space: nowrap;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    }
+    #toast.show { opacity: 1; }
+    #toast.success { border-color: var(--success); color: var(--success); }
+    #toast.error { border-color: var(--danger); color: var(--danger); }
+    #toast.info { border-color: var(--accent); color: var(--accent); }
+
+    /* ── CREATE MAP BTN ── */
+    .create-map-card {
+      background: linear-gradient(135deg, rgba(211,47,47,0.08) 0%, rgba(255,138,61,0.08) 100%);
+      border: 2px dashed rgba(211,47,47,0.35);
+      border-radius: 16px; overflow: hidden;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 200px; gap: 10px;
+    }
+    .create-map-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .create-map-card span { font-size: 36px; }
+    .create-map-card p { font-size: 14px; font-weight: 800; color: var(--accent); }
+
+    @media (max-width: 768px) {
+      .page { padding: 20px 16px; }
+      .navbar { padding: 0 16px; }
+      .hero { flex-direction: column; }
+      .hero-stats { flex-wrap: wrap; gap: 12px; }
+      .home-layout { grid-template-columns: 1fr; }
+      .profile-sidebar { position: static; order: -1; }
+      .challenge-days { gap: 5px; }
+      .flame-badge { width: 30px; height: 30px; font-size: 13px; border-radius: 8px; }
+      .challenge-day-label { font-size: 9px; }
+      .explore-search-row { flex-direction: column; }
+      .explore-search-btn { height: 42px; }
+    }
+
+    /* ── FRIEND SYSTEM ── */
+    .page-friends { display: none; padding: 32px 28px; max-width: 900px; margin: 0 auto; }
+    .page-friends.active { display: block; }
+
+    .friends-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    @media (max-width: 768px) { .friends-layout { grid-template-columns: 1fr; } .page-friends { padding: 20px 16px; } }
+
+    .friends-panel-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      box-shadow: 0 2px 14px rgba(211,47,47,0.07);
+    }
+    .fp-card-header {
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      font-size: 15px; font-weight: 900; color: var(--red);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .fp-card-body { padding: 14px; min-height: 160px; }
+    .home-friend-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s;
+    }
+    .home-friend-item:hover { border-color: var(--accent); }
+    .home-fi-avatar {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: #fff; position: relative; image-rendering: pixelated; flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    .home-fi-avatar .hfa-sprite {
+      background: url(images/characters.png) no-repeat;
+      width: 9px; height: 9px;
+      transform: scale(2); transform-origin: top left;
+      position: absolute; top: 9px; left: 9px;
+    }
+    .home-fi-avatar .hfa-shadow {
+      background: url(images/shadow.png) no-repeat;
+      width: 9px; height: 9px;
+      transform: scale(2); transform-origin: top left;
+      position: absolute; top: 9px; left: 9px;
+    }
+    .home-fi-name { font-size: 14px; font-weight: 800; flex: 1; }
+    .home-fi-coins { font-size: 12px; color: var(--gold-dark); }
+    .home-fi-btn {
+      padding: 5px 12px; border-radius: 7px; border: none;
+      font-size: 12px; font-weight: 800; cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    .home-fi-btn.accept { background: var(--success); color: #fff; }
+    .home-fi-btn.deny { background: rgba(226,75,74,0.15); color: var(--danger); border: 1px solid rgba(226,75,74,0.3); }
+    .home-fi-btn.msg { background: var(--accent); color: #fff; }
+    .home-fi-btn.remove { background: rgba(226,75,74,0.1); color: var(--danger); border: 1px solid rgba(226,75,74,0.25); }
+    .home-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 28px 10px; }
+    .req-count-pill {
+      background: var(--danger); color: #fff; font-size: 10px; font-weight: 900;
+      padding: 1px 7px; border-radius: 20px; margin-left: 6px;
+    }
+    .req-count-pill:empty { display: none; }
+
+    /* DM panel */
+    .dm-panel-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      display: flex; flex-direction: column; min-height: 320px; height: 100%;
+      box-shadow: 0 2px 14px rgba(211,47,47,0.07);
+    }
+    .dm-panel-select {
+      padding: 14px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .dm-convo-list { padding: 10px; overflow-y: auto; max-height: 180px; flex-shrink: 0; }
+    .dm-convo-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 8px; cursor: pointer;
+      transition: background 0.15s; margin-bottom: 4px;
+    }
+    .dm-convo-item:hover, .dm-convo-item.active { background: rgba(211,47,47,0.08); }
+    .dm-convo-name { font-size: 13px; font-weight: 800; flex: 1; }
+    .dm-convo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: none; }
+    .dm-convo-dot.unread { display: block; }
+    .dm-chat-area {
+      flex: 1; display: flex; flex-direction: column; min-height: 0; border-top: 1px solid var(--border);
+    }
+    .dm-msgs-box {
+      flex: 1; overflow-y: auto; padding: 10px 14px;
+      display: flex; flex-direction: column; gap: 6px;
+      min-height: 100px;
+    }
+    .dm-msgs-box::-webkit-scrollbar { width: 4px; }
+    .dm-msgs-box::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+    .dm-msg-row { font-size: 13px; line-height: 1.4; word-break: break-word; }
+    .dm-msg-row .dm-sndr { font-weight: 800; margin-right: 5px; }
+    .dm-msg-row .dm-sndr.me { color: var(--gold-dark); }
+    .dm-msg-row .dm-sndr.other { color: var(--accent2); }
+    .dm-msg-row .dm-body { color: var(--text); }
+    .dm-input-area { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); }
+    .dm-text-input {
+      flex: 1; padding: 9px 14px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 20px;
+      color: var(--text); font-family: 'Be Vietnam Pro', sans-serif; font-size: 13px; outline: none;
+    }
+    .dm-text-input:focus { border-color: var(--accent); }
+    .dm-send-btn-home {
+      width: 38px; height: 38px; border-radius: 50%; border: none;
+      background: var(--accent); color: #fff; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dm-no-convo { color: var(--text-muted); font-size: 13px; text-align: center; padding: 30px 10px; }
+    .nav-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--danger); color: #fff;
+      width: 16px; height: 16px; border-radius: 50%;
+      font-size: 9px; font-weight: 900; margin-left: 4px;
+      vertical-align: middle;
+    }
+    .nav-badge:empty { display: none; }
+    /* ── TAGS / LEARN / EXP ── */
+    .map-tags { display:flex; flex-wrap:wrap; gap:4px; margin:4px 0 6px; }
+    .tag-chip { font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:999px; background:rgba(211,47,47,.10); color:var(--accent); border:none; cursor:pointer; font-family:inherit; }
+    .tag-chip.prov { background:rgba(255,179,0,.2); color:#8a5a00; }
+    .tag-chip.quiz { background:rgba(46,125,50,.14); color:#2e7d32; cursor:default; }
+    .learn-row { display:flex; gap:6px; margin-top:6px; }
+    .learn-link { font-size:11px; font-weight:800; color:var(--accent); text-decoration:none; padding:3px 8px; border:1px solid var(--border); border-radius:8px; background:#fff; }
+    .learn-link:hover { background:var(--bg3); }
+    #query-banner:empty { display:none; }
+    #query-banner { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 12px; padding:10px 14px; border-radius:12px; background:#fff0ef; border:1px solid rgba(211,47,47,.25); font-size:13px; font-weight:700; color:var(--text); }
+    #query-banner button { margin-left:auto; border:none; background:var(--accent); color:#fff; border-radius:8px; padding:5px 12px; font-weight:800; font-size:12px; font-family:inherit; cursor:pointer; }
+    .tag-filter-row { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 14px; }
+    .tag-filter-row:empty { display:none; }
+    .tag-filter-row .tag-chip.active { background:var(--accent); color:#fff; }
+    .ps-exp { margin:-6px 0 16px; }
+    .ps-exp-bar { height:8px; border-radius:99px; background:rgba(255,255,255,.35); overflow:hidden; }
+    .ps-exp-bar i { display:block; height:100%; width:0; background:#FFB300; transition:width .5s; }
+    .ps-exp-text { font-size:11px; font-weight:800; color:#fff; margin-top:4px; text-shadow:0 1px 2px rgba(0,0,0,.3); }
+  </style>
+</head>
+<body>
+
+<!-- INITIAL LOADING OVERLAY (hiển thị trong lúc kiểm tra đăng nhập, tránh nháy màn hình) -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p style="color: var(--text-muted); font-size: 14px; font-weight: 600;">Đang tải minigame...</p>
+</div>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">🏮</div>
+    <h1>VIETVERSE</h1>
+    <p>Đăng nhập để khám phá thế giới Vietverse</p>
+
+    <div id="auth-forms">
+      <input class="auth-input" id="auth-email" type="email" placeholder="Email của bạn">
+      <input class="auth-input" id="auth-password" type="password" placeholder="Mật khẩu">
+      <button class="auth-btn" id="auth-action-btn">Đăng nhập</button>
+      <div class="auth-divider">hoặc</div>
+      <button class="auth-btn google" id="google-btn">🔵 Tiếp tục với Google</button>
+      <div class="auth-toggle" id="auth-toggle-text">
+        Chưa có tài khoản? <span id="auth-toggle-link">Đăng ký ngay</span>
+      </div>
+      <div class="auth-error" id="auth-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- NAVBAR (chuẩn, giống index.html) -->
+  <nav class="navbar" id="navbar">
+    <img src="logo.png" alt="Vietverse" class="logo" id="logoImg" />
+    <div class="nav-links">
+      <a href="profile.html">Profile</a>
+      <a href="ar.html">AR</a>
+      <a href="minigame.html" class="nav-active">Minigame</a>
+      <a href="library.html">Library</a>
+      <a href="explore.html">Explore</a>
+      <a href="index.html">Home</a>
+    </div>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-inner">
+      <a href="profile.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
+      </a>
+      <a href="ar.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>AR
+      </a>
+      <a href="minigame.html" class="nav-active">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Minigame
+      </a>
+      <div class="drawer-divider"></div>
+      <a href="library.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Library
+      </a>
+      <div class="drawer-divider"></div>
+      <a href="explore.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Explore
+      </a>
+      <a href="index.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home
+      </a>
+    </div>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="home-layout">
+      <div class="home-main">
+
+        <!-- Weekly Challenge -->
+        <div class="challenge-card">
+          <div class="challenge-header">
+            <h3>THỬ THÁCH TUẦN NÀY!:</h3>
+            <span class="challenge-week-label" id="challenge-week-label">TUẦN —</span>
+          </div>
+          <div class="challenge-days" id="challenge-days">
+            <!-- filled by renderWeeklyChallenge() -->
+          </div>
+        </div>
+
+        <!-- Explore / search -->
+        <h2 class="explore-title">KHÁM PHÁ THẾ GIỚI VIETVERSE</h2>
+        <div class="explore-search-row">
+          <div class="explore-search-box">
+            <span>🔍</span>
+            <input type="text" id="map-search-input" placeholder="Tìm map...">
+          </div>
+          <button class="explore-search-btn" id="map-search-btn">Tìm kiếm</button>
+        </div>
+
+        <div class="filter-row">
+          <button class="filter-btn active" data-filter="all">Tất cả</button>
+          <button class="filter-btn" data-filter="popular">🔥 Phổ biến</button>
+          <button class="filter-btn" data-filter="newest">✨ Mới nhất</button>
+          <button class="filter-btn" data-filter="mine">📌 Của tôi</button>
+        </div>
+
+        <div id="query-banner"></div>
+        <div class="tag-filter-row" id="tag-filter-row"></div>
+
+        <div id="maps-grid" class="maps-grid style-explore">
+          <div class="loading-spinner"><div class="spinner"></div>Đang tải maps...</div>
+        </div>
+      </div>
+
+      <!-- RIGHT PROFILE SIDEBAR -->
+      <aside class="profile-sidebar">
+        <div class="ps-label">My Profile:</div>
+        <div class="ps-avatar-ring">
+          <div class="ps-avatar-sprite" id="ps-avatar-sprite"></div>
+        </div>
+        <div class="ps-name" id="ps-name">Người chơi</div>
+        <div class="ps-stats">
+          <div><div class="ps-stat-label">Lv:</div><div class="ps-stat-val" id="ps-level">1</div></div>
+          <div><div class="ps-stat-label">Streat:</div><div class="ps-stat-val" id="ps-streak">0</div></div>
+          <div><div class="ps-stat-label">Friends:</div><div class="ps-stat-val" id="ps-friends">0</div></div>
+          <div><div class="ps-stat-label">Skin:</div><div class="ps-stat-val" id="ps-skins">1</div></div>
+        </div>
+        <div class="ps-exp"><div class="ps-exp-bar"><i id="ps-exp-fill"></i></div><div class="ps-exp-text" id="ps-exp-text">0/100 EXP</div></div>
+        <div class="ps-journey-title">Hành trình của tôi:</div>
+        <div class="ps-journey-list" id="ps-journey-list">
+          <div class="ps-journey-empty">Chưa chơi map nào.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- FRIENDS PAGE -->
+  <div class="page page-friends" id="page-friends">
+    <div class="section-header" style="margin-bottom:20px">
+      <h3>👥 Bạn bè & Tin nhắn</h3>
+    </div>
+    <div class="friends-layout">
+      <!-- Left column: friend list + requests -->
+      <div>
+        <div class="friends-panel-card" style="margin-bottom:16px">
+          <div class="fp-card-header">
+            🤝 Danh sách bạn bè
+            <span style="font-size:12px;color:var(--text-muted);font-weight:600" id="friend-count-label">0 bạn</span>
+          </div>
+          <div class="fp-card-body" id="home-friend-list"></div>
+        </div>
+        <div class="friends-panel-card">
+          <div class="fp-card-header">
+            📨 Lời mời kết bạn
+            <span class="req-count-pill" id="home-req-pill"></span>
+          </div>
+          <div class="fp-card-body" id="home-req-list"></div>
+        </div>
+      </div>
+
+      <!-- Right column: DM -->
+      <div class="dm-panel-card">
+        <div class="fp-card-header" style="border-bottom:1px solid var(--border)">
+          💬 Tin nhắn trực tiếp
+        </div>
+        <div class="dm-convo-list" id="home-dm-list"></div>
+        <div class="dm-chat-area">
+          <div id="home-dm-msgs" class="dm-msgs-box">
+            <div class="dm-no-convo">Chọn người bạn bên trái để nhắn tin</div>
+          </div>
+          <div class="dm-input-area">
+            <input class="dm-text-input" id="home-dm-input" maxlength="200" placeholder="Nhắn tin...">
+            <button class="dm-send-btn-home" id="home-dm-send">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM UTILITY BAR: coins, bạn bè, đăng nhập/đăng xuất — đặt dưới phần main thay vì trên navbar -->
+  <div class="bottom-util-bar">
+    <div class="bub-card">💰 <span class="bub-coins" id="nav-coins">0</span> xu</div>
+    <button class="bub-friends-btn" id="bub-friends-btn">
+      👥 Bạn bè <span class="nav-badge" id="nav-req-badge"></span>
+    </button>
+    <button class="bub-logout-btn" id="logout-btn">Đăng xuất</button>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="vv-learn.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+  authDomain: "vvss-b7a49.firebaseapp.com",
+  databaseURL: "https://vvss-b7a49-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "vvss-b7a49",
+  storageBucket: "vvss-b7a49.firebasestorage.app",
+  messagingSenderId: "562837285603",
+  appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6"
+};
+firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────
+const SKIN_DATA = [
+  { color: 'blue',   name: 'Xanh Dương', price: 0,  spriteY: 0    },
+  { color: 'red',    name: 'Đỏ Rực',     price: 10, spriteY: -16  },
+  { color: 'orange', name: 'Cam Nắng',   price: 15, spriteY: -32  },
+  { color: 'yellow', name: 'Vàng Óng',   price: 20, spriteY: -48  },
+  { color: 'green',  name: 'Xanh Lá',    price: 25, spriteY: -64  },
+  { color: 'purple', name: 'Tím Hoàng',  price: 30, spriteY: -80  },
+];
+
+const COLOR_SPRITE_Y = { blue:0, red:-16, orange:-32, yellow:-48, green:-64, purple:-80 };
+
+// ─── HANOI TIME HELPERS ─────────────────────────────────────────
+const HANOI_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+function getHanoiNow() {
+  const now = new Date();
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utcMs + HANOI_OFFSET_MS);
+}
+
+function getHanoiDayIndex() {
+  const d = getHanoiNow().getDay();
+  return (d + 6) % 7;
+}
+
+function getHanoiDateKey() {
+  const d = getHanoiNow();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function getHanoiWeekNumber() {
+  const d = getHanoiNow();
+  const onejan = new Date(d.getFullYear(), 0, 1);
+  const dayOfYear = Math.floor((d - onejan) / 86400000) + 1;
+  return Math.ceil((dayOfYear + ((onejan.getDay() + 6) % 7)) / 7);
+}
+
+const DAY_LABELS_FULL = ['Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.', 'Sun.'];
+
+// ─── WEEKLY CHALLENGE ───────────────────────────────────────────
+let weeklyChallengeData = {};
+let myStreakDays = {};
+
+function listenWeeklyChallenge() {
+  firebase.database().ref('weeklyChallenge').on('value', snap => {
+    weeklyChallengeData = snap.val() || {};
+    renderWeeklyChallenge();
+  });
+}
+
+function renderWeeklyChallenge() {
+  const wrap = document.getElementById('challenge-days');
+  const weekLabel = document.getElementById('challenge-week-label');
+  if (!wrap) return;
+  if (weekLabel) weekLabel.textContent = `TUẦN ${getHanoiWeekNumber()}`;
+
+  const todayIdx = getHanoiDayIndex();
+  wrap.innerHTML = '';
+
+  DAY_LABELS_FULL.forEach((label, idx) => {
+    const challenge = weeklyChallengeData[idx];
+    const isToday = idx === todayIdx;
+    const lit = !!(challenge && challenge.mapId && myStreakDays[challenge.mapId + '_' + idx + '_' + getCurrentCycleKey(idx)]);
+
+    const dayEl = document.createElement('div');
+    dayEl.className = 'challenge-day';
+    const flameClasses = ['flame-badge'];
+    if (!challenge || !challenge.mapId) flameClasses.push('no-map');
+    if (lit) flameClasses.push('lit');
+    if (isToday) flameClasses.push('is-today-ring');
+
+    dayEl.innerHTML = `
+      <div class="challenge-day-label ${isToday ? 'is-today' : ''}">${label}</div>
+      <div class="${flameClasses.join(' ')}" title="${challenge && challenge.mapName ? escapeHtml(challenge.mapName) : 'Chưa có map'}">🔥</div>
+    `;
+    if (challenge && challenge.mapId) {
+      dayEl.querySelector('.flame-badge').addEventListener('click', () => {
+        enterMap(challenge.mapId, allMapsData[challenge.mapId] || { name: challenge.mapName });
+      });
+    }
+    wrap.appendChild(dayEl);
+  });
+}
+
+function getCurrentCycleKey(dayIdx) {
+  const now = getHanoiNow();
+  const curIdx = getHanoiDayIndex();
+  const diff = dayIdx - curIdx;
+  const target = new Date(now);
+  target.setDate(target.getDate() + diff);
+  const y = target.getFullYear();
+  const m = String(target.getMonth() + 1).padStart(2, '0');
+  const day = String(target.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function loadStreakAndJourney() {
+  if (!currentUser) return;
+  firebase.database().ref(`playerStreaks/${currentUser.uid}`).on('value', snap => {
+    const data = snap.val() || {};
+    myStreakDays = data.completedFlames || {};
+    const streakCount = data.currentStreak || 0;
+    const psStreak = document.getElementById('ps-streak');
+    if (psStreak) psStreak.textContent = streakCount;
+    const level = Math.max(1, Math.floor(streakCount / 3) + 1);
+    const psLevel = document.getElementById('ps-level');
+    if (psLevel) psLevel.textContent = level;
+    renderWeeklyChallenge();
+    renderJourney(data.history || {});
+  });
+}
+
+function renderJourney(history) {
+  const list = document.getElementById('ps-journey-list');
+  if (!list) return;
+  const entries = Object.values(history).sort((a, b) => (b.playedAt || 0) - (a.playedAt || 0)).slice(0, 5);
+  if (entries.length === 0) {
+    list.innerHTML = '<div class="ps-journey-empty">Chưa chơi map nào.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(e => `
+    <div class="ps-journey-item">
+      ${e.imageUrl ? `<img class="ps-journey-thumb" src="${escapeHtml(e.imageUrl)}" onerror="this.style.display='none'">` : `<div class="ps-journey-thumb"></div>`}
+      <div class="ps-journey-info">
+        <div class="ps-journey-name">${escapeHtml(e.mapName || 'Map')}</div>
+        <div class="ps-journey-meta"><span class="ps-journey-stars">${'★'.repeat(e.stars||0)}${'☆'.repeat(5-(e.stars||0))}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── STATE ────────────────────────────────────────────────────
+let currentUser = null;
+let playerData = null;
+let allMapsData = {};
+let isRegisterMode = false;
+let currentFilter = 'all';
+let onlinePlayerCount = 0;
+let searchQuery = '';
+
+// ─── TOAST ────────────────────────────────────────────────────
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+// ─── AUTH FORM ────────────────────────────────────────────────
+let authMode = 'login';
+
+document.getElementById('auth-toggle-link').addEventListener('click', () => {
+  authMode = authMode === 'login' ? 'register' : 'login';
+  const btn = document.getElementById('auth-action-btn');
+  const toggle = document.getElementById('auth-toggle-text');
+  if (authMode === 'register') {
+    btn.textContent = 'Đăng ký';
+    toggle.innerHTML = 'Đã có tài khoản? <span id="auth-toggle-link">Đăng nhập</span>';
+  } else {
+    btn.textContent = 'Đăng nhập';
+    toggle.innerHTML = 'Chưa có tài khoản? <span id="auth-toggle-link">Đăng ký ngay</span>';
+  }
+  document.getElementById('auth-error').textContent = '';
+  document.getElementById('auth-toggle-link').addEventListener('click', arguments.callee);
+});
+
+document.getElementById('auth-action-btn').addEventListener('click', async () => {
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Vui lòng nhập email và mật khẩu.'; return; }
+  try {
+    if (authMode === 'login') {
+      await firebase.auth().signInWithEmailAndPassword(email, pass);
+    } else {
+      await firebase.auth().createUserWithEmailAndPassword(email, pass);
+    }
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found': 'Không tìm thấy tài khoản.',
+      'auth/wrong-password': 'Mật khẩu không đúng.',
+      'auth/email-already-in-use': 'Email đã được sử dụng.',
+      'auth/weak-password': 'Mật khẩu cần ít nhất 6 ký tự.',
+      'auth/invalid-email': 'Email không hợp lệ.',
+    };
+    errEl.textContent = msgs[e.code] || e.message;
+  }
+});
+
+document.getElementById('google-btn').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    await firebase.auth().signInWithPopup(provider);
+  } catch(e) {
+    document.getElementById('auth-error').textContent = e.message;
+  }
+});
+
+// ─── AUTH STATE ───────────────────────────────────────────────
+firebase.auth().onAuthStateChanged(async (user) => {
+  const loadingEl = document.getElementById('loading-overlay');
+
+  if (user) {
+    currentUser = user;
+    document.getElementById('auth-overlay').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    await initPlayerData();
+    loadMaps();
+    listenOnlinePlayers();
+    initHomeFriendSystem();
+    listenWeeklyChallenge();
+    seedDemoMapsIfEmpty();
+  } else {
+    currentUser = null;
+    document.getElementById('auth-overlay').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+
+  // Tắt màn hình chờ "Đang tải minigame..." sau khi đã xác định xong trạng thái đăng nhập
+  if (loadingEl) {
+    loadingEl.style.display = 'none';
+  }
+});
+
+// ─── PLAYER DATA ──────────────────────────────────────────────
+async function initPlayerData() {
+  const ref = firebase.database().ref(`players/${currentUser.uid}`);
+  const snap = await ref.once('value');
+  if (!snap.exists()) {
+    const defaultName = generateName();
+    await ref.set({
+      id: currentUser.uid,
+      name: defaultName,
+      email: currentUser.email || '',
+      color: 'blue',
+      coins: 0,
+      purchasedSkins: { blue: true },
+      direction: 'right',
+      x: 1, y: 4, px: 24, py: 72,
+    });
+  }
+  ref.on('value', (s) => {
+    playerData = s.val();
+    if (!playerData) return;
+    updateUIWithPlayerData();
+  });
+}
+
+function updateUIWithPlayerData() {
+  if (!playerData) return;
+  const name = playerData.name || 'Player';
+  const coins = playerData.coins || 0;
+  const color = playerData.color || 'blue';
+  const sprY = COLOR_SPRITE_Y[color] || 0;
+  const skinCount = Object.keys(playerData.purchasedSkins || { blue: true }).length;
+
+  document.getElementById('nav-coins').textContent = coins;
+  const li = VV.levelInfo(playerData.exp || 0);
+  const lvEl = document.getElementById('ps-level'); if (lvEl) lvEl.textContent = li.level;
+  const xf = document.getElementById('ps-exp-fill'); if (xf) xf.style.width = li.pct + '%';
+  const xt = document.getElementById('ps-exp-text'); if (xt) xt.textContent = li.cur + '/' + li.need + ' EXP';
+
+  const psName = document.getElementById('ps-name');
+  if (psName) psName.textContent = name;
+  const psSkins = document.getElementById('ps-skins');
+  if (psSkins) psSkins.textContent = skinCount;
+  const psSprite = document.getElementById('ps-avatar-sprite');
+  if (psSprite) psSprite.style.backgroundPositionY = sprY + 'px';
+
+  renderWeeklyChallenge();
+  loadStreakAndJourney();
+}
+
+function generateName() {
+  const adj = ['COOL','SWIFT','BRAVE','WILD','BOLD','DARK','SWIFT'];
+  const noun = ['BEAR','WOLF','HAWK','LION','TIGER','PANDA','EAGLE'];
+  return adj[Math.floor(Math.random()*adj.length)] + ' ' + noun[Math.floor(Math.random()*noun.length)];
+}
+
+// ─── NAVIGATION ──
+(function() {
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (navbar) {
+      if (window.scrollY > 20) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    }
+  });
+  const hbtn = document.getElementById('hamburgerBtn');
+  const drawer = document.getElementById('mobileDrawer');
+  if (hbtn && drawer) {
+    hbtn.addEventListener('click', e => { e.stopPropagation(); hbtn.classList.toggle('open'); drawer.classList.toggle('open'); });
+    document.addEventListener('click', e => {
+      if (!drawer.contains(e.target) && !hbtn.contains(e.target)) { hbtn.classList.remove('open'); drawer.classList.remove('open'); }
+    });
+  }
+  const logo = document.getElementById('logoImg');
+  if (logo) logo.addEventListener('click', () => window.location.href = 'index.html');
+})();
+
+document.getElementById('bub-friends-btn').addEventListener('click', () => {
+  document.querySelectorAll('.page, .page-friends').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-friends').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  firebase.auth().signOut();
+});
+
+// ─── ONLINE COUNTER ───────────────────────────────────────────
+function listenOnlinePlayers() {
+  firebase.database().ref('players').on('value', snap => {
+    const all = snap.val() || {};
+    onlinePlayerCount = Object.keys(all).length;
+  });
+}
+
+// ─── MAPS ─────────────────────────────────────────────────────
+function loadMaps() {
+  firebase.database().ref('maps').on('value', snap => {
+    allMapsData = snap.val() || {};
+    renderMaps();
+  });
+}
+
+function mapStarRating(map) {
+  const p = map.playCount || 0;
+  if (p >= 100) return 5;
+  if (p >= 50) return 4;
+  if (p >= 20) return 3;
+  if (p >= 5) return 2;
+  if (p >= 1) return 1;
+  return 0;
+}
+
+function renderStarsHtml(stars) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) html += `<span class="${i <= stars ? 'filled' : ''}">★</span>`;
+  return html;
+}
+
+let activeTag = '';
+// Bộ lọc từ link ở trang Khám phá: minigame.html?province=Hà Nội&tags=lễ hội,truyền thuyết
+const _qs = new URLSearchParams(location.search);
+let qProvince = VV.toArr(_qs.get('province') || _qs.get('tag'));
+let qTags = VV.toArr(_qs.get('tags'));
+function matchQuery(m) {
+  const keys = mapAllTags(m).map(VV.key);
+  return (!qProvince.length || qProvince.some(p => keys.includes(VV.key(p))))
+      && (!qTags.length || qTags.some(t => keys.includes(VV.key(t))));
+}
+function renderQueryBanner(n) {
+  const box = document.getElementById('query-banner');
+  box.innerHTML = '';
+  if (!qProvince.length && !qTags.length) return;
+  const span = document.createElement('span');
+  span.textContent = (n ? '🔎 Map liên quan đến: ' : '😅 Chưa có map nào cho: ') + qProvince.map(p => '📍' + p).concat(qTags.map(t => '#' + t)).join('  ');
+  const b = document.createElement('button'); b.textContent = 'Xem tất cả map';
+  b.addEventListener('click', () => { qProvince = []; qTags = []; history.replaceState(null, '', location.pathname); renderMaps(); });
+  box.append(span, b);
+}
+function mapAllTags(m) { return VV.toArr(m.tags).concat(VV.toArr(m.provinces)); }
+function renderTagFilter(maps) {
+  const box = document.getElementById('tag-filter-row');
+  const count = {};
+  maps.forEach(([,m]) => mapAllTags(m).forEach(t => { const k = VV.norm(t); if (!count[k]) count[k] = { label: t, n: 0 }; count[k].n++; }));
+  const keys = Object.keys(count).sort((a, b) => count[b].n - count[a].n).slice(0, 14);
+  box.innerHTML = '';
+  if (!keys.length) return;
+  const all = document.createElement('button'); all.className = 'tag-chip' + (activeTag ? '' : ' active'); all.textContent = '🏷️ Tất cả tag';
+  all.addEventListener('click', () => { activeTag = ''; renderMaps(); }); box.appendChild(all);
+  keys.forEach(k => {
+    const b = document.createElement('button'); b.className = 'tag-chip' + (activeTag === k ? ' active' : '');
+    b.textContent = count[k].label + ' · ' + count[k].n;
+    b.addEventListener('click', () => { activeTag = (activeTag === k ? '' : k); renderMaps(); });
+    box.appendChild(b);
+  });
+}
+
+function renderMaps() {
+  const grid = document.getElementById('maps-grid');
+  let maps = Object.entries(allMapsData);
+
+  if (currentFilter === 'mine') {
+    maps = maps.filter(([,m]) => m.creatorId === currentUser.uid);
+  } else {
+    maps = maps.filter(([,m]) => m.status === 'approved' || m.status === undefined || (m.creatorId === currentUser.uid));
+  }
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    const qn = VV.norm(searchQuery);
+    maps = maps.filter(([,m]) => VV.norm(m.name).includes(qn) || mapAllTags(m).some(t => VV.norm(t).includes(qn)));
+  }
+
+  if (currentFilter === 'popular') {
+    maps.sort((a, b) => (b[1].playCount || 0) - (a[1].playCount || 0));
+  } else if (currentFilter === 'newest') {
+    maps.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+  }
+
+  if (qProvince.length || qTags.length) maps = maps.filter(([,mm]) => matchQuery(mm));
+  renderTagFilter(maps);
+  if (activeTag) maps = maps.filter(([,m]) => mapAllTags(m).some(t => VV.norm(t) === activeTag));
+  renderQueryBanner(maps.length);
+
+  grid.innerHTML = '';
+
+  const createCard = document.createElement('div');
+  createCard.className = 'create-map-card';
+  createCard.innerHTML = '<span>➕</span><p>Tạo Map Mới</p>';
+  createCard.addEventListener('click', () => {
+    window.location.href = 'create.html';
+  });
+  grid.appendChild(createCard);
+
+  if (maps.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'no-maps';
+    empty.innerHTML = '<span>🌐</span>Chưa có map nào. Hãy tạo map đầu tiên!';
+    grid.appendChild(empty);
+    return;
+  }
+
+  maps.forEach(([id, map]) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'map-card-wrap';
+
+    const card = document.createElement('div');
+    card.className = 'map-card style-explore';
+    const imgHTML = map.imageUrl
+      ? `<img class="map-thumb" src="${escapeHtml(map.imageUrl)}" alt="${escapeHtml(map.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : '';
+    const placeholderStyle = map.imageUrl ? 'style="display:none"' : '';
+    const stars = mapStarRating(map);
+    const qn = (Array.isArray(map.npcs) ? map.npcs : []).reduce((n, x) => n + ((x.quiz || []).length), 0);
+    const tagList = VV.toArr(map.tags), provList = VV.toArr(map.provinces);
+    const tagsHtml = (tagList.length || provList.length || qn) ? `<div class="map-tags">
+        ${tagList.map(t => `<span class="tag-chip">#${escapeHtml(t)}</span>`).join('')}
+        ${provList.map(t => `<span class="tag-chip prov">📍${escapeHtml(t)}</span>`).join('')}
+        ${qn ? `<span class="tag-chip quiz">🎓 ${qn} câu hỏi</span>` : ''}</div>` : '';
+    const learnHtml = (tagList.length || provList.length) ? `<div class="learn-row">
+        <a class="learn-link" href="${escapeHtml(VV.learnUrl('library.html', map))}" onclick="event.stopPropagation()">📚 Sách liên quan</a>
+        <a class="learn-link" href="${escapeHtml(VV.learnUrl('explore.html', map))}" onclick="event.stopPropagation()">🧭 Khám phá</a></div>` : '';
+    const isPending = map.status !== 'approved';
+    const statusBadge = isPending ? `<div class="map-card-status pending">⏳ Chờ duyệt</div>` : '';
+
+    card.innerHTML = `
+      ${imgHTML}
+      <div class="map-thumb-placeholder" ${placeholderStyle}>🗺️</div>
+      ${statusBadge}
+      <div class="map-info">
+        <div class="map-name">${escapeHtml(map.name || 'Không tên')}</div>
+        ${tagsHtml}
+        <div class="map-card-score">${map.playCount || 0} điểm</div>
+        <div class="map-card-stars">
+          <span class="stars-row">${renderStarsHtml(stars)}</span>
+          <span class="map-tag">${map.gridWidth || '?'}×${map.gridHeight || '?'}</span>
+        </div>
+        ${learnHtml}
+      </div>
+      <div class="map-footer">
+        <div class="map-creator">bởi ${escapeHtml(map.creatorName || 'Ẩn danh')}</div>
+        <button class="play-btn">▶ Chơi</button>
+      </div>
+    `;
+    card.querySelector('.play-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      enterMap(id, map);
+    });
+    card.addEventListener('click', () => enterMap(id, map));
+    wrap.appendChild(card);
+    grid.appendChild(wrap);
+  });
+}
+
+function enterMap(id, map) {
+  showToast(`Đang vào "${map.name || 'Map'}"... 🚀`, 'success');
+  firebase.database().ref(`maps/${id}/playCount`).transaction(v => (v || 0) + 1);
+  setTimeout(() => {
+    window.location.href = `play.html?map=${id}`;
+  }, 400);
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── SEARCH ───────────────────────────────────────────────────
+document.getElementById('map-search-btn').addEventListener('click', () => {
+  searchQuery = document.getElementById('map-search-input').value.trim();
+  renderMaps();
+});
+document.getElementById('map-search-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    searchQuery = e.target.value.trim();
+    renderMaps();
+  }
+});
+
+
+// Filters
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderMaps();
+  });
+});
+
+// ─── FRIEND SYSTEM ────────────────────────────────────────────
+let homeFriendsData = {};
+let homeFriendReqs = {};
+let homeSentReqs = {};
+let homeDmUid = null;
+let homeDmListener = null;
+
+function initHomeFriendSystem() {
+  const uid = currentUser.uid;
+
+  firebase.database().ref(`friends/${uid}`).on('value', snap => {
+    homeFriendsData = snap.val() || {};
+    renderHomeFriendList();
+    renderHomeDmList();
+    updateNavReqBadge();
+  });
+
+  firebase.database().ref(`friendRequests/${uid}`).on('value', snap => {
+    homeFriendReqs = snap.val() || {};
+    renderHomeReqList();
+    updateNavReqBadge();
+  });
+
+  firebase.database().ref(`friendRequestsSent/${uid}`).on('value', snap => {
+    homeSentReqs = snap.val() || {};
+  });
+
+  document.getElementById('home-dm-send').addEventListener('click', sendHomeDm);
+  document.getElementById('home-dm-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); sendHomeDm(); }
+  });
+}
+
+function updateNavReqBadge() {
+  const count = Object.keys(homeFriendReqs).length;
+  const badge = document.getElementById('nav-req-badge');
+  badge.textContent = count > 0 ? count : '';
+}
+
+function renderHomeFriendList() {
+  const el = document.getElementById('home-friend-list');
+  const label = document.getElementById('friend-count-label');
+  const entries = Object.entries(homeFriendsData);
+  label.textContent = `${entries.length} bạn`;
+  const psFriends = document.getElementById('ps-friends');
+  if (psFriends) psFriends.textContent = entries.length;
+
+  if (entries.length === 0) {
+    el.innerHTML = '<div class="home-empty">Chưa có bạn bè nào.<br>Vào game và click vào người chơi khác để kết bạn!</div>';
+    return;
+  }
+  el.innerHTML = '';
+  entries.forEach(([fUid, fData]) => {
+    const sprY = COLOR_SPRITE_Y[fData.color || 'blue'] || 0;
+    const item = document.createElement('div');
+    item.className = 'home-friend-item';
+    item.innerHTML = `
+      <div class="home-fi-avatar">
+        <div class="hfa-shadow"></div>
+        <div class="hfa-sprite" style="background-position-y:${sprY / 2}px"></div>
+      </div>
+      <span class="home-fi-name">${escapeHtml(fData.name || 'Player')}</span>
+      <button class="home-fi-btn msg">💬</button>
+      <button class="home-fi-btn remove">✕</button>
+    `;
+    item.querySelector('.msg').addEventListener('click', (e) => { e.stopPropagation(); openHomeDm(fUid, fData.name); });
+    item.querySelector('.remove').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (!confirm(`Xóa ${fData.name} khỏi danh sách bạn bè?`)) return;
+      await firebase.database().ref(`friends/${currentUser.uid}/${fUid}`).remove();
+      await firebase.database().ref(`friends/${fUid}/${currentUser.uid}`).remove();
+      showToast('Đã xóa bạn bè.', 'info');
+    });
+    el.appendChild(item);
+  });
+}
+
+function renderHomeReqList() {
+  const el = document.getElementById('home-req-list');
+  const pill = document.getElementById('home-req-pill');
+  const entries = Object.entries(homeFriendReqs);
+  pill.textContent = entries.length > 0 ? entries.length : '';
+
+  if (entries.length === 0) {
+    el.innerHTML = '<div class="home-empty">Không có lời mời kết bạn nào.</div>';
+    return;
+  }
+  el.innerHTML = '';
+  entries.forEach(([fromUid, fromData]) => {
+    const sprY = COLOR_SPRITE_Y[fromData.color || 'blue'] || 0;
+    const item = document.createElement('div');
+    item.className = 'home-friend-item';
+    item.innerHTML = `
+      <div class="home-fi-avatar">
+        <div class="hfa-shadow"></div>
+        <div class="hfa-sprite" style="background-position-y:${sprY / 2}px"></div>
+      </div>
+      <span class="home-fi-name">${escapeHtml(fromData.name || 'Player')}</span>
+      <button class="home-fi-btn accept">✓</button>
+      <button class="home-fi-btn deny">✕</button>
+    `;
+    item.querySelector('.accept').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const myData = playerData || {};
+      await firebase.database().ref(`friends/${currentUser.uid}/${fromUid}`).set({ name: fromData.name, color: fromData.color });
+      await firebase.database().ref(`friends/${fromUid}/${currentUser.uid}`).set({ name: myData.name || 'Player', color: myData.color || 'blue' });
+      await firebase.database().ref(`friendRequests/${currentUser.uid}/${fromUid}`).remove();
+      await firebase.database().ref(`friendRequestsSent/${fromUid}/${currentUser.uid}`).remove();
+      showToast(`🎉 Đã kết bạn với ${escapeHtml(fromData.name || 'Player')}!`, 'success');
+    });
+    item.querySelector('.deny').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await firebase.database().ref(`friendRequests/${currentUser.uid}/${fromUid}`).remove();
+    });
+    el.appendChild(item);
+  });
+}
+
+function renderHomeDmList() {
+  const el = document.getElementById('home-dm-list');
+  el.innerHTML = '';
+  const entries = Object.entries(homeFriendsData);
+  if (entries.length === 0) {
+    el.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text-muted);text-align:center">Hãy kết bạn trước!</div>';
+    return;
+  }
+  entries.forEach(([fUid, fData]) => {
+    const item = document.createElement('div');
+    item.className = 'dm-convo-item' + (homeDmUid === fUid ? ' active' : '');
+    item.innerHTML = `<span class="dm-convo-name">${escapeHtml(fData.name || 'Player')}</span>`;
+    item.addEventListener('click', () => openHomeDm(fUid, fData.name));
+    el.appendChild(item);
+  });
+}
+
+function getDmKey(uid1, uid2) { return [uid1, uid2].sort().join('_'); }
+
+function openHomeDm(fUid, fName) {
+  homeDmUid = fUid;
+  renderHomeDmList();
+
+  const msgsBox = document.getElementById('home-dm-msgs');
+  msgsBox.innerHTML = '<div class="dm-no-convo">Đang tải...</div>';
+
+  if (homeDmListener) { homeDmListener(); homeDmListener = null; }
+
+  const ref = firebase.database().ref(`directMessages/${getDmKey(currentUser.uid, fUid)}`).limitToLast(50);
+  const handler = ref.on('value', snap => {
+    const msgs = snap.val() || {};
+    const list = Object.values(msgs).sort((a,b) => a.ts - b.ts);
+    if (list.length === 0) {
+      msgsBox.innerHTML = '<div class="dm-no-convo">Chưa có tin nhắn nào. Hãy nhắn trước!</div>';
+      return;
+    }
+    msgsBox.innerHTML = list.map(m => {
+      const isMe = m.uid === currentUser.uid;
+      return `<div class="dm-msg-row">
+        <span class="dm-sndr ${isMe ? 'me' : 'other'}">${escapeHtml(m.name)}:</span>
+        <span class="dm-body">${escapeHtml(m.text)}</span>
+      </div>`;
+    }).join('');
+    msgsBox.scrollTop = msgsBox.scrollHeight;
+  });
+  homeDmListener = () => ref.off('value', handler);
+}
+
+function sendHomeDm() {
+  if (!homeDmUid || !currentUser) return;
+  const input = document.getElementById('home-dm-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const myData = playerData || {};
+  firebase.database().ref(`directMessages/${getDmKey(currentUser.uid, homeDmUid)}`).push({
+    uid: currentUser.uid,
+    name: myData.name || 'Player',
+    text: text.slice(0, 200),
+    ts: Date.now(),
+  });
+  input.value = '';
+}
+
+// ─── DEMO MAP DATA (nếu DB trống) ─────────────────────────────
+async function seedDemoMapsIfEmpty() {
+  const snap = await firebase.database().ref('maps').once('value');
+  if (snap.exists()) return;
+  const demoMaps = [
+    { name: 'Làng Nón Lá', imageUrl: '', gridWidth: 15, gridHeight: 13, playCount: 42, creatorName: 'Admin', creatorId: 'admin', onlineCount: 3, createdAt: Date.now() - 86400000, status: 'approved' },
+    { name: 'Phố Cổ Hội An', imageUrl: '', gridWidth: 20, gridHeight: 16, playCount: 27, creatorName: 'HoiAnDev', creatorId: 'demo2', onlineCount: 1, createdAt: Date.now() - 3600000, status: 'approved' },
+    { name: 'Vịnh Hạ Long', imageUrl: '', gridWidth: 30, gridHeight: 20, playCount: 15, creatorName: 'VNMapper', creatorId: 'demo3', onlineCount: 0, createdAt: Date.now(), status: 'approved' },
+  ];
+  for (const m of demoMaps) {
+    await firebase.database().ref('maps').push(m);
+  }
+}
+</script>
+</body>
+</html>

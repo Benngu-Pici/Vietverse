@@ -1,0 +1,505 @@
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: linear-gradient(180deg, #64BEFF -50%, #6e96ff 69.71%, #2a65ff 150%);
+  font-family: 'Source Sans Pro', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Camera wrapper — full screen, clips the map */
+.camera-wrapper {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Camera pan layer — translate only, NO scale here */
+.camera-pan {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: auto;
+  will-change: transform;
+}
+
+/* Scale-only layer — scale only, NO translate here */
+.game-container { 
+  position: relative;
+  width: 240px;
+  height: 208px;
+  background: url(images/map.png) no-repeat no-repeat;
+  image-rendering: pixelated;
+  transform: scale(4);
+  transform-origin: top left;
+}
+
+/* Mobile Controls - Chỉ joystick */
+.joystick-container {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 100;
+  display: none;
+}
+
+.joystick-base {
+  width: 120px;
+  height: 120px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  backdrop-filter: blur(8px);
+  border: 3px solid rgba(255, 215, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.joystick-thumb {
+  width: 55px;
+  height: 55px;
+  background: radial-gradient(circle, #ffd700 0%, #ffaa00 100%);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.05s linear;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  .joystick-container {
+    display: block;
+  }
+  .mobile-controls {
+    display: none !important;
+  }
+}
+
+/* Characters */
+.grid-cell {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+}
+
+.Character {
+  position: absolute;
+}
+
+.Character.you {
+  z-index: 2;
+}
+
+.Character.you .Character_you-arrow {
+  display: block;
+}
+
+.Character_you-arrow {
+  display: none;
+  position: absolute;
+  top: -18px;
+  left: 5px;
+  width: 7px;
+  height: 5px;
+  background: url(images/arrow.png) no-repeat no-repeat;
+}
+
+.Character_sprite {
+  overflow: hidden;
+  top: -3px;
+  background: url(images/characters.png);
+  position: absolute;
+  width: 16px;
+  height: 16px;
+}
+
+.Character[data-direction="right"] .Character_sprite {
+  background-position-x: 16px;
+}
+
+.Character[data-color="blue"] .Character_sprite { background-position-y: 0px; }
+.Character[data-color="red"] .Character_sprite { background-position-y: -16px; }
+.Character[data-color="orange"] .Character_sprite { background-position-y: -32px; }
+.Character[data-color="yellow"] .Character_sprite { background-position-y: -48px; }
+.Character[data-color="green"] .Character_sprite { background-position-y: -64px; }
+.Character[data-color="purple"] .Character_sprite { background-position-y: -80px; }
+
+.Character_shadow {
+  background: url(images/shadow.png) no-repeat no-repeat;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+}
+
+.Character_name-container {
+  position: absolute;
+  top: -12px;
+  left: -5px;
+  font-size: 5px;
+  padding: 1px 2px 1px;
+  border-radius: 3px;
+  background: #333;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.Character_coins {
+  margin-left: 1px;
+  color: gold;
+}
+
+/* Merchant */
+.merchant {
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+}
+.merchant .Character_name-container {
+  background: #8B4513;
+  font-size: 4px;
+  top: -14px;
+}
+
+/* NPC Elder */
+.npc-elder {
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+}
+.npc-elder .Character_name-container {
+  background: #2E7D32;
+  font-size: 4px;
+  top: -14px;
+}
+
+/* Coins */
+.Coin { position: absolute; }
+
+.Coin_sprite {
+  background: url(images/coin.png) no-repeat no-repeat;
+  animation: coinFloat 0.8s linear infinite alternate-reverse;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes coinFloat {
+  from { transform: translateY(0); }
+  to { transform: translateY(5px); }
+}
+
+.Coin_shadow {
+  background: url(images/coin-shadow.png) no-repeat no-repeat;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+}
+
+/* Coordinate Display */
+.coord-display {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #00ff88;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  z-index: 999;
+  border: 1px solid #00ff88;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Player Info */
+.player-info {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 8px 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(5px);
+  border: 1px solid #ffd700;
+  z-index: 200;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .player-info {
+    top: 5px; left: 5px;
+    padding: 5px 8px;
+    gap: 5px;
+  }
+  .player-info > div { padding: 3px 6px; }
+  label { font-size: 8px; }
+  input[type="text"] { font-size: 10px; height: 22px; width: 80px; }
+  .coin-amount { font-size: 12px; }
+}
+
+.player-info > div {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid #ffd700;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  color: #ffd700;
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+input[type="text"] {
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 12px;
+  height: 28px;
+  border-radius: 4px;
+  outline: 0;
+  padding-left: 0.5em;
+  border: 2px solid #222034;
+  width: 100px;
+  text-transform: uppercase;
+  background: #fff;
+}
+
+.coin-display { text-align: center; min-width: 70px; }
+
+.coin-amount {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 1px 1px 0 #333;
+}
+
+/* ========================================
+   MERCHANT MODAL (giữ nguyên kiểu cũ)
+   ======================================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(3px);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 550px;
+  border: 3px solid #ffd700;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@media (max-width: 768px) {
+  .modal-content { width: 95%; max-width: 95%; margin: 10px; }
+  .modal-header h2 { font-size: 1rem; }
+  .skin-shop-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+  .skin-item { padding: 8px; }
+  .skin-preview { transform: scale(1.5); }
+  .skin-name { font-size: 0.7rem; }
+  .skin-buy-btn { font-size: 0.65rem; padding: 6px 8px; }
+}
+
+@keyframes modalSlideIn {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 2px solid #ffd700;
+  background: linear-gradient(135deg, #3a2a0a 0%, #2a1a0a 100%);
+  border-radius: 13px 13px 0 0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #ffd700;
+  font-size: 1.3rem;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+}
+
+.close {
+  color: #ffd700;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  line-height: 1;
+}
+.close:hover { color: #ff6600; transform: scale(1.2); }
+
+.modal-body { padding: 20px; }
+
+.merchant-message {
+  text-align: center;
+  color: #ffd700;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.skin-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.skin-item {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: 0.2s;
+  border: 2px solid #444;
+}
+.skin-item:hover { transform: translateY(-3px); border-color: #ffd700; }
+
+.skin-preview {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 10px;
+  transform: scale(2);
+  image-rendering: pixelated;
+}
+.skin-preview .Character_sprite { top: -3px; left: 0; }
+.skin-preview .Character_shadow { top: 0; left: 0; }
+
+.skin-name {
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.skin-buy-btn {
+  background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: 0.2s;
+  color: #333;
+  width: 100%;
+}
+.skin-buy-btn:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 2px 8px rgba(255,215,0,0.5); }
+.skin-buy-btn:disabled { background: #555; cursor: not-allowed; color: #999; transform: none; }
+
+/* ========================================
+   POKÉMON-STYLE DIALOGUE BOX
+   ======================================== */
+#npc-dialogue-box {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  /* No background overlay — game stays fully visible */
+}
+
+.poke-dialogue-inner {
+  margin: 0 12px 12px;
+  background: #f0f0f0;
+  border: 4px solid #1a1a2e;
+  border-radius: 8px;
+  padding: 14px 18px 12px;
+  position: relative;
+  box-shadow: 0 -4px 0 #888, inset 0 2px 0 #fff;
+  min-height: 90px;
+}
+
+/* Speaker name tag */
+.poke-speaker {
+  position: absolute;
+  top: -18px;
+  left: 18px;
+  background: #1a1a2e;
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 4px 4px 0 0;
+  letter-spacing: 1px;
+}
+
+.poke-text {
+  font-size: 14px;
+  color: #1a1a2e;
+  line-height: 1.5;
+  font-weight: bold;
+  font-family: 'Source Sans Pro', sans-serif;
+  min-height: 50px;
+}
+
+/* Blinking arrow indicator */
+.poke-arrow {
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  width: 0; height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 10px solid #1a1a2e;
+  animation: pokeArrowBlink 0.6s step-end infinite;
+}
+
+@keyframes pokeArrowBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* When on last line — hide blink arrow, show done */
+.poke-dialogue-inner.last-line .poke-arrow {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .poke-dialogue-inner {
+    margin: 0 6px 6px;
+    padding: 12px 14px 10px;
+    min-height: 80px;
+  }
+  .poke-text { font-size: 12px; }
+  .poke-speaker { font-size: 10px; }
+}

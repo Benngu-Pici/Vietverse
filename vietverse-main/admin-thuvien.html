@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vietverse | Admin – Upload Sách</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap" rel="stylesheet"/>
+
+  <script src="vv-learn.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc,
+      query, orderBy, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+      authDomain: "vvss-b7a49.firebaseapp.com",
+      projectId: "vvss-b7a49",
+      storageBucket: "vvss-b7a49.firebasestorage.app",
+      messagingSenderId: "562837285603",
+      appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6",
+      measurementId: "G-BRSGSK6MSM"
+    });
+    const db = getFirestore(app);
+
+    // ---- TAGS / TỈNH (chip input) ----
+    const formTags = [], formProvs = [], modalTags = [], modalProvs = [];
+
+    function setupChips(rootId, arr) {
+      const root = document.getElementById(rootId);
+      const input = root.querySelector('input');
+      function draw() {
+        root.querySelectorAll('.chip').forEach(c => c.remove());
+        arr.forEach((t, i) => {
+          const c = document.createElement('span'); c.className = 'chip'; c.textContent = t;
+          const x = document.createElement('b'); x.textContent = '✕';
+          x.addEventListener('click', () => { arr.splice(i, 1); draw(); });
+          c.appendChild(x); root.insertBefore(c, input);
+        });
+      }
+      function add() {
+        const v = input.value.trim().replace(/^#/, '');
+        input.value = '';
+        if (!v || v.length > 24 || arr.length >= 8) return;
+        if (arr.some(t => VV.norm(t) === VV.norm(v))) return;
+        arr.push(v); draw();
+      }
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); }
+        else if (e.key === 'Backspace' && !input.value && arr.length) { arr.pop(); draw(); }
+      });
+      input.addEventListener('blur', add);
+      draw();
+      return draw;
+    }
+    let drawFormTags, drawFormProvs, drawModalTags, drawModalProvs;
+
+    let editBookId = null;
+    window.openTagModal = function(id, book) {
+      editBookId = id;
+      document.getElementById('tagModalTitle').textContent = book.title || 'Sách';
+      modalTags.length = 0; modalProvs.length = 0;
+      modalTags.push(...VV.toArr(book.tags)); modalProvs.push(...VV.toArr(book.provinces));
+      drawModalTags(); drawModalProvs();
+      document.getElementById('tagModal').classList.add('open');
+    };
+    window.closeTagModal = function() { document.getElementById('tagModal').classList.remove('open'); editBookId = null; };
+    window.saveTagModal = async function() {
+      if (!editBookId) return;
+      const btn = document.getElementById('tagSaveBtn'); btn.disabled = true;
+      try {
+        await updateDoc(doc(db, "books", editBookId), { tags: modalTags.slice(), provinces: modalProvs.slice() });
+        showToast('✓ Đã lưu tags.', 'success');
+        closeTagModal(); loadList();
+      } catch (err) { showToast('Lỗi: ' + err.message, 'error'); }
+      finally { btn.disabled = false; }
+    };
+
+    // Gợi ý tên tỉnh từ Firestore (collection 'provinces') để khớp với trang Khám phá
+    async function loadProvinceSuggestions() {
+      try {
+        const snap = await getDocs(collection(db, 'provinces'));
+        const names = [];
+        snap.forEach(d => { const x = d.data() || {}; names.push(x.name || x.title || d.id.replace(/([a-z])([A-Z])/g, '$1 $2')); });
+        const dl = document.getElementById('prov-suggest');
+        names.sort((a, b) => a.localeCompare(b, 'vi')).forEach(n => { const o = document.createElement('option'); o.value = n; dl.appendChild(o); });
+      } catch (e) { console.warn('Không tải được danh sách tỉnh:', e.message); }
+    }
+
+    // ---- LOAD LIST ----
+    async function loadList() {
+      const tbody = document.getElementById('booksTbody');
+      tbody.innerHTML = '<tr><td colspan="5" class="loading-row"><div class="spinner"></div>Đang tải...</td></tr>';
+      try {
+        const snap = await getDocs(query(collection(db,"books"), orderBy("createdAt","desc")));
+        if (snap.empty) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Chưa có sách nào.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = '';
+        snap.forEach(d => {
+          const b = d.data();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="td-cover">
+              ${b.coverUrl
+                ? `<img src="${b.coverUrl}" alt="cover" class="cover-thumb">`
+                : `<div class="cover-placeholder-sm">${(b.title||'?')[0]}</div>`}
+            </td>
+            <td class="td-title">${b.title || '—'}</td>
+            <td><span class="cat-badge cat-${b.category||'other'}">${catLabel(b.category)}</span></td>
+            <td>${b.grade ? `Lớp ${b.grade}` : '—'}</td>
+            <td class="td-actions">
+              ${b.pdfUrl ? `<a href="${b.pdfUrl}" target="_blank" class="btn-view">Xem</a>` : '<span class="no-link">—</span>'}
+              <button class="btn-view btn-tags" data-id="${d.id}">Tags</button>
+              <button class="btn-del" data-id="${d.id}">Xóa</button>
+            </td>
+          `;
+          // hiện tags / tỉnh dưới tên sách (dùng textContent để an toàn)
+          const tdT = tr.querySelector('.td-title');
+          const tg = VV.toArr(b.tags), pv = VV.toArr(b.provinces);
+          if (tg.length || pv.length) {
+            const box = document.createElement('div'); box.className = 'row-chips';
+            tg.forEach(t => { const c = document.createElement('span'); c.className = 'chip'; c.textContent = '#' + t; box.appendChild(c); });
+            pv.forEach(t => { const c = document.createElement('span'); c.className = 'chip prov'; c.textContent = '📍' + t; box.appendChild(c); });
+            tdT.appendChild(box);
+          }
+          tr.querySelector('.btn-tags').addEventListener('click', () => openTagModal(d.id, b));
+          tbody.appendChild(tr);
+        });
+
+        tbody.querySelectorAll('.btn-del').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            if (!confirm('Xóa sách này?')) return;
+            btn.disabled = true; btn.textContent = '...';
+            await deleteDoc(doc(db,"books",btn.dataset.id));
+            showToast('Đã xóa sách.','success');
+            loadList();
+          });
+        });
+      } catch(e) {
+        console.error(e);
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-row" style="color:var(--red)">Lỗi tải dữ liệu: ${e.message}</td></tr>`;
+      }
+    }
+
+    function catLabel(c) {
+      const map = {'ngu-van':'Ngữ Văn','lich-su':'Lịch Sử','dia-ly':'Địa Lý','gdcd':'GDCD','van-hoa':'Văn Hóa','other':'Khác'};
+      return map[c] || 'Khác';
+    }
+
+    // ---- SUBMIT ----
+    window.handleSubmit = async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const title    = document.getElementById('f-title').value.trim();
+      const category = document.getElementById('f-category').value;
+      const grade    = document.getElementById('f-grade').value.trim();
+      const coverUrl = document.getElementById('f-cover').value.trim();
+      const pdfUrl   = document.getElementById('f-pdf').value.trim();
+
+      if (!title || !pdfUrl) { showToast('Vui lòng điền đủ Tên sách và Link PDF.','error'); return; }
+
+      btn.disabled = true; btn.textContent = 'Đang lưu...';
+      try {
+        await addDoc(collection(db,"books"), {
+          title, category, grade: grade || null,
+          tags: formTags.slice(), provinces: formProvs.slice(),
+          coverUrl: coverUrl || null, pdfUrl,
+          createdAt: serverTimestamp()
+        });
+        showToast('✓ Thêm sách thành công!','success');
+        e.target.reset();
+        formTags.length = 0; formProvs.length = 0; drawFormTags(); drawFormProvs();
+        updatePreview();
+        loadList();
+      } catch(err) {
+        console.error(err);
+        showToast('Lỗi: ' + err.message,'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Thêm vào thư viện';
+      }
+    };
+
+    // ---- PREVIEW ----
+    window.updatePreview = function() {
+      const title    = document.getElementById('f-title').value.trim();
+      const coverUrl = document.getElementById('f-cover').value.trim();
+      const grade    = document.getElementById('f-grade').value.trim();
+      const prev     = document.getElementById('previewCard');
+
+      prev.querySelector('.prev-title').textContent = title || 'Tên sách';
+      const img = prev.querySelector('.prev-img');
+      const fallback = prev.querySelector('.prev-fallback');
+      const gradeBadge = prev.querySelector('.prev-grade');
+
+      if (coverUrl) {
+        img.src = coverUrl; img.style.display = 'block'; fallback.style.display = 'none';
+      } else {
+        img.style.display = 'none'; fallback.style.display = 'flex';
+        fallback.querySelector('span').textContent = title ? title[0].toUpperCase() : '?';
+      }
+      gradeBadge.textContent = grade || '';
+      gradeBadge.style.display = grade ? 'flex' : 'none';
+    };
+
+    window.showToast = function(msg, type='success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + type;
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => t.className = 'toast', 3000);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      drawFormTags = setupChips('f-tags', formTags); drawFormProvs = setupChips('f-provs', formProvs);
+      drawModalTags = setupChips('m-tags', modalTags); drawModalProvs = setupChips('m-provs', modalProvs);
+      loadProvinceSuggestions();
+      loadList();
+      ['f-title','f-cover','f-grade'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', updatePreview);
+      });
+    });
+  </script>
+
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --red:#d32f2f; --red-dark:#b71c1c; --gold:#f5c842;
+      --bg:#f7f3f0; --card:#fff; --border:#ece5e0;
+      --text:#1a1a1a; --muted:#888; --nh:66px;
+    }
+    body{min-height:100vh;background:var(--bg);font-family:'Be Vietnam Pro',sans-serif;color:var(--text);}
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-thumb{background:var(--red);border-radius:8px;}
+
+    /* ===== TOP BAR ===== */
+    .topbar{
+      position:sticky;top:0;z-index:100;
+      background:#fff;border-bottom:2px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 32px;height:var(--nh);
+      box-shadow:0 2px 16px rgba(0,0,0,.06);
+    }
+    .topbar-left{display:flex;align-items:center;gap:14px;}
+    .topbar img.logo{height:34px;cursor:pointer;}
+    .topbar-title{font-family:'Baloo 2',cursive;font-size:1.25rem;font-weight:800;color:var(--red);}
+    .badge-admin{
+      background:var(--red);color:#fff;font-size:.7rem;font-weight:800;
+      padding:3px 10px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase;
+    }
+    .btn-goto-lib{
+      text-decoration:none;color:var(--red);font-weight:700;font-size:.9rem;
+      display:flex;align-items:center;gap:7px;
+      padding:8px 18px;border-radius:10px;border:2px solid rgba(211,47,47,.25);
+      transition:background .2s,border-color .2s;
+    }
+    .btn-goto-lib:hover{background:rgba(211,47,47,.07);border-color:var(--red);}
+
+    /* ===== LAYOUT ===== */
+    .main{max-width:1160px;margin:0 auto;padding:36px 24px 80px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;}
+    @media(max-width:860px){.main{grid-template-columns:1fr;}}
+
+    /* ===== CARD ===== */
+    .card{background:var(--card);border-radius:20px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.07);border:1px solid var(--border);}
+    .card-title{
+      font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;color:var(--red);
+      margin-bottom:28px;display:flex;align-items:center;gap:10px;
+    }
+    .card-title svg{opacity:.75;}
+
+    /* ===== FORM ===== */
+    .form-group{margin-bottom:20px;}
+    .form-group label{
+      display:block;font-size:.82rem;font-weight:700;color:var(--muted);
+      letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;
+    }
+    .form-group label span.req{color:var(--red);}
+    .form-control{
+      width:100%;padding:12px 16px;border-radius:12px;
+      border:2px solid var(--border);background:#faf8f6;
+      font-family:'Be Vietnam Pro',sans-serif;font-size:.97rem;color:var(--text);
+      transition:border-color .2s,box-shadow .2s;
+      outline:none;
+    }
+    .form-control:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(211,47,47,.1);background:#fff;}
+    select.form-control{cursor:pointer;}
+
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr;}}
+
+    .hint{font-size:.78rem;color:var(--muted);margin-top:6px;line-height:1.5;}
+
+    .btn-submit{
+      width:100%;padding:14px;border-radius:14px;
+      background:var(--red);color:#fff;border:none;
+      font-family:'Be Vietnam Pro',sans-serif;font-size:1rem;font-weight:800;
+      cursor:pointer;letter-spacing:.04em;
+      transition:background .2s,transform .2s,box-shadow .2s;
+      box-shadow:0 4px 16px rgba(211,47,47,.3);
+      margin-top:8px;
+    }
+    .btn-submit:hover:not(:disabled){background:var(--red-dark);transform:translateY(-2px);box-shadow:0 8px 22px rgba(211,47,47,.35);}
+    .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+    /* ===== PREVIEW ===== */
+    .preview-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding-top:12px;}
+    .preview-label{font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+    #previewCard{
+      width:160px;display:flex;flex-direction:column;align-items:center;gap:12px;
+    }
+    .prev-cover{
+      width:160px;aspect-ratio:3/4;border-radius:12px;overflow:hidden;
+      box-shadow:0 8px 24px rgba(0,0,0,.15);position:relative;background:#f0e8d5;
+    }
+    .prev-img{width:100%;height:100%;object-fit:cover;display:none;}
+    .prev-fallback{
+      width:100%;height:100%;background:linear-gradient(145deg,#c62828,#ef5350);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .prev-fallback span{font-family:'Baloo 2',cursive;font-size:3rem;font-weight:800;color:#fff;}
+    .prev-grade{
+      position:absolute;top:8px;right:8px;width:32px;height:32px;
+      border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:.8rem;
+      display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);
+    }
+    .prev-title{font-size:.85rem;font-weight:700;color:var(--text);text-align:center;line-height:1.4;max-width:160px;}
+
+    /* ===== BOOK LIST ===== */
+    .list-card{grid-column:1/-1;}
+    .table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);}
+    table{width:100%;border-collapse:collapse;}
+    thead tr{background:rgba(211,47,47,.06);}
+    th{padding:13px 16px;text-align:left;font-size:.78rem;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+    td{padding:12px 16px;border-top:1px solid var(--border);vertical-align:middle;}
+    tr:hover td{background:#fdf9f9;}
+
+    .td-cover{width:60px;}
+    .cover-thumb{width:44px;height:58px;object-fit:cover;border-radius:7px;display:block;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+    .cover-placeholder-sm{
+      width:44px;height:58px;border-radius:7px;
+      background:linear-gradient(135deg,var(--red),#ef5350);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#fff;
+    }
+    .td-title{font-weight:600;font-size:.9rem;max-width:220px;}
+    .td-actions{white-space:nowrap;display:flex;gap:8px;align-items:center;}
+
+    .cat-badge{
+      display:inline-block;padding:4px 12px;border-radius:999px;
+      font-size:.72rem;font-weight:700;letter-spacing:.04em;
+      background:#f0f0f0;color:#666;
+    }
+    .cat-badge.cat-ngu-van{background:#e8f5e9;color:#2e7d32;}
+    .cat-badge.cat-lich-su{background:#e3f2fd;color:#1565c0;}
+    .cat-badge.cat-dia-ly{background:#e0f7fa;color:#006064;}
+    .cat-badge.cat-gdcd{background:#f3e5f5;color:#6a1b9a;}
+    .cat-badge.cat-van-hoa{background:#fce4ec;color:#880e4f;}
+
+    .btn-view{
+      text-decoration:none;background:#e8f4fd;color:#1565c0;
+      font-size:.8rem;font-weight:700;padding:5px 13px;border-radius:8px;
+      transition:background .2s;
+    }
+    .btn-view:hover{background:#bbdefb;}
+    .btn-del{
+      background:#fdecea;color:var(--red);border:none;
+      font-size:.8rem;font-weight:700;padding:5px 13px;border-radius:8px;
+      cursor:pointer;transition:background .2s;font-family:'Be Vietnam Pro',sans-serif;
+    }
+    .btn-del:hover{background:#ffcdd2;}
+    .no-link{color:#ccc;font-size:.85rem;}
+
+    .loading-row,.empty-row{
+      text-align:center;padding:40px!important;color:var(--muted);
+      font-weight:600;font-size:.9rem;
+    }
+    .loading-row{display:flex;align-items:center;justify-content:center;gap:12px;}
+    .spinner{width:22px;height:22px;border-radius:50%;border:2.5px solid #f0f0f0;border-top-color:var(--red);animation:spin .8s linear infinite;flex-shrink:0;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* ===== TOAST ===== */
+    .toast{
+      position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);
+      background:#333;color:#fff;padding:13px 28px;border-radius:14px;
+      font-weight:700;font-size:.92rem;
+      opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;
+      box-shadow:0 8px 28px rgba(0,0,0,.2);z-index:9999;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast.success{background:#1b5e20;}
+    .toast.error{background:var(--red-dark);}
+
+    @media(max-width:600px){
+      .topbar{padding:0 16px;}
+      .topbar-title{font-size:1rem;}
+      .card{padding:22px 18px;}
+    }
+    /* ── TAGS ── */
+    .chip-input{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;border:2px solid var(--border);border-radius:12px;background:#faf8f6;}
+    .chip-input:focus-within{border-color:var(--red);box-shadow:0 0 0 4px rgba(211,47,47,.1);background:#fff;}
+    .chip-input input{flex:1;min-width:140px;border:none;background:transparent;outline:none;font-family:'Be Vietnam Pro',sans-serif;font-size:.92rem;padding:4px;}
+    .chip{display:inline-flex;align-items:center;gap:5px;background:rgba(211,47,47,.1);color:var(--red);font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:999px;}
+    .chip b{cursor:pointer;font-size:.65rem;opacity:.7;}
+    .chip.prov{background:rgba(245,200,66,.3);color:#8a5a00;}
+    .row-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+    .row-chips .chip{font-size:.68rem;padding:2px 7px;font-weight:700;}
+    #tagModal{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+    #tagModal.open{display:flex;}
+    .tag-card{background:#fff;border-radius:20px;padding:28px;width:460px;max-width:94vw;box-shadow:0 16px 48px rgba(0,0,0,.2);}
+    .btn-tag-cancel{flex:1;padding:14px;border-radius:12px;border:2px solid var(--border);background:#fff;color:var(--muted);font-family:'Be Vietnam Pro',sans-serif;font-weight:800;cursor:pointer;}
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <img src="logo.png" alt="Vietverse" class="logo" onclick="location.href='index.html'"/>
+    <span class="badge-admin">Admin</span>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- FORM CARD -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Thêm sách mới
+    </div>
+
+    <form onsubmit="handleSubmit(event)">
+      <div class="form-group">
+        <label>Tên sách <span class="req">*</span></label>
+        <input id="f-title" class="form-control" type="text" placeholder="VD: Ngữ Văn 12 – Tập 1 – KNTT" required />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Danh mục</label>
+          <select id="f-category" class="form-control">
+            <option value="ngu-van">Ngữ Văn</option>
+            <option value="lich-su">Lịch Sử</option>
+            <option value="dia-ly">Địa Lý</option>
+            <option value="gdcd">GDCD</option>
+            <option value="van-hoa">Văn Hóa</option>
+            <option value="other">Khác</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Lớp</label>
+          <input id="f-grade" class="form-control" type="text" placeholder="VD: 12" maxlength="3"/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tags nội dung</label>
+        <div class="chip-input" id="f-tags"><input placeholder="VD: lễ hội, làng nghề, truyền thuyết… (Enter để thêm)" list="tag-suggest"></div>
+      </div>
+      <div class="form-group">
+        <label>Tỉnh / thành liên quan</label>
+        <div class="chip-input" id="f-provs"><input placeholder="Chọn từ danh sách tỉnh…" list="prov-suggest"></div>
+        <p class="hint">Dùng để gợi ý sách này khi người chơi học xong một minigame cùng chủ đề / cùng tỉnh. Tags nên dùng cùng cách gọi với tags khi tạo map.</p>
+      </div>
+      <datalist id="tag-suggest"><option value="Lịch sử"><option value="Văn hóa"><option value="Lễ hội"><option value="Ẩm thực"><option value="Làng nghề"><option value="Di sản"><option value="Kiến trúc"><option value="Truyền thuyết"><option value="Âm nhạc dân gian"><option value="Danh nhân"><option value="Phong tục"></datalist>
+      <datalist id="prov-suggest"></datalist>
+
+      <div class="form-group">
+        <label>Link ảnh bìa</label>
+        <input id="f-cover" class="form-control" type="url" placeholder="https://..." />
+        <p class="hint">Dán link ảnh trực tiếp (Google Drive, Imgur, v.v.)<br>
+          Với Google Drive: dùng link dạng <code>https://drive.google.com/uc?id=FILE_ID</code></p>
+      </div>
+
+      <div class="form-group">
+        <label>Link PDF / Google Drive <span class="req">*</span></label>
+        <input id="f-pdf" class="form-control" type="url" placeholder="https://drive.google.com/file/d/..." required />
+        <p class="hint">Hỗ trợ Google Drive: chia sẻ "Bất kỳ ai có link" → dán link vào đây.<br>
+          Hệ thống tự chuyển sang link embed khi đọc.</p>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Thêm vào thư viện</button>
+    </form>
+  </div>
+
+  <!-- PREVIEW CARD -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Xem trước
+    </div>
+    <div class="preview-wrap">
+      <div class="preview-label">Hiển thị trong thư viện</div>
+      <div id="previewCard">
+        <div class="prev-cover">
+          <img class="prev-img" src="" alt=""/>
+          <div class="prev-fallback"><span>?</span></div>
+          <div class="prev-grade"></div>
+        </div>
+        <div class="prev-title">Tên sách</div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);text-align:center;max-width:200px;line-height:1.6;">
+        Preview cập nhật tự động khi bạn điền form bên trái.
+      </p>
+    </div>
+
+    <!-- Drive link helper -->
+    <div style="margin-top:32px;padding:18px;background:#fff8f0;border-radius:14px;border:1.5px solid #ffe0b2;">
+      <p style="font-size:.82rem;font-weight:800;color:#e65100;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Hướng dẫn Google Drive
+      </p>
+      <ol style="font-size:.8rem;color:#555;line-height:2;padding-left:18px;">
+        <li>Upload file PDF / ảnh lên Google Drive</li>
+        <li>Nhấp chuột phải → <b>Chia sẻ</b></li>
+        <li>Chọn <b>"Bất kỳ ai có đường liên kết"</b></li>
+        <li>Sao chép link và dán vào form</li>
+      </ol>
+      <p style="font-size:.78rem;color:#888;margin-top:10px;">
+        Link ảnh bìa dạng: <code style="background:#ffe;padding:2px 6px;border-radius:4px;">drive.google.com/uc?id=FILE_ID</code>
+      </p>
+    </div>
+  </div>
+
+  <!-- BOOK LIST -->
+  <div class="card list-card">
+    <div class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Danh sách sách trong thư viện
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Bìa</th>
+            <th>Tên sách</th>
+            <th>Danh mục</th>
+            <th>Lớp</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="booksTbody">
+          <tr><td colspan="5" class="loading-row"><div class="spinner"></div>Đang tải...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- end .main -->
+
+<!-- SỬA TAGS -->
+<div id="tagModal" onclick="if(event.target===this)closeTagModal()">
+  <div class="tag-card">
+    <div class="card-title" style="margin-bottom:6px">🏷️ Tags &amp; tỉnh</div>
+    <p class="hint" id="tagModalTitle" style="margin:0 0 16px;font-weight:700"></p>
+    <div class="form-group"><label>Tags nội dung</label>
+      <div class="chip-input" id="m-tags"><input placeholder="Enter để thêm" list="tag-suggest"></div></div>
+    <div class="form-group"><label>Tỉnh / thành liên quan</label>
+      <div class="chip-input" id="m-provs"><input placeholder="Chọn từ danh sách tỉnh…" list="prov-suggest"></div></div>
+    <div style="display:flex;gap:10px">
+      <button type="button" class="btn-tag-cancel" onclick="closeTagModal()">Hủy</button>
+      <button type="button" class="btn-submit" id="tagSaveBtn" style="flex:2;margin:0" onclick="saveTagModal()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</body>
+</html>

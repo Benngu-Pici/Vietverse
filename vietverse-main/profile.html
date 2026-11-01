@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vietverse | Hồ Sơ Cá Nhân</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #FFB300;
+      --gold-dark: #c98a00;
+      --red: #d32f2f;
+      --red-dark: #b71c1c;
+      --bg: #fff5f5;
+      --bg2: #ffffff;
+      --bg3: #fff0ef;
+      --accent: #d32f2f;
+      --accent2: #ff8a3d;
+      --text: #2b1212;
+      --text-muted: #9a6a6a;
+      --border: rgba(211,47,47,0.14);
+      --card-glow: rgba(211,47,47,0.10);
+      --danger: #e24b4a;
+      --success: #2e7d32;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Be Vietnam Pro', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    /* ===== CUSTOM SCROLL ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 8px; }
+
+    /* ── SPLASH / INITIAL LOADING OVERLAY ── */
+    #loading-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+
+    /* ── AUTH OVERLAY ── */
+    #auth-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: linear-gradient(160deg, #fff5f5 0%, #ffe2e2 100%);
+      display: none; align-items: center; justify-content: center;
+    }
+    .auth-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(211,47,47,0.12);
+    }
+    .auth-logo { font-size: 48px; margin-bottom: 8px; }
+    .auth-box h1 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 24px; font-weight: 800; color: var(--red);
+      letter-spacing: 2px; margin-bottom: 6px;
+    }
+    .auth-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+    .auth-input {
+      width: 100%; padding: 12px 16px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 15px; margin-bottom: 12px; outline: none;
+      transition: border 0.2s;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+    .auth-btn {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      border: none; border-radius: 10px;
+      color: #fff; font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-bottom: 10px;
+    }
+    .auth-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .auth-btn.google {
+      background: linear-gradient(135deg, #ea4335, #cc2c20);
+      margin-top: 4px;
+    }
+    .auth-divider {
+      color: var(--text-muted); font-size: 13px; margin: 10px 0;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .auth-toggle { color: var(--text-muted); font-size: 13px; }
+    .auth-toggle span { color: var(--accent); cursor: pointer; font-weight: 700; }
+    .auth-error { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 20px; }
+
+    /* ── MAIN APP ── */
+    #app { display: none; min-height: 100vh; }
+
+    /* ===== NAVBAR (chuẩn, giống index.html) ===== */
+    :root { --nh:70px; }
+    .navbar{
+      position:sticky;top:0;left:0;width:100%;height:var(--nh);
+      background:#fff;display:flex;align-items:center;justify-content:space-between;
+      padding:0 36px 0 22px;
+      border-bottom-left-radius:22px;border-bottom-right-radius:22px;
+      z-index:1000;box-shadow:0 4px 24px rgba(0,0,0,.07);
+    }
+    .navbar.scrolled{box-shadow:0 4px 28px rgba(0,0,0,.1);}
+    .logo{height:38px;cursor:pointer;display:block;transition:opacity .2s;}
+    .logo:hover{opacity:.82;}
+
+    .nav-links{display:flex;align-items:center;gap:44px;}
+    .nav-links a{
+      text-decoration:none;color:var(--red);font-weight:700;font-size:.97rem;
+      position:relative;transition:opacity .2s,transform .2s;
+    }
+    .nav-links a:not(.nav-active)::after{
+      content:'';position:absolute;bottom:-5px;left:0;
+      width:0;height:2.5px;background:var(--red);border-radius:3px;
+      transition:width .25s cubic-bezier(.2,.9,.4,1.1);
+    }
+    .nav-links a:not(.nav-active):hover::after{width:100%;}
+    .nav-links a:not(.nav-active):hover{opacity:.72;transform:translateY(-1px);}
+    .nav-links a.nav-active{
+      background:var(--red);color:#fff!important;
+      padding:8px 24px;border-radius:999px;
+      animation:navPulse 2.4s infinite;
+    }
+    .nav-links a.nav-active::after{display:none;}
+    @keyframes navPulse{
+      0%{box-shadow:0 0 0 0 rgba(211,47,47,.35);}
+      70%{box-shadow:0 0 0 9px rgba(211,47,47,0);}
+      100%{box-shadow:0 0 0 0 rgba(211,47,47,0);}
+    }
+
+    /* Hamburger */
+    .hamburger{
+      display:none;flex-direction:column;justify-content:center;align-items:center;
+      gap:6px;width:38px;height:38px;
+      background:none;border:none;cursor:pointer;
+      padding:0;border-radius:10px;transition:background .2s;
+    }
+    .hamburger:hover{background:rgba(211,47,47,.09);}
+    .hamburger span{
+      display:block;width:22px;height:2.5px;
+      background:var(--red);border-radius:4px;
+      transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;
+      transform-origin:center;
+      flex-shrink:0;
+    }
+    .hamburger.open span:nth-child(1){transform:translateY(8.5px) rotate(45deg);}
+    .hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+    .hamburger.open span:nth-child(3){transform:translateY(-8.5px) rotate(-45deg);}
+
+    /* Mobile drawer */
+    .mobile-drawer{
+      position:fixed;top:0;left:0;width:100%;
+      background:#fff;z-index:997;
+      max-height:0;overflow:hidden;
+      transition:max-height .38s cubic-bezier(.4,0,.2,1),box-shadow .3s;
+      border-bottom-left-radius:28px;border-bottom-right-radius:28px;
+    }
+    .mobile-drawer.open{max-height:calc(var(--nh) + 440px);box-shadow:0 20px 48px rgba(0,0,0,.14);}
+    .drawer-inner{padding:16px 20px 28px;display:flex;flex-direction:column;gap:2px;
+      margin-top:var(--nh);}
+    .drawer-inner a{
+      text-decoration:none;color:var(--red);font-weight:700;font-size:1.05rem;
+      padding:11px 16px;border-radius:14px;
+      display:flex;align-items:center;gap:10px;
+      transition:background .18s,transform .18s;
+    }
+    .drawer-inner a:not(.nav-active):hover{background:rgba(211,47,47,.07);transform:translateX(4px);}
+    .drawer-inner a.nav-active{background:var(--red);color:#fff;box-shadow:0 4px 16px rgba(211,47,47,.3);}
+    .drawer-inner a.nav-active:hover{transform:none;}
+    .drawer-divider{height:1px;background:#f0f0f0;margin:5px 0;}
+
+    @media(max-width:860px){
+      .nav-links{display:none;}
+      .hamburger{display:flex;}
+    }
+
+    /* ===== BOTTOM UTILITY BAR (coins, bạn bè, đăng nhập/xuất) ===== */
+    .bottom-util-bar {
+      max-width: 1100px; margin: 0 auto; padding: 0 28px 36px;
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+    .bub-card {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 999px; padding: 9px 18px;
+      box-shadow: 0 2px 12px rgba(211,47,47,0.06);
+    }
+    .bub-coins { font-weight: 800; font-size: 14px; color: var(--gold-dark); }
+    .bub-friends-btn {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 999px;
+      padding: 9px 20px; font-size: 14px; font-weight: 700; color: var(--red);
+      cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif; transition: all 0.2s;
+      display: flex; align-items: center; gap: 8px; text-decoration: none;
+      box-shadow: 0 2px 12px rgba(211,47,47,0.06);
+    }
+    .bub-friends-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .bub-logout-btn {
+      padding: 9px 20px; border-radius: 999px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: 'Be Vietnam Pro', sans-serif;
+      transition: all 0.2s;
+    }
+    .bub-logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+    .nav-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--danger); color: #fff;
+      width: 16px; height: 16px; border-radius: 50%;
+      font-size: 9px; font-weight: 900; margin-left: 2px;
+      vertical-align: middle;
+    }
+    .nav-badge:empty { display: none; }
+
+    @media (max-width: 768px) {
+      .bottom-util-bar { padding: 0 16px 28px; gap: 10px; }
+      .bub-card, .bub-friends-btn, .bub-logout-btn { padding: 7px 14px; font-size: 12.5px; }
+    }
+
+    /* ── PAGE CONTENT ── */
+    .page { padding: 32px 28px; max-width: 1100px; margin: 0 auto; }
+
+    /* ── LOADING ── */
+    .loading-spinner {
+      text-align: center; padding: 40px; color: var(--text-muted);
+      font-size: 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 30px; height: 30px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+    }
+
+    /* ── PROFILE / AVATAR PAGE ── */
+    .avatar-layout {
+      display: grid; grid-template-columns: 280px 1fr; gap: 24px;
+    }
+    .avatar-preview-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px 20px; text-align: center;
+      box-shadow: 0 2px 14px rgba(211,47,47,0.07);
+    }
+    .avatar-character {
+      width: 64px; height: 64px; margin: 0 auto 20px;
+      image-rendering: pixelated;
+      position: relative;
+    }
+    .avatar-sprite {
+      background: url(images/characters.png) no-repeat;
+      width: 16px; height: 16px;
+      transform: scale(4); transform-origin: top left;
+      position: absolute;
+    }
+    .avatar-shadow {
+      background: url(images/shadow.png) no-repeat;
+      width: 16px; height: 16px;
+      transform: scale(4); transform-origin: top left;
+      position: absolute;
+    }
+    .avatar-name { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+    .avatar-email { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .avatar-name-input {
+      width: 100%; padding: 10px 14px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 14px; outline: none; text-align: center; font-weight: 700;
+      margin-bottom: 14px; transition: border 0.2s;
+    }
+    .avatar-name-input:focus { border-color: var(--accent); }
+    .save-name-btn {
+      width: 100%; padding: 10px;
+      background: var(--bg3); border: 1px solid var(--accent);
+      border-radius: 10px; color: var(--accent);
+      font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .save-name-btn:hover { background: var(--accent); color: #fff; }
+    .coins-info {
+      margin-top: 20px; padding: 14px;
+      background: var(--bg3); border-radius: 10px;
+      border: 1px solid rgba(255,215,0,0.25);
+    }
+    .coins-big { font-size: 28px; font-weight: 900; color: var(--gold); }
+    .coins-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .skin-panel h3 { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+    .skin-panel p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .skin-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px;
+    }
+    .skin-card {
+      background: var(--bg2); border: 2px solid var(--border);
+      border-radius: 14px; padding: 16px 10px; text-align: center;
+      transition: all 0.2s;
+      box-shadow: 0 2px 10px rgba(211,47,47,0.06);
+    }
+    .skin-card.owned { border-color: var(--success); }
+    .skin-card.equipped { border-color: var(--gold); background: rgba(255,215,0,0.05); }
+    .skin-card:hover { transform: translateY(-2px); }
+    .skin-sprite-wrap {
+      width: 64px; height: 64px; margin: 0 auto 10px;
+      position: relative; image-rendering: pixelated;
+    }
+    .skin-sprite {
+      background: url(images/characters.png) no-repeat;
+      width: 16px; height: 16px;
+      transform: scale(4); transform-origin: top left;
+      position: absolute;
+    }
+    .skin-shadow {
+      background: url(images/shadow.png) no-repeat;
+      width: 16px; height: 16px;
+      transform: scale(4); transform-origin: top left;
+      position: absolute;
+    }
+    .skin-color-name {
+      font-size: 13px; font-weight: 800; margin-bottom: 8px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .skin-action-btn {
+      width: 100%; padding: 7px; border-radius: 8px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: 'Be Vietnam Pro', sans-serif; border: none;
+      transition: all 0.2s;
+    }
+    .skin-action-btn.buy {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #222;
+    }
+    .skin-action-btn.equip {
+      background: var(--bg3); border: 1px solid var(--success);
+      color: var(--success);
+    }
+    .skin-action-btn.equipped-state {
+      background: rgba(255,215,0,0.1); border: 1px solid var(--gold);
+      color: var(--gold); cursor: default;
+    }
+    .skin-action-btn.disabled {
+      background: var(--bg3); color: var(--text-muted);
+      cursor: not-allowed; opacity: 0.6;
+    }
+    .skin-action-btn.buy:hover { opacity: 0.85; }
+    .skin-action-btn.equip:hover { background: var(--success); color: #fff; }
+    .skin-badge {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 4px; font-size: 11px; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .skin-badge.free { background: rgba(63,185,80,0.15); color: var(--success); }
+    .skin-badge.price { background: rgba(255,215,0,0.12); color: var(--gold); }
+    .skin-badge.owned-badge { background: rgba(63,185,80,0.15); color: var(--success); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 22px;
+      font-size: 14px; font-weight: 700;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+      z-index: 9999; white-space: nowrap;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    }
+    #toast.show { opacity: 1; }
+    #toast.success { border-color: var(--success); color: var(--success); }
+    #toast.error { border-color: var(--danger); color: var(--danger); }
+    #toast.info { border-color: var(--accent); color: var(--accent); }
+
+    @media (max-width: 768px) {
+      .page { padding: 20px 16px; }
+      .navbar { padding: 0 16px; }
+      .avatar-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- INITIAL LOADING OVERLAY (Dùng để chống nháy khi kiểm tra trạng thái Auth) -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p style="color: var(--text-muted); font-size: 14px; font-weight: 600;">Đang kiểm tra đăng nhập...</p>
+</div>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">🏮</div>
+    <h1>VIETVERSE</h1>
+    <p>Đăng nhập để xem hồ sơ của bạn</p>
+
+    <div id="auth-forms">
+      <input class="auth-input" id="auth-email" type="email" placeholder="Email của bạn">
+      <input class="auth-input" id="auth-password" type="password" placeholder="Mật khẩu">
+      <button class="auth-btn" id="auth-action-btn">Đăng nhập</button>
+      <div class="auth-divider">hoặc</div>
+      <button class="auth-btn google" id="google-btn">🔵 Tiếp tục với Google</button>
+      <div class="auth-toggle" id="auth-toggle-text">
+        Chưa có tài khoản? <span id="auth-toggle-link">Đăng ký ngay</span>
+      </div>
+      <div class="auth-error" id="auth-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- NAVBAR (chuẩn, giống index.html) -->
+  <nav class="navbar" id="navbar">
+    <img src="logo.png" alt="Vietverse" class="logo" id="logoImg" />
+    <div class="nav-links">
+      <a href="profile.html" class="nav-active">Profile</a>
+      <a href="ar.html">AR</a>
+      <a href="minigame.html">Minigame</a>
+      <a href="library.html">Library</a>
+      <a href="explore.html">Explore</a>
+      <a href="index.html">Home</a>
+    </div>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-inner">
+      <a href="profile.html" class="nav-active">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile
+      </a>
+      <a href="ar.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>AR
+      </a>
+      <a href="minigame.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Minigame
+      </a>
+      <div class="drawer-divider"></div>
+      <a href="library.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>Library
+      </a>
+      <div class="drawer-divider"></div>
+      <a href="explore.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Explore
+      </a>
+      <a href="index.html">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home
+      </a>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="page-profile">
+    <div class="avatar-layout">
+      <!-- Left: preview + info -->
+      <div>
+        <div class="avatar-preview-card">
+          <div class="avatar-character" id="avatar-display">
+            <div class="avatar-shadow"></div>
+            <div class="avatar-sprite" id="avatar-sprite-el"></div>
+          </div>
+          <div class="avatar-name" id="av-display-name">Player</div>
+          <div class="avatar-email" id="av-display-email">—</div>
+          <input class="avatar-name-input" id="av-name-input" maxlength="12" placeholder="Tên hiển thị">
+          <button class="save-name-btn" id="av-save-name">💾 Lưu tên</button>
+          <div class="coins-info">
+            <div class="coins-big">💰 <span id="av-coins">0</span></div>
+            <div class="coins-label">Xu hiện có — thu thập trong các map</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: skin shop -->
+      <div class="skin-panel">
+        <h3>🎨 Cửa hàng Skin</h3>
+        <p>Mua skin mới bằng xu thu thập được khi chơi trong các map.</p>
+        <div class="skin-grid" id="skin-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM UTILITY BAR: coins, bạn bè, đăng nhập/đăng xuất — đặt dưới phần main thay vì trên navbar -->
+  <div class="bottom-util-bar">
+    <div class="bub-card">💰 <span class="bub-coins" id="nav-coins">0</span> xu</div>
+    <a class="bub-friends-btn" href="minigame.html">
+      👥 Bạn bè <span class="nav-badge" id="nav-req-badge"></span>
+    </a>
+    <button class="bub-logout-btn" id="logout-btn">Đăng xuất</button>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+  authDomain: "vvss-b7a49.firebaseapp.com",
+  databaseURL: "https://vvss-b7a49-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "vvss-b7a49",
+  storageBucket: "vvss-b7a49.firebasestorage.app",
+  messagingSenderId: "562837285603",
+  appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6"
+};
+firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────
+const SKIN_DATA = [
+  { color: 'blue',   name: 'Xanh Dương', price: 0,  spriteY: 0    },
+  { color: 'red',    name: 'Đỏ Rực',     price: 10, spriteY: -16  },
+  { color: 'orange', name: 'Cam Nắng',   price: 15, spriteY: -32  },
+  { color: 'yellow', name: 'Vàng Óng',   price: 20, spriteY: -48  },
+  { color: 'green',  name: 'Xanh Lá',    price: 25, spriteY: -64  },
+  { color: 'purple', name: 'Tím Hoàng',  price: 30, spriteY: -80  },
+];
+const COLOR_SPRITE_Y = { blue:0, red:-16, orange:-32, yellow:-48, green:-64, purple:-80 };
+
+// ─── STATE ────────────────────────────────────────────────────
+let currentUser = null;
+let playerData = null;
+
+// ─── TOAST ────────────────────────────────────────────────────
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── AUTH FORM ────────────────────────────────────────────────
+let authMode = 'login';
+
+function updateAuthUI() {
+  const btn = document.getElementById('auth-action-btn');
+  const toggle = document.getElementById('auth-toggle-text');
+  if (authMode === 'register') {
+    btn.textContent = 'Đăng ký';
+    toggle.innerHTML = 'Đã có tài khoản? <span id="auth-toggle-link">Đăng nhập</span>';
+  } else {
+    btn.textContent = 'Đăng nhập';
+    toggle.innerHTML = 'Chưa có tài khoản? <span id="auth-toggle-link">Đăng ký ngay</span>';
+  }
+  document.getElementById('auth-error').textContent = '';
+}
+
+document.getElementById('auth-toggle-text').addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'auth-toggle-link') {
+    authMode = authMode === 'login' ? 'register' : 'login';
+    updateAuthUI();
+  }
+});
+
+document.getElementById('auth-action-btn').addEventListener('click', async () => {
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'Vui lòng nhập email và mật khẩu.'; return; }
+  try {
+    if (authMode === 'login') {
+      await firebase.auth().signInWithEmailAndPassword(email, pass);
+    } else {
+      await firebase.auth().createUserWithEmailAndPassword(email, pass);
+    }
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found': 'Không tìm thấy tài khoản.',
+      'auth/wrong-password': 'Mật khẩu không đúng.',
+      'auth/email-already-in-use': 'Email đã được sử dụng.',
+      'auth/weak-password': 'Mật khẩu cần ít nhất 6 ký tự.',
+      'auth/invalid-email': 'Email không hợp lệ.',
+    };
+    errEl.textContent = msgs[e.code] || e.message;
+  }
+});
+
+document.getElementById('google-btn').addEventListener('click', async () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    await firebase.auth().signInWithPopup(provider);
+  } catch(e) {
+    document.getElementById('auth-error').textContent = e.message;
+  }
+});
+
+// ─── AUTH STATE ───────────────────────────────────────────────
+firebase.auth().onAuthStateChanged(async (user) => {
+  const loadingEl = document.getElementById('loading-overlay');
+  const authEl = document.getElementById('auth-overlay');
+  const appEl = document.getElementById('app');
+
+  if (user) {
+    currentUser = user;
+    authEl.style.display = 'none';
+    await initPlayerData();
+    listenFriendReqCount();
+    appEl.style.display = 'block';
+  } else {
+    currentUser = null;
+    appEl.style.display = 'none';
+    authEl.style.display = 'flex';
+  }
+
+  // Tắt màn hình chờ sau khi kiểm tra xong trạng thái
+  if (loadingEl) {
+    loadingEl.style.display = 'none';
+  }
+});
+
+// ─── PLAYER DATA ──────────────────────────────────────────────
+async function initPlayerData() {
+  const ref = firebase.database().ref(`players/${currentUser.uid}`);
+  const snap = await ref.once('value');
+  if (!snap.exists()) {
+    const defaultName = generateName();
+    await ref.set({
+      id: currentUser.uid,
+      name: defaultName,
+      email: currentUser.email || '',
+      color: 'blue',
+      coins: 0,
+      purchasedSkins: { blue: true },
+      direction: 'right',
+      x: 1, y: 4, px: 24, py: 72,
+    });
+  }
+  ref.on('value', (s) => {
+    playerData = s.val();
+    if (!playerData) return;
+    updateUIWithPlayerData();
+  });
+}
+
+function updateUIWithPlayerData() {
+  if (!playerData) return;
+  const name = playerData.name || 'Player';
+  const coins = playerData.coins || 0;
+  const color = playerData.color || 'blue';
+  const sprY = COLOR_SPRITE_Y[color] || 0;
+
+  document.getElementById('nav-coins').textContent = coins;
+  document.getElementById('av-display-name').textContent = name;
+  document.getElementById('av-display-email').textContent = currentUser.email || '';
+  document.getElementById('av-name-input').value = name;
+  document.getElementById('av-coins').textContent = coins;
+
+  const sprEl = document.getElementById('avatar-sprite-el');
+  if (sprEl) sprEl.style.backgroundPositionY = sprY + 'px';
+
+  renderSkinGrid();
+}
+
+function generateName() {
+  const adj = ['COOL','SWIFT','BRAVE','WILD','BOLD','DARK','SWIFT'];
+  const noun = ['BEAR','WOLF','HAWK','LION','TIGER','PANDA','EAGLE'];
+  return adj[Math.floor(Math.random()*adj.length)] + ' ' + noun[Math.floor(Math.random()*noun.length)];
+}
+
+// ─── NAVBAR (hamburger + scroll shadow) ────────────────────────
+(function() {
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
+  const hbtn = document.getElementById('hamburgerBtn');
+  const drawer = document.getElementById('mobileDrawer');
+  hbtn.addEventListener('click', e => { e.stopPropagation(); hbtn.classList.toggle('open'); drawer.classList.toggle('open'); });
+  document.addEventListener('click', e => {
+    if (!drawer.contains(e.target) && !hbtn.contains(e.target)) { hbtn.classList.remove('open'); drawer.classList.remove('open'); }
+  });
+  const logo = document.getElementById('logoImg');
+  if (logo) logo.addEventListener('click', () => window.location.href = 'index.html');
+})();
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  firebase.auth().signOut();
+});
+
+// ─── SKIN SHOP ────────────────────────────────────────────────
+function renderSkinGrid() {
+  const grid = document.getElementById('skin-grid');
+  if (!grid || !playerData) return;
+  const owned = playerData.purchasedSkins || { blue: true };
+  const coins = playerData.coins || 0;
+  const equipped = playerData.color || 'blue';
+
+  grid.innerHTML = '';
+  SKIN_DATA.forEach(skin => {
+    const isOwned = !!owned[skin.color];
+    const isEquipped = equipped === skin.color;
+    const canAfford = coins >= skin.price;
+
+    const card = document.createElement('div');
+    card.className = 'skin-card' + (isEquipped ? ' equipped' : isOwned ? ' owned' : '');
+
+    let badgeHTML = skin.price === 0
+      ? '<span class="skin-badge free">MIỄN PHÍ</span>'
+      : isOwned
+        ? '<span class="skin-badge owned-badge">ĐÃ SỞ HỮU</span>'
+        : `<span class="skin-badge price">💰 ${skin.price} xu</span>`;
+
+    let btnClass, btnText;
+    if (isEquipped) { btnClass = 'equipped-state'; btnText = '✓ Đang dùng'; }
+    else if (isOwned) { btnClass = 'equip'; btnText = 'Trang bị'; }
+    else if (canAfford) { btnClass = 'buy'; btnText = `Mua ${skin.price} xu`; }
+    else { btnClass = 'disabled'; btnText = `Thiếu ${skin.price - coins} xu`; }
+
+    card.innerHTML = `
+      <div class="skin-sprite-wrap">
+        <div class="skin-shadow"></div>
+        <div class="skin-sprite" style="background-position-y: ${skin.spriteY}px"></div>
+      </div>
+      ${badgeHTML}
+      <div class="skin-color-name">${skin.name}</div>
+      <button class="skin-action-btn ${btnClass}">${btnText}</button>
+    `;
+
+    const btn = card.querySelector('.skin-action-btn');
+    if (!isEquipped && (isOwned || canAfford)) {
+      btn.addEventListener('click', () => handleSkinAction(skin, isOwned));
+    }
+
+    grid.appendChild(card);
+  });
+}
+
+async function handleSkinAction(skin, isOwned) {
+  if (!playerData || !currentUser) return;
+  const ref = firebase.database().ref(`players/${currentUser.uid}`);
+  const coins = playerData.coins || 0;
+  const owned = playerData.purchasedSkins || { blue: true };
+
+  if (isOwned) {
+    await ref.update({ color: skin.color });
+    showToast(`✅ Đã trang bị skin ${skin.name}!`, 'success');
+  } else if (coins >= skin.price) {
+    await ref.update({
+      coins: coins - skin.price,
+      color: skin.color,
+      purchasedSkins: { ...owned, [skin.color]: true }
+    });
+    showToast(`🎉 Mua thành công skin ${skin.name}!`, 'success');
+  }
+}
+
+// ─── AVATAR NAME SAVE ─────────────────────────────────────────
+document.getElementById('av-save-name').addEventListener('click', async () => {
+  const newName = document.getElementById('av-name-input').value.trim();
+  if (!newName) { showToast('Vui lòng nhập tên!', 'error'); return; }
+  if (!currentUser) return;
+  await firebase.database().ref(`players/${currentUser.uid}`).update({ name: newName });
+  showToast('✅ Đã lưu tên!', 'success');
+});
+
+// ─── FRIEND REQUEST COUNT BADGE ───────────────────────────────
+function listenFriendReqCount() {
+  firebase.database().ref(`friendRequests/${currentUser.uid}`).on('value', snap => {
+    const count = Object.keys(snap.val() || {}).length;
+    document.getElementById('nav-req-badge').textContent = count > 0 ? count : '';
+  });
+}
+</script>
+</body>
+</html>

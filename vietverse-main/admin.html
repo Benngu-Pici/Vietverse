@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Vietverse | Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --red:#d32f2f; --red-dark:#b71c1c; --gold:#f5c842;
+    --bg:#f7f3f0; --card:#fff; --border:#ece5e0;
+    --text:#1a1a1a; --muted:#888; --nh:66px;
+    --danger:#e24b4a; --success:#2e7d32;
+  }
+  html,body{min-height:100%;background:var(--bg);font-family:'Be Vietnam Pro',sans-serif;color:var(--text);}
+  body{padding-bottom:60px;}
+  ::-webkit-scrollbar{width:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--red);border-radius:8px;}
+
+  /* ===== SPLASH / INITIAL LOADING OVERLAY ===== */
+  #loading-overlay{
+    position:fixed;inset:0;z-index:1000;
+    background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+
+  /* ===== AUTH OVERLAY ===== */
+  #auth-overlay{
+    position:fixed;inset:0;z-index:999;
+    background:linear-gradient(160deg,#fff5f5 0%,#ffe2e2 100%);
+    display:none;align-items:center;justify-content:center;
+  }
+  .auth-box{
+    background:#fff;border:1px solid var(--border);
+    border-radius:20px;padding:40px 36px;width:360px;text-align:center;
+    box-shadow:0 12px 40px rgba(211,47,47,.12);
+  }
+  .auth-box h1{font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;color:var(--red);letter-spacing:2px;margin-bottom:6px;}
+  .auth-box p{color:var(--muted);font-size:13px;margin-bottom:24px;}
+  .auth-input{
+    width:100%;padding:12px 16px;background:#faf8f6;
+    border:1px solid var(--border);border-radius:10px;
+    color:var(--text);font-family:'Be Vietnam Pro',sans-serif;
+    font-size:15px;margin-bottom:12px;outline:none;
+  }
+  .auth-input:focus{border-color:var(--red);}
+  .auth-btn{
+    width:100%;padding:13px;background:linear-gradient(135deg,var(--red),var(--red-dark));
+    border:none;border-radius:10px;color:#fff;
+    font-family:'Be Vietnam Pro',sans-serif;font-size:15px;font-weight:700;cursor:pointer;
+  }
+  .auth-error{color:var(--danger);font-size:13px;margin-top:8px;min-height:18px;}
+  .admin-setup-wrap{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border);}
+  .admin-setup-btn{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;font-family:'Be Vietnam Pro',sans-serif;}
+
+  /* ===== APP / TOPBAR ===== */
+  #app{display:none;}
+  .topbar{
+    position:sticky;top:0;z-index:100;
+    background:#fff;border-bottom:2px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 32px;height:var(--nh);
+    box-shadow:0 2px 16px rgba(0,0,0,.06);
+  }
+  .topbar-left{display:flex;align-items:center;gap:14px;}
+  .topbar img.logo{height:34px;cursor:pointer;}
+  .badge-admin{
+    background:var(--red);color:#fff;font-size:.7rem;font-weight:800;
+    padding:3px 10px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase;
+  }
+  .btn-logout{
+    text-decoration:none;color:var(--red);font-weight:700;font-size:.85rem;
+    display:flex;align-items:center;gap:7px;
+    padding:8px 16px;border-radius:10px;border:2px solid rgba(211,47,47,.25);
+    transition:background .2s,border-color .2s;background:none;
+    cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;
+  }
+  .btn-logout:hover{background:rgba(211,47,47,.07);border-color:var(--red);}
+  .topbar-right{display:flex;align-items:center;gap:10px;}
+
+  /* ===== TOP-LEVEL SECTION TABS ===== */
+  .top-tabs{
+    max-width:1160px;margin:24px auto 0;padding:0 24px;
+    display:flex;gap:10px;flex-wrap:wrap;
+  }
+  .top-tab{
+    padding:11px 22px;border-radius:12px;border:2px solid var(--border);
+    background:#fff;color:var(--muted);
+    font-family:'Be Vietnam Pro',sans-serif;font-size:.92rem;font-weight:800;cursor:pointer;
+    transition:all .2s;display:flex;align-items:center;gap:8px;
+    box-shadow:0 2px 10px rgba(211,47,47,.05);
+  }
+  .top-tab.active{background:var(--red);border-color:var(--red);color:#fff;}
+  .top-tab:hover:not(.active){border-color:rgba(211,47,47,.4);color:var(--red);}
+  .top-section{display:none;}
+  .top-section.active{display:block;}
+
+  /* ===== SHARED CARD / FORM ===== */
+  .main{max-width:1160px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;}
+  @media(max-width:860px){.main{grid-template-columns:1fr;}}
+  .card{background:var(--card);border-radius:20px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.07);border:1px solid var(--border);}
+  .card-title{
+    font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;color:var(--red);
+    margin-bottom:28px;display:flex;align-items:center;gap:10px;
+  }
+  .card-title svg{opacity:.75;}
+  .form-group{margin-bottom:20px;}
+  .form-group label{
+    display:block;font-size:.82rem;font-weight:700;color:var(--muted);
+    letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;
+  }
+  .form-group label span.req{color:var(--red);}
+  .form-control{
+    width:100%;padding:12px 16px;border-radius:12px;
+    border:2px solid var(--border);background:#faf8f6;
+    font-family:'Be Vietnam Pro',sans-serif;font-size:.97rem;color:var(--text);
+    transition:border-color .2s,box-shadow .2s;outline:none;
+  }
+  .form-control:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(211,47,47,.1);background:#fff;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:480px){.form-row{grid-template-columns:1fr;}}
+  .hint{font-size:.78rem;color:var(--muted);margin-top:6px;line-height:1.5;}
+  .btn-submit{
+    width:100%;padding:14px;border-radius:14px;
+    background:var(--red);color:#fff;border:none;
+    font-family:'Be Vietnam Pro',sans-serif;font-size:1rem;font-weight:800;
+    cursor:pointer;letter-spacing:.04em;
+    transition:background .2s,transform .2s,box-shadow .2s;
+    box-shadow:0 4px 16px rgba(211,47,47,.3);margin-top:8px;
+  }
+  .btn-submit:hover:not(:disabled){background:var(--red-dark);transform:translateY(-2px);box-shadow:0 8px 22px rgba(211,47,47,.35);}
+  .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+  /* ===== AR PREVIEW ===== */
+  .preview-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding-top:12px;}
+  .preview-label{font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+  .preview-card{width:160px;display:flex;flex-direction:column;align-items:center;gap:12px;}
+  .prev-cover{width:160px;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.15);position:relative;background:#f0e8d5;}
+  .prev-cover.ratio-square{height:160px;}
+  .prev-cover.ratio-book{aspect-ratio:3/4;}
+  .prev-img{width:100%;height:100%;object-fit:cover;display:none;}
+  .prev-fallback{width:100%;height:100%;background:linear-gradient(145deg,#c62828,#ef5350);display:flex;align-items:center;justify-content:center;}
+  .prev-fallback span{font-family:'Baloo 2',cursive;font-size:3rem;font-weight:800;color:#fff;}
+  .prev-grade{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:.8rem;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+  .prev-title{font-size:.85rem;font-weight:700;color:var(--text);text-align:center;line-height:1.4;max-width:160px;}
+
+  /* ===== TABLE / LIST ===== */
+  .list-card{grid-column:1/-1;}
+  .table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;}
+  thead tr{background:rgba(211,47,47,.06);}
+  th{padding:13px 16px;text-align:left;font-size:.78rem;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+  td{padding:12px 16px;border-top:1px solid var(--border);vertical-align:middle;}
+  tr:hover td{background:#fdf9f9;}
+  .td-cover{width:60px;}
+  .cover-thumb{width:44px;height:58px;object-fit:cover;border-radius:7px;display:block;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .cover-placeholder-sm{width:44px;height:58px;border-radius:7px;background:linear-gradient(135deg,var(--red),#ef5350);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;color:#fff;}
+  .td-title{font-weight:600;font-size:.9rem;max-width:220px;}
+  .td-actions{white-space:nowrap;display:flex;gap:8px;align-items:center;}
+  .cat-badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.04em;background:#f0f0f0;color:#666;}
+  .cat-badge.cat-ngu-van{background:#e8f5e9;color:#2e7d32;}
+  .cat-badge.cat-lich-su{background:#e3f2fd;color:#1565c0;}
+  .cat-badge.cat-dia-ly{background:#e0f7fa;color:#006064;}
+  .cat-badge.cat-gdcd{background:#f3e5f5;color:#6a1b9a;}
+  .cat-badge.cat-van-hoa{background:#fce4ec;color:#880e4f;}
+  .btn-view{text-decoration:none;background:#e8f4fd;color:#1565c0;font-size:.8rem;font-weight:700;padding:5px 13px;border-radius:8px;transition:background .2s;}
+  .btn-view:hover{background:#bbdefb;}
+  .btn-del{background:#fdecea;color:var(--red);border:none;font-size:.8rem;font-weight:700;padding:5px 13px;border-radius:8px;cursor:pointer;transition:background .2s;font-family:'Be Vietnam Pro',sans-serif;}
+  .btn-del:hover{background:#ffcdd2;}
+  .no-link{color:#ccc;font-size:.85rem;}
+  .loading-row,.empty-row{text-align:center;padding:40px!important;color:var(--muted);font-weight:600;font-size:.9rem;}
+  .loading-row{display:flex;align-items:center;justify-content:center;gap:12px;}
+  .spinner{width:22px;height:22px;border-radius:50%;border:2.5px solid #f0f0f0;border-top-color:var(--red);animation:spin .8s linear infinite;flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ===== WARN BOX ===== */
+  .warn-box{margin-top:32px;padding:18px;background:#fff8f0;border-radius:14px;border:1.5px solid #ffe0b2;}
+  .warn-box p.warn-title{font-size:.82rem;font-weight:800;color:#e65100;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+  .warn-box ol,.warn-box ul{font-size:.8rem;color:#555;line-height:1.9;padding-left:18px;}
+  .warn-box .small{font-size:.78rem;color:#888;margin-top:10px;}
+  .warn-box code{background:#ffe;padding:2px 6px;border-radius:4px;}
+
+  /* ===== INFO BOX (mới, thay thế warn-box cho AR) ===== */
+  .info-box{margin-top:28px;padding:18px;background:#f0f4ff;border-radius:14px;border:1.5px solid #c5d4f7;}
+  .info-box p.info-title{font-size:.82rem;font-weight:800;color:#1565c0;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+  .info-box ol,.info-box ul{font-size:.8rem;color:#555;line-height:1.9;padding-left:18px;}
+
+  /* ===== TOAST ===== */
+  .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:#fff;padding:13px 28px;border-radius:14px;font-weight:700;font-size:.92rem;max-width:90vw;text-align:center;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 8px 28px rgba(0,0,0,.2);z-index:9999;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.success{background:#1b5e20;}
+  .toast.error{background:var(--red-dark);}
+  .toast.info{background:#1565c0;}
+
+  /* ===== MINIGAME TAB ===== */
+  #tab-minigame{--mg-gold:#FFB300;--mg-gold-dark:#c98a00;--mg-bg2:#ffffff;--mg-bg3:#fff0ef;--mg-accent:#d32f2f;--mg-text-muted:#8a6a6a;--mg-border:rgba(211,47,47,0.14);--mg-danger:#e24b4a;--mg-success:#2e7d32;}
+  #tab-minigame .page{max-width:1000px;margin:0 auto;padding:8px 24px 60px;}
+  #tab-minigame .admin-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+  #tab-minigame .admin-tab{padding:9px 20px;border-radius:10px;background:var(--mg-bg2);color:var(--mg-text-muted);font-family:'Be Vietnam Pro',sans-serif;font-size:14px;font-weight:800;cursor:pointer;border:1px solid var(--mg-border);transition:all .2s;display:flex;align-items:center;gap:6px;box-shadow:0 2px 10px rgba(211,47,47,0.06);}
+  #tab-minigame .admin-tab.active{background:var(--mg-accent);border-color:var(--mg-accent);color:#fff;}
+  #tab-minigame .admin-tab .count-badge{background:rgba(0,0,0,0.12);border-radius:10px;padding:1px 7px;font-size:11px;}
+  #tab-minigame .admin-tab.active .count-badge{background:rgba(255,255,255,0.25);}
+  #tab-minigame .admin-section{display:none;}
+  #tab-minigame .admin-section.active{display:block;}
+  #tab-minigame .section-title{font-family:'Baloo 2',cursive;font-size:17px;font-weight:800;margin-bottom:4px;color:var(--red);}
+  #tab-minigame .section-sub{font-size:13px;color:var(--mg-text-muted);margin-bottom:18px;}
+  #tab-minigame .map-row{display:flex;align-items:center;gap:14px;background:var(--mg-bg2);border:1px solid var(--mg-border);border-radius:14px;padding:12px 16px;margin-bottom:10px;box-shadow:0 2px 10px rgba(211,47,47,0.05);}
+  #tab-minigame .map-row-thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;background:var(--mg-bg3);flex-shrink:0;}
+  #tab-minigame .map-row-thumb-ph{width:56px;height:56px;border-radius:10px;background:var(--mg-bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  #tab-minigame .map-row-info{flex:1;min-width:0;}
+  #tab-minigame .map-row-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #tab-minigame .map-row-meta{font-size:12px;color:var(--mg-text-muted);margin-top:3px;}
+  #tab-minigame .map-row-meta b{color:var(--text);}
+  #tab-minigame .map-row-status{display:inline-block;font-size:10px;font-weight:800;padding:2px 9px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+  #tab-minigame .map-row-status.approved{background:rgba(46,125,50,0.13);color:var(--mg-success);}
+  #tab-minigame .map-row-status.pending{background:rgba(255,179,0,0.15);color:var(--mg-gold-dark);}
+  #tab-minigame .map-row-actions{display:flex;gap:8px;flex-shrink:0;}
+  #tab-minigame .ar-btn{padding:8px 14px;border-radius:9px;border:none;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .2s;white-space:nowrap;}
+  #tab-minigame .ar-btn.approve{background:var(--mg-success);color:#fff;}
+  #tab-minigame .ar-btn.delete{background:rgba(226,75,74,0.18);color:var(--mg-danger);}
+  #tab-minigame .ar-btn.unpublish{background:var(--mg-bg3);border:1px solid var(--mg-border);color:var(--mg-text-muted);}
+  #tab-minigame .ar-btn:hover{opacity:.8;}
+  #tab-minigame .empty-state{text-align:center;padding:50px 20px;color:var(--mg-text-muted);font-size:14px;}
+  #tab-minigame .empty-state span{display:block;font-size:36px;margin-bottom:10px;}
+  #tab-minigame .challenge-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;}
+  #tab-minigame .challenge-col{background:var(--mg-bg2);border:1px solid var(--mg-border);border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 2px 10px rgba(211,47,47,0.05);}
+  #tab-minigame .challenge-col-label{font-size:13px;font-weight:900;color:var(--red);margin-bottom:10px;}
+  #tab-minigame .challenge-col-thumb{width:100%;height:64px;border-radius:8px;object-fit:cover;background:var(--mg-bg3);margin-bottom:8px;}
+  #tab-minigame .challenge-col-thumb-ph{width:100%;height:64px;border-radius:8px;background:var(--mg-bg3);margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  #tab-minigame .challenge-col-mapname{font-size:11px;font-weight:700;margin-bottom:10px;min-height:28px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+  #tab-minigame .challenge-col select{width:100%;padding:7px 6px;border-radius:8px;background:var(--mg-bg3);border:1px solid var(--mg-border);color:var(--text);font-family:'Be Vietnam Pro',sans-serif;font-size:11px;outline:none;}
+  @media(max-width:900px){#tab-minigame .challenge-grid{grid-template-columns:repeat(4,1fr);}}
+  @media(max-width:600px){#tab-minigame .challenge-grid{grid-template-columns:repeat(2,1fr);}#tab-minigame .page{padding:8px 14px 50px;}#tab-minigame .map-row{flex-wrap:wrap;}#tab-minigame .map-row-actions{width:100%;}}
+  @media(max-width:600px){.topbar{padding:0 16px;}.card{padding:22px 18px;}.top-tabs{padding:0 16px;}}
+  /* ── TAGS ── */
+  .chip-input{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;border:2px solid var(--border);border-radius:12px;background:#faf8f6;}
+  .chip-input:focus-within{border-color:var(--red);box-shadow:0 0 0 4px rgba(211,47,47,.1);background:#fff;}
+  .chip-input input{flex:1;min-width:140px;border:none;background:transparent;outline:none;font-family:'Be Vietnam Pro',sans-serif;font-size:.92rem;padding:4px;}
+  .chip{display:inline-flex;align-items:center;gap:5px;background:rgba(211,47,47,.1);color:var(--red);font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:999px;}
+  .chip b{cursor:pointer;font-size:.65rem;opacity:.7;}
+  .chip.prov{background:rgba(245,200,66,.3);color:#8a5a00;}
+  .chip.quiz{background:rgba(46,125,50,.14);color:#2e7d32;}
+  .row-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .row-chips .chip{font-size:.68rem;padding:2px 7px;}
+  #bkTagModal{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+  #bkTagModal.open{display:flex;}
+  .bk-tag-card{background:#fff;border-radius:20px;padding:28px;width:460px;max-width:94vw;box-shadow:0 16px 48px rgba(0,0,0,.2);}
+  .bk-tag-cancel{flex:1;padding:14px;border-radius:12px;border:2px solid var(--border);background:#fff;color:var(--muted);font-family:'Be Vietnam Pro',sans-serif;font-weight:800;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- INITIAL LOADING OVERLAY (tránh nháy giao diện admin trước khi xác minh quyền) -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p style="color: var(--muted); font-size: 14px; font-weight: 600;">Đang xác minh quyền truy cập...</p>
+</div>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div style="font-size:40px;margin-bottom:8px">🛡️</div>
+    <h1>VIETVERSE ADMIN</h1>
+    <p>Đăng nhập để vào trang quản trị</p>
+    <input class="auth-input" id="auth-email" type="email" placeholder="Email">
+    <input class="auth-input" id="auth-password" type="password" placeholder="Mật khẩu">
+    <button class="auth-btn" id="auth-action-btn">Đăng nhập</button>
+    <div class="auth-error" id="auth-error"></div>
+
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="logo.png" alt="Vietverse" class="logo" onclick="location.href='index.html'">
+      <span class="badge-admin">Admin</span>
+    </div>
+    <div class="topbar-right">
+      <a class="btn-logout" href="admin-explore.html" style="text-decoration:none;margin-right:8px">🧭 Khám phá</a>
+      <button class="btn-logout" id="logout-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><path d="M16 17l5-5-5-5"></path><path d="M21 12H9"></path></svg>
+        Đăng xuất
+      </button>
+    </div>
+  </header>
+
+  <!-- TOP-LEVEL TABS -->
+  <div class="top-tabs">
+    <button class="top-tab active" data-top-tab="ar">🧿 AR</button>
+    <button class="top-tab" data-top-tab="minigame">🎮 Minigame</button>
+    <button class="top-tab" data-top-tab="thuvien">📚 Thư viện</button>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- TAB: AR (WebXR — không cần marker)                     -->
+  <!-- ====================================================== -->
+  <div id="tab-ar" class="top-section active">
+    <div class="main">
+
+      <!-- FORM CARD -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Thêm mô hình AR mới
+        </div>
+
+        <form onsubmit="arHandleSubmit(event)">
+          <div class="form-group">
+            <label>Tên mô hình <span class="req">*</span></label>
+            <input id="f-name" class="form-control" type="text" placeholder="VD: Trống Đồng Đông Sơn" required>
+          </div>
+
+          <div class="form-group">
+            <label>Link model 3D (.glb / .gltf) <span class="req">*</span></label>
+            <input id="f-model" class="form-control" type="url" placeholder="https://..." required>
+            <p class="hint">Hỗ trợ Google Drive (link chia sẻ "Bất kỳ ai có link" → hệ thống tự chuyển sang link tải trực tiếp). Model cần cho phép CORS.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Link ảnh thumbnail (tùy chọn)</label>
+            <input id="f-thumb" class="form-control" type="url" placeholder="https://... (.jpg / .png)">
+            <p class="hint">Ảnh đại diện hiển thị trong lưới AR. Nếu bỏ trống, hệ thống tự tạo placeholder từ tên.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Link file marker lá bài (.mind) (tùy chọn)</label>
+            <input id="f-marker" class="form-control" type="url" placeholder="https://... (.mind)">
+            <p class="hint">Điền link này thì trang AR sẽ có nút "Quét lá bài" cho mô hình. Bỏ trống thì mô hình chỉ xem được theo kiểu đặt lên mặt phẳng. Nên host ở nơi cho phép CORS (GitHub raw, Firebase Storage...), không dùng Google Drive.</p>
+          </div>
+
+          <div class="form-group" style="background:#fff7f7;border:1px dashed var(--red);border-radius:12px;padding:14px;">
+            <label>Tạo file .mind từ ảnh lá bài</label>
+            <input id="f-cardimg" class="form-control" type="file" accept="image/*">
+            <button type="button" class="btn-submit" id="btnCompileMind" style="margin-top:10px;">Tạo &amp; tải file .mind</button>
+            <p class="hint" id="mindStatus">Chọn đúng ảnh in trên lá bài (cắt sát mép). Quá trình chạy ngay trên trình duyệt, mất vài chục giây. Tải xong, upload file .mind lên host rồi dán link vào ô phía trên.</p>
+          </div>
+
+          <button type="submit" class="btn-submit" id="arSubmitBtn">Thêm vào hệ thống AR</button>
+        </form>
+
+        <div class="info-box">
+          <p class="info-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            Cơ chế AR mới — WebXR Hit-test
+          </p>
+          <ul>
+            <li><b>Không cần marker / in ảnh:</b> người dùng chỉ cần mở trang AR, chọn mô hình và tap vào mặt phẳng thực tế để đặt mô hình.</li>
+            <li><b>Android Chrome:</b> dùng WebXR hit-test thật — mô hình "đứng" trên sàn/bàn thực tế.</li>
+            <li><b>iOS Safari:</b> mở AR Quick Look qua model-viewer — nhấn icon AR góc phải để xem trong không gian thực.</li>
+            <li><b>Model cần CORS:</b> đảm bảo nguồn host model (GitHub Raw, Firebase Storage, CDN...) cho phép truy cập cross-origin.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PREVIEW CARD -->
+      <div class="card">
+        <div class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          Xem trước
+        </div>
+        <div class="preview-wrap">
+          <div class="preview-label">Hiển thị trong lưới AR</div>
+          <div id="ar-previewCard" class="preview-card">
+            <div class="prev-cover ratio-square">
+              <img class="prev-img" src="" alt="">
+              <div class="prev-fallback"><span>?</span></div>
+            </div>
+            <div class="prev-title">Tên mô hình</div>
+          </div>
+          <p style="font-size:.78rem;color:var(--muted);text-align:center;max-width:220px;line-height:1.6;">
+            Preview cập nhật tự động khi bạn điền form bên trái.
+          </p>
+        </div>
+
+        <div class="warn-box">
+          <p class="warn-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+            Hướng dẫn Google Drive
+          </p>
+          <ol>
+            <li>Upload file .glb lên Google Drive</li>
+            <li>Nhấp chuột phải → <b>Chia sẻ</b></li>
+            <li>Chọn <b>"Bất kỳ ai có đường liên kết"</b></li>
+            <li>Sao chép link và dán vào form</li>
+          </ol>
+          <p class="small">Hệ thống sẽ tự chuyển link Drive sang link tải trực tiếp.</p>
+        </div>
+      </div>
+
+      <!-- AR LIST -->
+      <div class="card list-card">
+        <div class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path></svg>
+          Danh sách mô hình AR trong hệ thống
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Thumbnail</th><th>Tên mô hình</th><th>Link model</th><th>Thao tác</th></tr>
+            </thead>
+            <tbody id="arTbody">
+              <tr><td colspan="4" class="loading-row"><div class="spinner"></div>Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- TAB: MINIGAME                                           -->
+  <!-- ====================================================== -->
+  <div id="tab-minigame" class="top-section">
+    <div class="page">
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-mg-tab="pending">⏳ Chờ duyệt <span class="count-badge" id="count-pending">0</span></button>
+        <button class="admin-tab" data-mg-tab="all">🗺️ Tất cả Map <span class="count-badge" id="count-all">0</span></button>
+        <button class="admin-tab" data-mg-tab="challenge">🔥 Thử thách tuần</button>
+      </div>
+
+      <div class="admin-section active" id="tab-mg-pending">
+        <div class="section-title">Map chờ duyệt</div>
+        <div class="section-sub">Map mới đăng phải được duyệt ở đây trước khi hiển thị công khai cho mọi người.</div>
+        <div id="pending-list"><div class="empty-state"><span>✅</span>Không có map nào đang chờ duyệt.</div></div>
+      </div>
+
+      <div class="admin-section" id="tab-mg-all">
+        <div class="section-title">Tất cả Map</div>
+        <div class="section-sub">Quản lý / xóa bất kỳ map nào trong hệ thống.</div>
+        <div id="all-list"><div class="empty-state"><span>🌐</span>Chưa có map nào trong hệ thống.</div></div>
+      </div>
+
+      <div class="admin-section" id="tab-mg-challenge">
+        <div class="section-title">Thử thách tuần</div>
+        <div class="section-sub">Chọn 1 map cho mỗi thứ trong tuần. Lựa chọn này lặp lại mỗi tuần (không cần set lại). Chỉ map đã duyệt mới chọn được.</div>
+        <div class="challenge-grid" id="challenge-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- TAB: THƯ VIỆN                                           -->
+  <!-- ====================================================== -->
+  <div id="tab-thuvien" class="top-section">
+    <div class="main">
+
+      <div class="card">
+        <div class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Thêm sách mới
+        </div>
+        <form onsubmit="bookHandleSubmit(event)">
+          <div class="form-group">
+            <label>Tên sách <span class="req">*</span></label>
+            <input id="f-title" class="form-control" type="text" placeholder="VD: Ngữ Văn 12 – Tập 1 – KNTT" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Danh mục</label>
+              <select id="f-category" class="form-control">
+                <option value="ngu-van">Ngữ Văn</option>
+                <option value="lich-su">Lịch Sử</option>
+                <option value="dia-ly">Địa Lý</option>
+                <option value="gdcd">GDCD</option>
+                <option value="van-hoa">Văn Hóa</option>
+                <option value="other">Khác</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Lớp</label>
+              <input id="f-grade" class="form-control" type="text" placeholder="VD: 12" maxlength="3">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tags nội dung</label>
+            <div class="chip-input" id="bk-tags"><input placeholder="VD: lễ hội, làng nghề, truyền thuyết… (Enter để thêm)" list="bk-tag-suggest"></div>
+          </div>
+          <div class="form-group">
+            <label>Tỉnh / thành liên quan</label>
+            <div class="chip-input" id="bk-provs"><input placeholder="Chọn từ danh sách tỉnh…" list="bk-prov-suggest"></div>
+            <p class="hint">Dùng để gợi ý sách khi người chơi học xong minigame cùng chủ đề / cùng tỉnh. Nên dùng cùng cách gọi với tags của map.</p>
+          </div>
+          <datalist id="bk-tag-suggest"><option value="Lịch sử"><option value="Văn hóa"><option value="Lễ hội"><option value="Ẩm thực"><option value="Làng nghề"><option value="Di sản"><option value="Kiến trúc"><option value="Truyền thuyết"><option value="Âm nhạc dân gian"><option value="Danh nhân"><option value="Phong tục"></datalist>
+          <datalist id="bk-prov-suggest"></datalist>
+          <div class="form-group">
+            <label>Link ảnh bìa</label>
+            <input id="f-cover" class="form-control" type="url" placeholder="https://...">
+            <p class="hint">Dán link ảnh trực tiếp (Google Drive, Imgur, v.v.)</p>
+          </div>
+          <div class="form-group">
+            <label>Link PDF / Google Drive <span class="req">*</span></label>
+            <input id="f-pdf" class="form-control" type="url" placeholder="https://drive.google.com/file/d/..." required>
+            <p class="hint">Hỗ trợ Google Drive: chia sẻ "Bất kỳ ai có link" → dán link vào đây.</p>
+          </div>
+          <button type="submit" class="btn-submit" id="bookSubmitBtn">Thêm vào thư viện</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          Xem trước
+        </div>
+        <div class="preview-wrap">
+          <div class="preview-label">Hiển thị trong thư viện</div>
+          <div id="book-previewCard" class="preview-card">
+            <div class="prev-cover ratio-book">
+              <img class="prev-img" src="" alt="">
+              <div class="prev-fallback"><span>?</span></div>
+              <div class="prev-grade"></div>
+            </div>
+            <div class="prev-title">Tên sách</div>
+          </div>
+          <p style="font-size:.78rem;color:var(--muted);text-align:center;max-width:200px;line-height:1.6;">Preview cập nhật tự động khi bạn điền form bên trái.</p>
+        </div>
+        <div class="warn-box">
+          <p class="warn-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            Hướng dẫn Google Drive
+          </p>
+          <ol>
+            <li>Upload file PDF / ảnh lên Google Drive</li>
+            <li>Nhấp chuột phải → <b>Chia sẻ</b></li>
+            <li>Chọn <b>"Bất kỳ ai có đường liên kết"</b></li>
+            <li>Sao chép link và dán vào form</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card list-card">
+        <div class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path></svg>
+          Danh sách sách trong thư viện
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Bìa</th><th>Tên sách</th><th>Danh mục</th><th>Lớp</th><th>Thao tác</th></tr>
+            </thead>
+            <tbody id="booksTbody">
+              <tr><td colspan="5" class="loading-row"><div class="spinner"></div>Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- SỬA TAGS SÁCH -->
+<div id="bkTagModal" onclick="if(event.target===this)bkCloseTagModal()">
+  <div class="bk-tag-card">
+    <div class="card-title" style="margin-bottom:6px">🏷️ Tags &amp; tỉnh</div>
+    <p class="hint" id="bkTagModalTitle" style="margin:0 0 16px;font-weight:700"></p>
+    <div class="form-group"><label>Tags nội dung</label>
+      <div class="chip-input" id="bk-m-tags"><input placeholder="Enter để thêm" list="bk-tag-suggest"></div></div>
+    <div class="form-group"><label>Tỉnh / thành liên quan</label>
+      <div class="chip-input" id="bk-m-provs"><input placeholder="Chọn từ danh sách tỉnh…" list="bk-prov-suggest"></div></div>
+    <div style="display:flex;gap:10px">
+      <button type="button" class="bk-tag-cancel" onclick="bkCloseTagModal()">Hủy</button>
+      <button type="button" class="btn-submit" id="bkTagSaveBtn" style="flex:2;margin:0" onclick="bkSaveTagModal()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============== SHARED UTILS ============== -->
+<script>
+  function showToast(msg, type) {
+    type = type || 'success';
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => { t.className = 'toast'; }, 3500);
+  }
+
+  document.querySelectorAll('.top-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.top-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.top-section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.topTab).classList.add('active');
+    });
+  });
+</script>
+
+<!-- ============== FIREBASE v8 (Auth + Realtime DB — Minigame & Auth) ============== -->
+<script src="vv-learn.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+    authDomain: "vvss-b7a49.firebaseapp.com",
+    databaseURL: "https://vvss-b7a49-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "vvss-b7a49",
+    storageBucket: "vvss-b7a49.firebasestorage.app",
+    messagingSenderId: "562837285603",
+    appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+  const DAY_LABELS_FULL = ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
+  let currentUser = null;
+  let allMapsData = {};
+  let weeklyChallengeData = {};
+
+  // ─── ADMIN CHECK ────────────────────────────────────────────
+  // Chỉ những UID có trong node "admins" của Realtime Database mới được coi là admin.
+  // Node này KHÔNG tự tạo — phải được set thủ công (hoặc qua nút "Thiết lập admin đầu tiên" bên dưới).
+  async function isAdminUid(uid) {
+    try {
+      const snap = await firebase.database().ref('admins/' + uid).once('value');
+      return snap.exists() && snap.val() === true;
+    } catch (e) {
+      console.error('Lỗi kiểm tra quyền admin:', e);
+      return false;
+    }
+  }
+
+  function showAuthScreen(message) {
+    document.getElementById('auth-overlay').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    const errEl = document.getElementById('auth-error');
+    if (message) {
+      errEl.style.color = 'var(--danger)';
+      errEl.textContent = message;
+    }
+  }
+
+  // ─── AUTH ─────────────────────────────────────────────────────
+  document.getElementById('auth-action-btn').addEventListener('click', async () => {
+    const email = document.getElementById('auth-email').value.trim();
+    const pass  = document.getElementById('auth-password').value;
+    const errEl = document.getElementById('auth-error');
+    errEl.style.color = 'var(--danger)';
+    errEl.textContent = '';
+    if (!email || !pass) { errEl.textContent = 'Nhập email và mật khẩu.'; return; }
+    try { await firebase.auth().signInWithEmailAndPassword(email, pass); }
+    catch (e) { errEl.textContent = e.message; }
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', () => firebase.auth().signOut());
+
+  firebase.auth().onAuthStateChanged(async (user) => {
+    const loadingEl = document.getElementById('loading-overlay');
+
+    if (user) {
+      const isAdmin = await isAdminUid(user.uid);
+      if (!isAdmin) {
+        await firebase.auth().signOut();
+        currentUser = null;
+        showAuthScreen('Tài khoản này không có quyền truy cập trang admin.');
+        if (loadingEl) loadingEl.style.display = 'none';
+        return;
+      }
+      currentUser = user;
+      document.getElementById('auth-error').textContent = '';
+      document.getElementById('auth-overlay').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      listenMaps();
+      listenWeeklyChallenge();
+      arLoadList();
+      booksLoadList();
+    } else {
+      currentUser = null;
+      showAuthScreen();
+    }
+
+    if (loadingEl) loadingEl.style.display = 'none';
+  });
+
+  // ─── THIẾT LẬP ADMIN ĐẦU TIÊN (chạy 1 lần rồi xóa khỏi file) ──
+  // Tạo (hoặc dùng lại nếu đã tồn tại) tài khoản admin cố định bên dưới,
+  // rồi ghi UID của tài khoản đó vào node admins/ trong Realtime Database.
+  document.getElementById('admin-setup-btn').addEventListener('click', async () => {
+    const ADMIN_EMAIL = 'truongnguyenkhang08@gmail.com';
+    const ADMIN_PASS  = '123334';
+    if (!confirm('Thao tác này sẽ tạo (hoặc gán quyền admin cho) tài khoản:\n' + ADMIN_EMAIL + '\n\nChỉ nên chạy 1 LẦN DUY NHẤT, sau đó hãy xóa nút này khỏi file admin.html. Tiếp tục?')) return;
+    const errEl = document.getElementById('auth-error');
+    errEl.style.color = 'var(--success)';
+    errEl.textContent = 'Đang thiết lập tài khoản admin...';
+    try {
+      let uid;
+      try {
+        const cred = await firebase.auth().createUserWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PASS);
+        uid = cred.user.uid;
+      } catch (e) {
+        if (e.code === 'auth/email-already-in-use') {
+          const cred = await firebase.auth().signInWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PASS);
+          uid = cred.user.uid;
+        } else {
+          throw e;
+        }
+      }
+      await firebase.database().ref('admins/' + uid).set(true);
+      await firebase.auth().signOut();
+      errEl.style.color = 'var(--success)';
+      errEl.textContent = '✅ Đã cấp quyền admin! Giờ có thể đăng nhập lại bằng tài khoản đó. Hãy XÓA nút thiết lập này khỏi file.';
+    } catch (e) {
+      errEl.style.color = 'var(--danger)';
+      errEl.textContent = 'Lỗi thiết lập admin: ' + e.message;
+    }
+  });
+
+  // ─── MINIGAME SUB-TABS ───────────────────────────────────────
+  document.querySelectorAll('[data-mg-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-mg-tab]').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#tab-minigame .admin-section').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-mg-' + btn.dataset.mgTab).classList.add('active');
+    });
+  });
+
+  // ─── REALTIME DB LISTENERS ────────────────────────────────────
+  function listenMaps() {
+    firebase.database().ref('maps').on('value', snap => {
+      allMapsData = snap.val() || {};
+      renderPendingList(); renderAllList(); renderChallengeGrid();
+    });
+  }
+  function listenWeeklyChallenge() {
+    firebase.database().ref('weeklyChallenge').on('value', snap => {
+      weeklyChallengeData = snap.val() || {};
+      renderChallengeGrid();
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function thumbHtml(map, sizeClass) {
+    return map.imageUrl
+      ? `<img class="${sizeClass}" src="${escapeHtml(map.imageUrl)}" onerror="this.outerHTML='<div class=&quot;${sizeClass}-ph&quot;>🗺️</div>'">`
+      : `<div class="${sizeClass}-ph">🗺️</div>`;
+  }
+
+  function mapTagsHtml(map) {
+    const tg = VV.toArr(map.tags), pv = VV.toArr(map.provinces);
+    const qn = (Array.isArray(map.npcs) ? map.npcs : []).reduce((n, x) => n + ((x && x.quiz) ? x.quiz.length : 0), 0);
+    if (!tg.length && !pv.length && !qn) return '';
+    return '<div class="row-chips">'
+      + tg.map(t => `<span class="chip">#${escapeHtml(t)}</span>`).join('')
+      + pv.map(t => `<span class="chip prov">📍${escapeHtml(t)}</span>`).join('')
+      + (qn ? `<span class="chip quiz">🎓 ${qn} câu hỏi</span>` : '')
+      + '</div>';
+  }
+
+  // ─── PENDING ──────────────────────────────────────────────────
+  function renderPendingList() {
+    const list    = document.getElementById('pending-list');
+    const entries = Object.entries(allMapsData).filter(([,m]) => m.status === 'pending');
+    document.getElementById('count-pending').textContent = entries.length;
+    if (entries.length === 0) {
+      list.innerHTML = '<div class="empty-state"><span>✅</span>Không có map nào đang chờ duyệt.</div>'; return;
+    }
+    entries.sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
+    list.innerHTML = '';
+    entries.forEach(([id, map]) => {
+      const row = document.createElement('div'); row.className = 'map-row';
+      row.innerHTML = `${thumbHtml(map,'map-row-thumb')}
+        <div class="map-row-info">
+          <div class="map-row-name">${escapeHtml(map.name||'Không tên')}</div>
+          <div class="map-row-meta">bởi <b>${escapeHtml(map.creatorName||'Ẩn danh')}</b> · ${map.gridWidth||'?'}×${map.gridHeight||'?'} ô</div>
+          ${mapTagsHtml(map)}
+        </div>
+        <div class="map-row-actions">
+          <button class="ar-btn approve">✅ Duyệt</button>
+          <button class="ar-btn delete">🗑️ Xóa</button>
+        </div>`;
+      row.querySelector('.approve').addEventListener('click', () => approveMap(id));
+      row.querySelector('.delete').addEventListener('click',  () => deleteMap(id, map.name));
+      list.appendChild(row);
+    });
+  }
+
+  // ─── ALL MAPS ─────────────────────────────────────────────────
+  function renderAllList() {
+    const list    = document.getElementById('all-list');
+    const entries = Object.entries(allMapsData);
+    document.getElementById('count-all').textContent = entries.length;
+    if (entries.length === 0) {
+      list.innerHTML = '<div class="empty-state"><span>🌐</span>Chưa có map nào trong hệ thống.</div>'; return;
+    }
+    entries.sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
+    list.innerHTML = '';
+    entries.forEach(([id, map]) => {
+      const isApproved = map.status === 'approved' || map.status === undefined;
+      const statusBadge = isApproved
+        ? '<span class="map-row-status approved">✅ Đã duyệt</span>'
+        : '<span class="map-row-status pending">⏳ Chờ duyệt</span>';
+      const row = document.createElement('div'); row.className = 'map-row';
+      row.innerHTML = `${thumbHtml(map,'map-row-thumb')}
+        <div class="map-row-info">
+          <div class="map-row-name">${escapeHtml(map.name||'Không tên')} ${statusBadge}</div>
+          <div class="map-row-meta">bởi <b>${escapeHtml(map.creatorName||'Ẩn danh')}</b> · ${map.playCount||0} lượt chơi · ${map.gridWidth||'?'}×${map.gridHeight||'?'} ô</div>
+          ${mapTagsHtml(map)}
+        </div>
+        <div class="map-row-actions">
+          ${isApproved
+            ? '<button class="ar-btn unpublish">⏸️ Gỡ duyệt</button>'
+            : '<button class="ar-btn approve">✅ Duyệt</button>'}
+          <button class="ar-btn delete">🗑️ Xóa</button>
+        </div>`;
+      const approveBtn = row.querySelector('.approve');
+      if (approveBtn) approveBtn.addEventListener('click', () => approveMap(id));
+      const unpublishBtn = row.querySelector('.unpublish');
+      if (unpublishBtn) unpublishBtn.addEventListener('click', () => unpublishMap(id));
+      row.querySelector('.delete').addEventListener('click', () => deleteMap(id, map.name));
+      list.appendChild(row);
+    });
+  }
+
+  async function approveMap(id) {
+    try { await firebase.database().ref(`maps/${id}/status`).set('approved'); showToast('✅ Đã duyệt map!','success'); }
+    catch(e) { showToast('Lỗi: '+e.message,'error'); }
+  }
+  async function unpublishMap(id) {
+    try { await firebase.database().ref(`maps/${id}/status`).set('pending'); showToast('⏸️ Đã gỡ duyệt map.','info'); }
+    catch(e) { showToast('Lỗi: '+e.message,'error'); }
+  }
+  async function deleteMap(id, name) {
+    if (!confirm(`Xóa map "${name||'Không tên'}"? Hành động này không thể hoàn tác.`)) return;
+    try {
+      await firebase.database().ref(`maps/${id}`).remove();
+      const updates = {};
+      Object.entries(weeklyChallengeData).forEach(([dayIdx, ch]) => {
+        if (ch && ch.mapId === id) updates[`weeklyChallenge/${dayIdx}`] = null;
+      });
+      if (Object.keys(updates).length > 0) await firebase.database().ref().update(updates);
+      showToast('🗑️ Đã xóa map!','success');
+    } catch(e) { showToast('Lỗi: '+e.message,'error'); }
+  }
+
+  // ─── WEEKLY CHALLENGE ─────────────────────────────────────────
+  function renderChallengeGrid() {
+    const grid = document.getElementById('challenge-grid');
+    const approvedMaps = Object.entries(allMapsData).filter(([,m]) => m.status === 'approved' || m.status === undefined);
+    grid.innerHTML = '';
+    DAY_LABELS_FULL.forEach((label, dayIdx) => {
+      const current    = weeklyChallengeData[dayIdx];
+      const currentMap = current && current.mapId ? allMapsData[current.mapId] : null;
+      const col = document.createElement('div'); col.className = 'challenge-col';
+      const thumb = currentMap ? thumbHtml(currentMap,'challenge-col-thumb') : '<div class="challenge-col-thumb-ph">🔥</div>';
+      let optHtml = '<option value="">— Chưa chọn —</option>';
+      approvedMaps.forEach(([id, m]) => {
+        const sel = current && current.mapId === id ? 'selected' : '';
+        optHtml += `<option value="${id}" ${sel}>${escapeHtml(m.name||'Không tên')}</option>`;
+      });
+      col.innerHTML = `<div class="challenge-col-label">${label}</div>${thumb}
+        <div class="challenge-col-mapname">${currentMap ? escapeHtml(currentMap.name||'') : 'Chưa có map'}</div>
+        <select data-day="${dayIdx}">${optHtml}</select>`;
+      col.querySelector('select').addEventListener('change', e => setChallengeDay(dayIdx, e.target.value));
+      grid.appendChild(col);
+    });
+  }
+
+  async function setChallengeDay(dayIdx, mapId) {
+    try {
+      if (!mapId) {
+        await firebase.database().ref(`weeklyChallenge/${dayIdx}`).remove();
+        showToast(`Đã bỏ chọn thử thách cho ${DAY_LABELS_FULL[dayIdx]}.`,'info'); return;
+      }
+      const map = allMapsData[mapId];
+      await firebase.database().ref(`weeklyChallenge/${dayIdx}`).set({ mapId, mapName:(map&&map.name)||'Map' });
+      showToast(`🔥 Đã đặt thử thách cho ${DAY_LABELS_FULL[dayIdx]}!`,'success');
+    } catch(e) { showToast('Lỗi: '+e.message,'error'); }
+  }
+</script>
+
+<!-- ============== FIREBASE v10 modular (Firestore — AR + Thư viện) ============== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, deleteDoc, updateDoc, doc,
+    query, orderBy, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const fsApp = initializeApp({
+    apiKey: "AIzaSyAq52d5zrc5rN6UFflwb22bJD9GSjdS0ts",
+    authDomain: "vvss-b7a49.firebaseapp.com",
+    projectId: "vvss-b7a49",
+    storageBucket: "vvss-b7a49.firebasestorage.app",
+    messagingSenderId: "562837285603",
+    appId: "1:562837285603:web:e75d7a983e1ef644c9b3d6"
+  }, "firestoreApp");
+  const db = getFirestore(fsApp);
+
+  /* ── Drive link normalizer ── */
+  function normalizeDriveLink(url, kind) {
+    if (!url) return url;
+    let id = null;
+    let m = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+    if (m) id = m[1];
+    if (!id) { m = url.match(/[?&]id=([^&]+)/); if (m) id = m[1]; }
+    if (!id) return url;
+    return kind === 'image'
+      ? `https://drive.google.com/uc?export=view&id=${id}`
+      : `https://drive.google.com/uc?export=download&id=${id}`;
+  }
+
+  /* ── AR: LOAD LIST ── */
+  window.arLoadList = async function() {
+    const tbody = document.getElementById('arTbody');
+    tbody.innerHTML = '<tr><td colspan="4" class="loading-row"><div class="spinner"></div>Đang tải...</td></tr>';
+    try {
+      const snap = await getDocs(query(collection(db,"ar_items"), orderBy("createdAt","desc")));
+      if (snap.empty) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-row">Chưa có mô hình nào.</td></tr>'; return;
+      }
+      tbody.innerHTML = '';
+      snap.forEach(d => {
+        const a  = d.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="td-cover">
+            ${a.thumbnailUrl
+              ? `<img src="${a.thumbnailUrl}" alt="thumb" class="cover-thumb"
+                  onerror="this.outerHTML='<div class=cover-placeholder-sm>${(a.name||'?')[0]}</div>'">`
+              : `<div class="cover-placeholder-sm">${(a.name||'?')[0]}</div>`}
+          </td>
+          <td class="td-title">${a.name||'—'}${a.markerUrl ? ' <span title="Có marker lá bài">🎴</span>' : ''}</td>
+          <td>
+            ${a.modelUrl
+              ? `<a href="${a.modelUrl}" target="_blank" class="btn-view">Xem model</a>`
+              : '<span class="no-link">—</span>'}
+          </td>
+          <td class="td-actions">
+            <button class="btn-del" data-id="${d.id}">Xóa</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+      tbody.querySelectorAll('.btn-del').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Xóa mô hình AR này?')) return;
+          btn.disabled = true; btn.textContent = '...';
+          await deleteDoc(doc(db,"ar_items",btn.dataset.id));
+          showToast('Đã xóa mô hình AR.','success');
+          window.arLoadList();
+        });
+      });
+    } catch(e) {
+      console.error(e);
+      tbody.innerHTML = `<tr><td colspan="4" class="empty-row" style="color:var(--red)">Lỗi tải dữ liệu: ${e.message}</td></tr>`;
+    }
+  };
+
+  /* ── AR: SUBMIT ── */
+  window.arHandleSubmit = async function(e) {
+    e.preventDefault();
+    const btn          = document.getElementById('arSubmitBtn');
+    const name         = document.getElementById('f-name').value.trim();
+    const modelUrlRaw  = document.getElementById('f-model').value.trim();
+    const thumbUrlRaw  = document.getElementById('f-thumb').value.trim();
+    const markerUrl    = document.getElementById('f-marker').value.trim() || null;
+
+    if (!name || !modelUrlRaw) {
+      showToast('Vui lòng điền đủ Tên và Link model.','error'); return;
+    }
+
+    const modelUrl    = normalizeDriveLink(modelUrlRaw, 'model');
+    const thumbnailUrl = thumbUrlRaw ? normalizeDriveLink(thumbUrlRaw, 'image') : null;
+
+    btn.disabled = true; btn.textContent = 'Đang lưu...';
+    try {
+      await addDoc(collection(db,"ar_items"), {
+        name, modelUrl, thumbnailUrl, markerUrl,
+        createdAt: serverTimestamp()
+      });
+      showToast('✓ Thêm mô hình AR thành công!','success');
+      e.target.reset();
+      arUpdatePreview();
+      window.arLoadList();
+    } catch(err) {
+      console.error(err);
+      showToast('Lỗi: '+err.message,'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Thêm vào hệ thống AR';
+    }
+  };
+
+  /* ── AR: PREVIEW ── */
+  window.arUpdatePreview = function() {
+    const name    = document.getElementById('f-name').value.trim();
+    const thumbUrl = document.getElementById('f-thumb').value.trim();
+    const prev    = document.getElementById('ar-previewCard');
+    prev.querySelector('.prev-title').textContent = name || 'Tên mô hình';
+    const img      = prev.querySelector('.prev-img');
+    const fallback = prev.querySelector('.prev-fallback');
+    if (thumbUrl) {
+      img.src = normalizeDriveLink(thumbUrl,'image');
+      img.style.display = 'block'; fallback.style.display = 'none';
+    } else {
+      img.style.display = 'none'; fallback.style.display = 'flex';
+      fallback.querySelector('span').textContent = name ? name[0].toUpperCase() : '?';
+    }
+  };
+
+  /* ── SÁCH: TAGS / TỈNH ── */
+  const bkTags = [], bkProvs = [], bkMTags = [], bkMProvs = [];
+  function bkSetupChips(rootId, arr) {
+    const root = document.getElementById(rootId);
+    const input = root.querySelector('input');
+    function draw() {
+      root.querySelectorAll('.chip').forEach(c => c.remove());
+      arr.forEach((t, i) => {
+        const c = document.createElement('span'); c.className = 'chip'; c.textContent = t;
+        const x = document.createElement('b'); x.textContent = '✕';
+        x.addEventListener('click', () => { arr.splice(i, 1); draw(); });
+        c.appendChild(x); root.insertBefore(c, input);
+      });
+    }
+    function add() {
+      const v = input.value.trim().replace(/^#/, '');
+      input.value = '';
+      if (!v || v.length > 24 || arr.length >= 8) return;
+      if (arr.some(t => VV.norm(t) === VV.norm(v))) return;
+      arr.push(v); draw();
+    }
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); }
+      else if (e.key === 'Backspace' && !input.value && arr.length) { arr.pop(); draw(); }
+    });
+    input.addEventListener('blur', add);
+    draw();
+    return draw;
+  }
+  let bkDrawTags, bkDrawProvs, bkDrawMTags, bkDrawMProvs, bkEditId = null;
+
+  window.bkOpenTagModal = function(id, book) {
+    bkEditId = id;
+    document.getElementById('bkTagModalTitle').textContent = book.title || 'Sách';
+    bkMTags.length = 0; bkMProvs.length = 0;
+    bkMTags.push(...VV.toArr(book.tags)); bkMProvs.push(...VV.toArr(book.provinces));
+    bkDrawMTags(); bkDrawMProvs();
+    document.getElementById('bkTagModal').classList.add('open');
+  };
+  window.bkCloseTagModal = function() { document.getElementById('bkTagModal').classList.remove('open'); bkEditId = null; };
+  window.bkSaveTagModal = async function() {
+    if (!bkEditId) return;
+    const btn = document.getElementById('bkTagSaveBtn'); btn.disabled = true;
+    try {
+      await updateDoc(doc(db, "books", bkEditId), { tags: bkMTags.slice(), provinces: bkMProvs.slice() });
+      showToast('✓ Đã lưu tags.', 'success');
+      bkCloseTagModal(); window.booksLoadList();
+    } catch (err) { showToast('Lỗi: ' + err.message, 'error'); }
+    finally { btn.disabled = false; }
+  };
+
+  // Gợi ý tên tỉnh từ Firestore (collection 'provinces') để khớp với trang Khám phá
+  async function bkLoadProvinceSuggestions() {
+    try {
+      const snap = await getDocs(collection(db, 'provinces'));
+      const names = [];
+      snap.forEach(d => { const x = d.data() || {}; names.push(x.name || x.title || d.id.replace(/([a-z])([A-Z])/g, '$1 $2')); });
+      const dl = document.getElementById('bk-prov-suggest');
+      names.sort((a, b) => a.localeCompare(b, 'vi')).forEach(n => { const o = document.createElement('option'); o.value = n; dl.appendChild(o); });
+    } catch (e) { console.warn('Không tải được danh sách tỉnh:', e.message); }
+  }
+
+  /* ── SÁCH: LOAD LIST ── */
+  window.booksLoadList = async function() {
+    const tbody = document.getElementById('booksTbody');
+    tbody.innerHTML = '<tr><td colspan="5" class="loading-row"><div class="spinner"></div>Đang tải...</td></tr>';
+    try {
+      const snap = await getDocs(query(collection(db,"books"), orderBy("createdAt","desc")));
+      if (snap.empty) { tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Chưa có sách nào.</td></tr>'; return; }
+      tbody.innerHTML = '';
+      const catLabel = c => ({
+        'ngu-van':'Ngữ Văn','lich-su':'Lịch Sử','dia-ly':'Địa Lý',
+        'gdcd':'GDCD','van-hoa':'Văn Hóa','other':'Khác'
+      })[c] || 'Khác';
+      snap.forEach(d => {
+        const b  = d.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="td-cover">
+            ${b.coverUrl
+              ? `<img src="${b.coverUrl}" alt="cover" class="cover-thumb">`
+              : `<div class="cover-placeholder-sm">${(b.title||'?')[0]}</div>`}
+          </td>
+          <td class="td-title">${b.title||'—'}</td>
+          <td><span class="cat-badge cat-${b.category||'other'}">${catLabel(b.category)}</span></td>
+          <td>${b.grade ? `Lớp ${b.grade}` : '—'}</td>
+          <td class="td-actions">
+            ${b.pdfUrl ? `<a href="${b.pdfUrl}" target="_blank" class="btn-view">Xem</a>` : '<span class="no-link">—</span>'}
+            <button class="btn-view btn-tags" style="border:none;cursor:pointer;font-family:inherit">Tags</button>
+            <button class="btn-del" data-id="${d.id}">Xóa</button>
+          </td>`;
+        const tg = VV.toArr(b.tags), pv = VV.toArr(b.provinces);
+        if (tg.length || pv.length) {
+          const box = document.createElement('div'); box.className = 'row-chips';
+          tg.forEach(t => { const c = document.createElement('span'); c.className = 'chip'; c.textContent = '#' + t; box.appendChild(c); });
+          pv.forEach(t => { const c = document.createElement('span'); c.className = 'chip prov'; c.textContent = '📍' + t; box.appendChild(c); });
+          tr.querySelector('.td-title').appendChild(box);
+        }
+        tr.querySelector('.btn-tags').addEventListener('click', () => window.bkOpenTagModal(d.id, b));
+        tbody.appendChild(tr);
+      });
+      tbody.querySelectorAll('.btn-del').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Xóa sách này?')) return;
+          btn.disabled = true; btn.textContent = '...';
+          await deleteDoc(doc(db,"books",btn.dataset.id));
+          showToast('Đã xóa sách.','success');
+          window.booksLoadList();
+        });
+      });
+    } catch(e) {
+      console.error(e);
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-row" style="color:var(--red)">Lỗi tải dữ liệu: ${e.message}</td></tr>`;
+    }
+  };
+
+  /* ── SÁCH: SUBMIT ── */
+  window.bookHandleSubmit = async function(e) {
+    e.preventDefault();
+    const btn      = document.getElementById('bookSubmitBtn');
+    const title    = document.getElementById('f-title').value.trim();
+    const category = document.getElementById('f-category').value;
+    const grade    = document.getElementById('f-grade').value.trim();
+    const coverUrl = document.getElementById('f-cover').value.trim();
+    const pdfUrl   = document.getElementById('f-pdf').value.trim();
+    if (!title || !pdfUrl) { showToast('Vui lòng điền đủ Tên sách và Link PDF.','error'); return; }
+    btn.disabled = true; btn.textContent = 'Đang lưu...';
+    try {
+      await addDoc(collection(db,"books"), {
+        title, category, grade: grade||null,
+        tags: bkTags.slice(), provinces: bkProvs.slice(),
+        coverUrl: coverUrl||null, pdfUrl, createdAt: serverTimestamp()
+      });
+      showToast('✓ Thêm sách thành công!','success');
+      e.target.reset();
+      bkTags.length = 0; bkProvs.length = 0; bkDrawTags(); bkDrawProvs();
+      window.bookUpdatePreview();
+      window.booksLoadList();
+    } catch(err) {
+      console.error(err); showToast('Lỗi: '+err.message,'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Thêm vào thư viện';
+    }
+  };
+
+  /* ── SÁCH: PREVIEW ── */
+  window.bookUpdatePreview = function() {
+    const title    = document.getElementById('f-title').value.trim();
+    const coverUrl = document.getElementById('f-cover').value.trim();
+    const grade    = document.getElementById('f-grade').value.trim();
+    const prev     = document.getElementById('book-previewCard');
+    prev.querySelector('.prev-title').textContent = title || 'Tên sách';
+    const img       = prev.querySelector('.prev-img');
+    const fallback  = prev.querySelector('.prev-fallback');
+    const gradeBadge = prev.querySelector('.prev-grade');
+    if (coverUrl) { img.src = coverUrl; img.style.display = 'block'; fallback.style.display = 'none'; }
+    else { img.style.display = 'none'; fallback.style.display = 'flex'; fallback.querySelector('span').textContent = title ? title[0].toUpperCase() : '?'; }
+    gradeBadge.textContent = grade || '';
+    gradeBadge.style.display = grade ? 'flex' : 'none';
+  };
+
+  /* ── Wire up live preview ── */
+  document.addEventListener('DOMContentLoaded', () => {
+    bkDrawTags = bkSetupChips('bk-tags', bkTags); bkDrawProvs = bkSetupChips('bk-provs', bkProvs);
+    bkDrawMTags = bkSetupChips('bk-m-tags', bkMTags); bkDrawMProvs = bkSetupChips('bk-m-provs', bkMProvs);
+    bkLoadProvinceSuggestions();
+    ['f-name','f-thumb'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', window.arUpdatePreview);
+    });
+    ['f-title','f-cover','f-grade'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', window.bookUpdatePreview);
+    });
+  });
+</script>
+
+<script>
+(function () {
+  const fileEl = document.getElementById('f-cardimg');
+  const btn    = document.getElementById('btnCompileMind');
+  const status = document.getElementById('mindStatus');
+  if (!btn) return;
+
+  function loadMindAR() {
+    return new Promise((resolve, reject) => {
+      if (window.MINDAR && window.MINDAR.IMAGE && window.MINDAR.IMAGE.Compiler) return resolve();
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js';
+      s.onload = resolve;
+      s.onerror = () => reject(new Error('Không tải được thư viện MindAR.'));
+      document.head.appendChild(s);
+    });
+  }
+
+  // Giải mã ảnh an toàn: vẽ qua canvas -> PNG, thu nhỏ cạnh dài tối đa 1280px
+  async function fileToImage(file) {
+    let src = null;
+    try {
+      src = await createImageBitmap(file);
+    } catch (e) { src = null; }
+
+    if (!src) {
+      const dataUrl = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = () => rej(new Error('Không đọc được file ảnh.'));
+        r.readAsDataURL(file);
+      });
+      src = await new Promise((res, rej) => {
+        const i = new Image();
+        i.onload = () => res(i);
+        i.onerror = () => rej(new Error('Trình duyệt không giải mã được ảnh (định dạng: ' +
+          (file.type || 'không rõ') + '). Hãy xuất ảnh sang PNG hoặc JPG rồi thử lại.'));
+        i.src = dataUrl;
+      });
+    }
+
+    const w0 = src.naturalWidth || src.width, h0 = src.naturalHeight || src.height;
+    const k = Math.min(1, 1280 / Math.max(w0, h0));
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(w0 * k); cv.height = Math.round(h0 * k);
+    cv.getContext('2d').drawImage(src, 0, 0, cv.width, cv.height);
+
+    return await new Promise((res, rej) => {
+      const out = new Image();
+      out.onload = () => res(out);
+      out.onerror = () => rej(new Error('Không tạo được ảnh từ canvas.'));
+      out.src = cv.toDataURL('image/png');
+    });
+  }
+
+  btn.addEventListener('click', async () => {
+    const file = fileEl.files[0];
+    if (!file) { showToast('Chọn ảnh lá bài trước.', 'error'); return; }
+    btn.disabled = true;
+    status.textContent = 'Đang tải thư viện MindAR...';
+    try {
+      await loadMindAR();
+      const img = await fileToImage(file);
+      const compiler = new window.MINDAR.IMAGE.Compiler();
+      await compiler.compileImageTargets([img], p => {
+        status.textContent = 'Đang biên dịch... ' + Math.round(p) + '%';
+      });
+      const buffer = await compiler.exportData();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([buffer]));
+      a.download = (file.name.replace(/\.[^.]+$/, '') || 'card') + '.mind';
+      document.body.appendChild(a); a.click(); a.remove();
+      status.textContent = '✓ Đã tạo file .mind. Hãy upload lên host rồi dán link vào ô "Link file marker".';
+      showToast('✓ Đã tạo file .mind', 'success');
+    } catch (err) {
+      console.error(err);
+      status.textContent = 'Lỗi: ' + (err.message || err);
+      showToast('Lỗi tạo .mind: ' + (err.message || err), 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
