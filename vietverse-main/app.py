@@ -7,26 +7,40 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-# Thư mục gốc của project
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Tự động xác định thư mục gốc (hỗ trợ cả khi đặt app.py ở root hoặc trong sever-python)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if os.path.basename(CURRENT_DIR) == "sever-python":
+    ROOT_DIR = os.path.dirname(CURRENT_DIR)
+else:
+    ROOT_DIR = CURRENT_DIR
 
-# Nạp file .env từ root hoặc sever-python nếu có
+# Nạp file .env từ cả thư mục hiện tại, root và sever-python
+load_dotenv(os.path.join(CURRENT_DIR, ".env"))
 load_dotenv(os.path.join(ROOT_DIR, ".env"))
 load_dotenv(os.path.join(ROOT_DIR, "sever-python", ".env"))
 
 API_KEY = os.getenv("AI_API_KEY")
 API_URL = os.getenv("AI_API_URL", "https://api.openai.com/v1/chat/completions")
-MODEL = os.getenv("AI_MODEL", "gpt-6-luna")
+MODEL = os.getenv("AI_MODEL", "gpt-4o-mini")
 PORT = int(os.getenv("PORT", "3001"))
-# Mức "suy nghĩ" của model GPT-6: none / low / medium / high. Để trống = không gửi tham số.
-REASONING_EFFORT = os.getenv("AI_REASONING_EFFORT", "low")
-# Giới hạn token đầu ra (GPT-6 tính cả token suy nghĩ vào giới hạn này)
+
+# Để trống mặc định để tránh lỗi 400 với các model không hỗ trợ reasoning_effort
+REASONING_EFFORT = os.getenv("AI_REASONING_EFFORT", "")
 MAX_OUTPUT_TOKENS = int(os.getenv("AI_MAX_TOKENS", "3000"))
 
 app = Flask(__name__, static_folder=None)
 
-# Bật CORS cho toàn bộ API routes
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+# Bật CORS đầy đủ (cho phép cả header ngrok-skip-browser-warning từ index.html gửi lên)
+CORS(
+    app,
+    resources={
+        r"/*": {
+            "origins": "*",
+            "methods": ["GET", "POST", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization", "ngrok-skip-browser-warning"],
+        }
+    },
+)
 
 SYSTEM_PROMPT = """Bạn là Vietverse AI — trợ lý chuyên sâu về lịch sử, văn hóa và địa lý Việt Nam, phục vụ học sinh, phụ huynh và người yêu thích tìm hiểu về Việt Nam.
 
@@ -79,7 +93,7 @@ def is_rate_limited(ip: str) -> bool:
 # ---------------------------------------------------------------------
 @app.get("/api/health")
 def health():
-    return jsonify(status="ok", ok=True)
+    return jsonify(status="ok", ok=True, service="Vietverse AI Backend")
 
 
 @app.route("/api/chat", methods=["POST", "OPTIONS"])
@@ -87,15 +101,15 @@ def chat():
     if request.method == "OPTIONS":
         return "", 200
 
-    api_key = os.getenv("AI_API_KEY") or API_KEY
-    api_url = os.getenv("AI_API_URL") or API_URL
-    model = os.getenv("AI_MODEL") or MODEL
+    api_key = (os.getenv("AI_API_KEY") or API_KEY or "").strip()
+    api_url = (os.getenv("AI_API_URL") or API_URL).strip()
+    model = (os.getenv("AI_MODEL") or MODEL).strip()
 
     if not api_key:
-        return jsonify(error="Server chưa cấu hình AI_API_KEY trong biến môi trường."), 500
+        return jsonify(error="Server Render chưa cấu hình AI_API_KEY trong Environment Variables."), 500
 
     forwarded = request.headers.get("X-Forwarded-For")
-    ip = forwarded.split(",")[0].strip() if forwarded else request.remote_addr
+    ip = forwarded.split(",")[0].strip() if forwarded else (request.remote_addr or "unknown")
 
     if is_rate_limited(ip):
         return jsonify(error="Bạn gửi quá nhiều yêu cầu, thử lại sau ít phút."), 429
@@ -105,15 +119,23 @@ def chat():
     if not isinstance(messages, list) or len(messages) == 0:
         return jsonify(error='Thiếu trường "messages" hợp lệ.'), 400
 
-    trimmed_history = messages[-10:]
+    # Lọc chỉ giữ các message hợp lệ
+    cleaned_messages = []
+    for m in messages[-10:]:
+        if isinstance(m, dict) and m.get("role") in ("user", "assistant") and m.get("content"):
+            cleaned_messages.append({"role": m["role"], "content": str(m["content"])})
+
+    if not cleaned_messages:
+        return jsonify(error="Nội dung tin nhắn không hợp lệ."), 400
 
     payload = {
         "model": model,
-        "messages": [{"role": "system", "content": SYSTEM_PROMPT}, *trimmed_history],
-        "max_completion_tokens": MAX_OUTPUT_TOKENS,
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT}, *cleaned_messages],
+        "max_tokens": MAX_OUTPUT_TOKENS,
         "stream": False,
     }
-    effort = os.getenv("AI_REASONING_EFFORT", REASONING_EFFORT)
+
+    effort = os.getenv("AI_REASONING_EFFORT", REASONING_EFFORT).strip()
     if effort:
         payload["reasoning_effort"] = effort
 
@@ -130,36 +152,50 @@ def chat():
     except requests.RequestException as e:
         return jsonify(error=f"Không thể kết nối tới nhà cung cấp AI: {e}"), 502
 
-    data = upstream_res.json() if upstream_res.content else None
+    # Parse JSON an toàn (tránh crash 500 khi upstream trả về trang lỗi HTML)
+    try:
+        data = upstream_res.json() if upstream_res.content else None
+    except ValueError:
+        data = None
 
     if not upstream_res.ok:
-        upstream_msg = (
-            data.get("error", {}).get("message")
-            if data and isinstance(data, dict)
-            else f"Lỗi HTTP {upstream_res.status_code} từ nhà cung cấp AI."
-        )
+        upstream_msg = f"Lỗi HTTP {upstream_res.status_code} từ nhà cung cấp AI."
+        if isinstance(data, dict):
+            err_obj = data.get("error")
+            if isinstance(err_obj, dict) and err_obj.get("message"):
+                upstream_msg = err_obj.get("message")
+            elif isinstance(err_obj, str):
+                upstream_msg = err_obj
         return jsonify(error=upstream_msg), upstream_res.status_code
 
-    # Bóc tách JSON linh hoạt (OpenAI, Gemini, Custom API)
+    # Bóc tách JSON linh hoạt (OpenAI, Gemini, Custom Proxy API)
     reply = None
-    if data and isinstance(data, dict):
+    if isinstance(data, dict):
         if "choices" in data and len(data["choices"]) > 0:
-            reply = data["choices"][0].get("message", {}).get("content")
+            msg_obj = data["choices"][0].get("message") or {}
+            reply = msg_obj.get("content")
         elif "candidates" in data and len(data["candidates"]) > 0:
-            reply = data["candidates"][0].get("content", {}).get("parts", [{}])[0].get("text")
+            parts = data["candidates"][0].get("content", {}).get("parts", [])
+            if parts and isinstance(parts[0], dict):
+                reply = parts[0].get("text")
+        elif "reply" in data:
+            reply = data["reply"]
 
     if not reply:
-        return jsonify(error="Phản hồi từ nhà cung cấp AI không đúng định dạng."), 502
+        return jsonify(error="Phản hồi từ nhà cung cấp AI trống hoặc không đúng định dạng."), 502
 
     return jsonify(reply=reply)
 
 
 # ---------------------------------------------------------------------
-# FRONTEND ROUTES & STATIC FILES
+# FRONTEND ROUTES & STATIC FILES (Khi chạy trực tiếp trên Render / Local)
 # ---------------------------------------------------------------------
 @app.route("/")
 def index():
-    return send_from_directory(ROOT_DIR, "index.html")
+    index_path = os.path.join(ROOT_DIR, "index.html")
+    if os.path.isfile(index_path):
+        return send_from_directory(ROOT_DIR, "index.html")
+    return jsonify(status="ok", message="Vietverse AI Backend is running on Render.")
 
 
 @app.route("/<path:path>")
@@ -168,7 +204,6 @@ def serve_file_or_page(path):
     if os.path.isfile(target_path):
         return send_from_directory(ROOT_DIR, path)
 
-    # Hỗ trợ truy cập đường dẫn gọn (ví dụ: /explore -> explore.html)
     html_file = f"{path}.html"
     html_path = os.path.join(ROOT_DIR, html_file)
     if os.path.isfile(html_path):
@@ -179,5 +214,5 @@ def serve_file_or_page(path):
 
 if __name__ == "__main__":
     print(f"Vietverse Flask backend đang chạy tại http://0.0.0.0:{PORT}")
-    print(f"Model: {os.getenv('AI_MODEL') or MODEL} | URL: {os.getenv('AI_API_URL') or API_URL} | reasoning_effort: {os.getenv('AI_REASONING_EFFORT', REASONING_EFFORT) or '(không gửi)'}")
+    print(f"Model: {os.getenv('AI_MODEL') or MODEL} | URL: {os.getenv('AI_API_URL') or API_URL}")
     app.run(host="0.0.0.0", port=PORT, debug=False)
