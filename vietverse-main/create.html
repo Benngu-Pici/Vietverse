@@ -423,6 +423,15 @@
     .quiz-opt input[type=radio] { accent-color:#2e7d32; width:16px; height:16px; flex-shrink:0; cursor:pointer; }
     .quiz-opt span { font-weight:900; color:var(--accent); width:14px; }
     .quiz-explain { margin-top:2px; }
+    /* ── QUIZ IMPORT ── */
+    .quiz-import-box { display:none; border:1px dashed var(--accent); background:var(--bg3); border-radius:12px; padding:12px; margin-bottom:10px; }
+    .quiz-import-box.open { display:block; }
+    .quiz-import-box textarea { width:100%; min-height:170px; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-family:Consolas,monospace; font-size:12px; outline:none; resize:vertical; margin:6px 0; }
+    .quiz-import-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+    .quiz-import-row button, .quiz-import-row label { padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-family:'Be Vietnam Pro',sans-serif; font-size:12px; font-weight:700; cursor:pointer; }
+    .quiz-import-row .primary { background:linear-gradient(135deg,var(--gold),var(--gold-dark)); border:none; color:#1a1200; font-weight:900; }
+    .quiz-import-msg { font-size:12px; margin-top:8px; line-height:1.5; }
+    .quiz-import-msg.err { color:var(--danger); } .quiz-import-msg.ok { color:#2e7d32; }
     .quiz-hint { font-size:11px; color:var(--text-muted); margin:-2px 0 8px; }
     .chip-input { display:flex; flex-wrap:wrap; gap:6px; padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:var(--bg3); }
     .chip-input input { flex:1; min-width:120px; border:none; background:transparent; outline:none; font-family:'Be Vietnam Pro',sans-serif; font-size:13px; color:var(--text); padding:3px; }
@@ -676,6 +685,18 @@
     <div class="quiz-hint">Người chơi trả lời đúng lần đầu → +10 điểm, +20 EXP. Chọn nút tròn ở đáp án đúng.</div>
     <div id="npc-quiz-list"></div>
     <button class="npc-add-line-btn" id="npc-add-q-btn">➕ Thêm câu hỏi</button>
+    <button class="npc-add-line-btn" id="npc-import-toggle" style="margin-top:6px">📥 Nhập nhanh nhiều câu hỏi (dán / tải file)</button>
+    <div class="quiz-import-box" id="quiz-import-box">
+      <div class="quiz-hint" style="margin:0">Dán câu hỏi theo mẫu dưới (cách nhau bằng 1 dòng trống), hoặc dán thẳng từ Excel/Google Sheets (cột: Câu hỏi | A | B | C | D | Đáp án đúng | Giải thích).</div>
+      <textarea id="quiz-import-text" spellcheck="false" placeholder="Câu 1: Thủ đô của Việt Nam là gì?&#10;A. Hà Nội&#10;B. Huế&#10;C. Đà Nẵng&#10;D. TP.HCM&#10;Đáp án: A&#10;Giải thích: Hà Nội là thủ đô từ năm 1010.&#10;&#10;Câu 2: ..."></textarea>
+      <div class="quiz-import-row">
+        <button type="button" class="primary" id="quiz-import-apply">➕ Thêm vào NPC</button>
+        <label>📄 Tải file .txt / .csv<input type="file" id="quiz-import-file" accept=".txt,.csv,.tsv" style="display:none"></label>
+        <button type="button" id="quiz-import-sample">⬇️ Tải file mẫu</button>
+        <button type="button" id="quiz-import-replace-toggle" data-replace="0">Chế độ: thêm nối tiếp</button>
+      </div>
+      <div class="quiz-import-msg" id="quiz-import-msg"></div>
+    </div>
     <div class="npc-actions">
       <button class="npc-cancel" id="npc-cancel">Hủy</button>
       <button class="npc-delete" id="npc-delete">🗑️ Xóa NPC</button>
@@ -1568,6 +1589,154 @@ function collectQuiz() {
 }
 
 document.getElementById('npc-add-q-btn').addEventListener('click', () => addQuizRow());
+
+
+// ──────────────────────────────────────────────
+// NHẬP NHANH CÂU HỎI (dán text / TSV từ Excel / file .txt .csv)
+// ──────────────────────────────────────────────
+const QUIZ_SAMPLE = `Câu 1: Thủ đô của Việt Nam là gì?
+A. Hà Nội
+B. Huế
+C. Đà Nẵng
+D. TP.HCM
+Đáp án: A
+Giải thích: Hà Nội là thủ đô từ năm 1010 (Thăng Long).
+
+Câu 2: Cầu Rồng nằm ở thành phố nào?
+A. Hà Nội
+B. Đà Nẵng
+C. Cần Thơ
+D. Hải Phòng
+Đáp án: B
+`;
+
+function splitCsvLine(line, delim) {
+  const out = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQ) {
+      if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+      else if (c === '"') inQ = false;
+      else cur += c;
+    } else if (c === '"') inQ = true;
+    else if (c === delim) { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out.map(x => x.trim());
+}
+
+function letterToIdx(v) {
+  const m = String(v || '').trim().toUpperCase().match(/^[ABCD1-4]/);
+  if (!m) return -1;
+  return 'ABCD1234'.indexOf(m[0]) % 4;
+}
+
+// Trả về { items:[{q,options,correct,explain}], errors:[...] }
+function parseQuizText(raw) {
+  const items = [], errors = [];
+  const text = String(raw || '').replace(/\r/g, '').trim();
+  if (!text) return { items, errors: ['Chưa có nội dung.'] };
+
+  const lines = text.split('\n').filter(l => l.trim());
+  const delim = lines.every(l => l.includes('\t')) ? '\t'
+              : (lines.length > 1 && lines.every(l => (l.match(/,/g) || []).length >= 5) ? ',' : null);
+
+  if (delim) {
+    // ── dạng bảng: Câu hỏi | A | B | C | D | Đáp án | Giải thích
+    lines.forEach((l, i) => {
+      const c = splitCsvLine(l, delim);
+      if (i === 0 && /câu\s*hỏi|question|^q$/i.test(c[0]) ) return;   // bỏ dòng tiêu đề
+      const [q, a, b, cc, d, ans, ex] = c;
+      const correct = letterToIdx(ans);
+      const options = [a, b, cc, d].map(x => (x || '').trim());
+      if (!q) errors.push(`Dòng ${i + 1}: thiếu câu hỏi`);
+      else if (options.some(o => !o)) errors.push(`Dòng ${i + 1}: cần đủ 4 đáp án`);
+      else if (correct < 0) errors.push(`Dòng ${i + 1}: "Đáp án đúng" phải là A/B/C/D`);
+      else items.push({ q, options, correct, explain: (ex || '').trim() });
+    });
+    return { items, errors };
+  }
+
+  // ── dạng khối: các khối cách nhau bởi dòng trống
+  const blocks = text.split(/\n\s*\n+/);
+  blocks.forEach((blk, bi) => {
+    const ls = blk.split('\n').map(x => x.trim()).filter(Boolean);
+    let q = '', explain = '', correct = -1; const options = ['', '', '', ''];
+    let last = 'q';
+    for (const l of ls) {
+      let m;
+      if ((m = l.match(/^(?:đáp\s*án(?:\s*đúng)?|dap\s*an|answer|ans)\s*[:：\-]\s*([ABCD1-4])/i))) { correct = letterToIdx(m[1]); last = ''; }
+      else if ((m = l.match(/^(?:giải\s*thích|giai\s*thich|explain|explanation)\s*[:：\-]\s*(.*)$/i))) { explain = m[1].trim(); last = 'e'; }
+      else if ((m = l.match(/^(\*?)\s*([ABCD])\s*[\.\):：]\s*(.*)$/i))) {
+        const i = 'ABCD'.indexOf(m[2].toUpperCase());
+        options[i] = m[3].trim(); if (m[1] === '*') correct = i; last = 'o' + i;
+      }
+      else if ((m = l.match(/^(?:câu\s*\d*|cau\s*\d*|question\s*\d*|q\s*\d*|\d+)\s*[:：\.\)]\s*(.*)$/i))) { q = m[1].trim(); last = 'q'; }
+      else if (last === 'q') q += (q ? ' ' : '') + l;
+      else if (last === 'e') explain += ' ' + l;
+      else if (last && last[0] === 'o') { const i = +last[1]; options[i] += ' ' + l; }
+      else if (!q) q = l;
+    }
+    const tag = `Câu ${bi + 1}`;
+    if (!q) errors.push(`${tag}: thiếu nội dung câu hỏi`);
+    else if (options.some(o => !o)) errors.push(`${tag}: cần đủ 4 đáp án A–D`);
+    else if (correct < 0) errors.push(`${tag}: thiếu dòng "Đáp án: A/B/C/D"`);
+    else items.push({ q, options, correct, explain });
+  });
+  return { items, errors };
+}
+
+function clampQuizItem(it) {
+  return {
+    q: it.q.slice(0, 200),
+    options: it.options.map(o => o.slice(0, 100)),
+    correct: it.correct,
+    explain: (it.explain || '').slice(0, 200),
+  };
+}
+
+(function setupQuizImport() {
+  const box = document.getElementById('quiz-import-box');
+  const ta = document.getElementById('quiz-import-text');
+  const msg = document.getElementById('quiz-import-msg');
+  const modeBtn = document.getElementById('quiz-import-replace-toggle');
+  const setMsg = (t, cls) => { msg.className = 'quiz-import-msg ' + (cls || ''); msg.innerHTML = t; };
+
+  document.getElementById('npc-import-toggle').addEventListener('click', () => box.classList.toggle('open'));
+
+  modeBtn.addEventListener('click', () => {
+    const rep = modeBtn.dataset.replace === '1' ? '0' : '1';
+    modeBtn.dataset.replace = rep;
+    modeBtn.textContent = rep === '1' ? 'Chế độ: THAY THẾ toàn bộ câu cũ' : 'Chế độ: thêm nối tiếp';
+  });
+
+  document.getElementById('quiz-import-sample').addEventListener('click', () => {
+    const blob = new Blob(['\ufeff' + QUIZ_SAMPLE], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'mau-cau-hoi-npc.txt'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+
+  document.getElementById('quiz-import-file').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { ta.value = r.result; setMsg(`Đã đọc file "${f.name}". Nhấn "Thêm vào NPC".`, 'ok'); };
+    r.readAsText(f, 'utf-8');
+    e.target.value = '';
+  });
+
+  document.getElementById('quiz-import-apply').addEventListener('click', () => {
+    const { items, errors } = parseQuizText(ta.value);
+    if (!items.length) { setMsg('❌ Không nhập được câu nào.<br>' + errors.slice(0, 6).join('<br>'), 'err'); return; }
+    if (modeBtn.dataset.replace === '1') quizListEl.innerHTML = '';
+    items.map(clampQuizItem).forEach(it => addQuizRow(it));
+    ta.value = '';
+    let t = `✅ Đã thêm ${items.length} câu hỏi. Kiểm tra lại rồi bấm 💾 Lưu.`;
+    if (errors.length) t += `<br><span style="color:#e24b4a">⚠️ Bỏ qua ${errors.length} câu lỗi:<br>${errors.slice(0, 6).join('<br>')}</span>`;
+    setMsg(t, 'ok');
+  });
+})();
 
 // ──────────────────────────────────────────────
 // MAP TAGS / PROVINCES (chip input)
