@@ -237,6 +237,13 @@
     @keyframes pokeArrowBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     .poke-dialogue-inner.last-line .poke-arrow { display: none; }
 
+    .poke-choices { display: none; flex-direction: column; gap: 6px; margin-top: 10px; }
+    .poke-choices.show { display: flex; }
+    .poke-choice { display: flex; align-items: center; gap: 8px; text-align: left; padding: 9px 12px; border: 3px solid #1a1a2e; border-radius: 6px; background: #fff; color: #1a1a2e; font: 700 13px 'Be Vietnam Pro', sans-serif; cursor: pointer; box-shadow: 0 3px 0 #888; }
+    .poke-choice:hover, .poke-choice:focus { background: #fff3c4; outline: none; }
+    .poke-choice:active { transform: translateY(2px); box-shadow: 0 1px 0 #888; }
+    .poke-choice b { flex-shrink: 0; width: 22px; height: 22px; border-radius: 5px; background: #1a1a2e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
     #toast {
       position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
       background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
@@ -595,6 +602,7 @@
   <div class="poke-dialogue-inner" id="poke-inner">
     <div class="poke-speaker">🎋 LÃO NHÂN</div>
     <p class="poke-text" id="poke-text"></p>
+    <div class="poke-choices" id="poke-choices"></div>
     <div class="poke-arrow" id="poke-arrow"></div>
   </div>
 </div>
@@ -823,6 +831,7 @@ document.getElementById('google-btn').addEventListener('click', async () => {
   const npcDialogueBox   = document.querySelector("#npc-dialogue-box");
   const pokeText         = document.querySelector("#poke-text");
   const pokeInner        = document.querySelector("#poke-inner");
+  const pokeChoices      = document.querySelector("#poke-choices");
 
   let localX = 0, localY = 0;
   let velX = 0, velY = 0;
@@ -1188,23 +1197,53 @@ document.getElementById('google-btn').addEventListener('click', async () => {
     });
   }
 
+  // ─── Hội thoại: hỗ trợ cả thoại thẳng (npc.dialogue) lẫn rẽ nhánh (npc.talk) ───
+  let talkMap = {};        // id -> node
+  let currentNode = null;
+  let choicesShown = false;
+
+  function buildTalk(npc) {
+    const map = {};
+    const tk = npc.talk;
+    if (tk && tk.nodes) {
+      const raw = Array.isArray(tk.nodes) ? tk.nodes : Object.values(tk.nodes);
+      raw.forEach(n => {
+        if (!n || n.id == null) return;
+        const ch = Array.isArray(n.choices) ? n.choices : Object.values(n.choices || {});
+        map[n.id] = { id: n.id, text: String(n.text || ""), next: n.next || "end", choices: ch.filter(c => c && c.label) };
+      });
+      const first = (tk.start != null && map[tk.start]) ? tk.start : (raw[0] && raw[0].id);
+      return { map, start: first };
+    }
+    // NPC cũ: biến các dòng thoại thành chuỗi thẻ nối tiếp, dòng cuối → mở quiz (nếu có)
+    const lines = (npc.dialogue || []).filter(Boolean);
+    lines.forEach((t, i) => {
+      map["L" + i] = { id: "L" + i, text: String(t), choices: [],
+        next: i < lines.length - 1 ? "L" + (i + 1) : ((npc.quiz && npc.quiz.length) ? "quiz" : "end") };
+    });
+    return { map, start: lines.length ? "L0" : null };
+  }
+
   function openNpcDialogue(npc) {
     activeDialogueNpc = npc;
-    currentDialogueIndex = 0; isInDialogue = true;
+    isInDialogue = true;
+    const built = buildTalk(npc);
+    talkMap = built.map;
     document.querySelector('.poke-speaker').textContent = `🎋 ${(npc.name || NPC_SPEAKER_DEFAULT).toUpperCase()}`;
-    showDialogueLine(); npcDialogueBox.style.display = "block";
+    npcDialogueBox.style.display = "block";
     document.addEventListener("keydown", onDialogueKey);
     npcDialogueBox.addEventListener("click", advanceDialogue);
+    if (!built.start) { goTo("quiz"); return; }
+    showNode(built.start);
   }
   function closeNpcDialogue() {
-    // Clear any running typewriter
     if (typewriterTimer) { clearTimeout(typewriterTimer); typewriterTimer = null; }
-    isTyping = false;
+    isTyping = false; choicesShown = false; currentNode = null; talkMap = {};
+    pokeChoices.classList.remove("show"); pokeChoices.innerHTML = "";
     npcDialogueBox.style.display = "none"; isInDialogue = false; currentDialogueIndex = 0;
     activeDialogueNpc = null;
     document.removeEventListener("keydown", onDialogueKey);
     npcDialogueBox.removeEventListener("click", advanceDialogue);
-    // Re-check hints
     const gx = Math.floor(localX/TILE), gy = Math.floor(localY/TILE);
     checkNpcInteraction(gx, gy);
   }
@@ -1220,7 +1259,18 @@ document.getElementById('google-btn').addEventListener('click', async () => {
       grantCoins: (n) => playerRef.child('coins').transaction(v => (v || 0) + n)
     });
   }
+  function goTo(target) {
+    const npc = activeDialogueNpc;
+    if (target === "quiz") { closeNpcDialogue(); startNpcQuiz(npc); return; }
+    if (!target || target === "end" || !talkMap[target]) { closeNpcDialogue(); return; }
+    showNode(target);
+  }
   function onDialogueKey(e) {
+    if (choicesShown && /^[1-3]$/.test(e.key)) {
+      const b = pokeChoices.querySelectorAll(".poke-choice")[+e.key - 1];
+      if (b) { e.preventDefault(); b.click(); }
+      return;
+    }
     if (e.code === "Space" || e.code === "Enter" || e.code === "KeyZ") { e.preventDefault(); advanceDialogue(); }
     if (e.code === "Escape") closeNpcDialogue();
   }
@@ -1228,13 +1278,31 @@ document.getElementById('google-btn').addEventListener('click', async () => {
   let typewriterTimer = null;
   let isTyping = false;
 
-  function showDialogueLine() {
-    if (!activeDialogueNpc) return;
-    const lines = activeDialogueNpc.dialogue || [];
-    const text = lines[currentDialogueIndex] || "";
-    const isLast = currentDialogueIndex === lines.length - 1;
-    pokeInner.classList.toggle("last-line", isLast);
-    // Typewriter effect
+  function revealChoices() {
+    if (!currentNode || !currentNode.choices.length) return;
+    pokeChoices.innerHTML = "";
+    currentNode.choices.slice(0, 3).forEach((c, k) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "poke-choice";
+      const n = document.createElement("b"); n.textContent = k + 1;
+      const t = document.createElement("span"); t.textContent = c.label;
+      b.append(n, t);
+      b.addEventListener("click", ev => { ev.stopPropagation(); choicesShown = false; pokeChoices.classList.remove("show"); goTo(c.next); });
+      pokeChoices.appendChild(b);
+    });
+    pokeChoices.classList.add("show");
+    choicesShown = true;
+  }
+
+  function showNode(id) {
+    const node = talkMap[id];
+    if (!activeDialogueNpc || !node) { closeNpcDialogue(); return; }
+    currentNode = node; choicesShown = false;
+    pokeChoices.classList.remove("show"); pokeChoices.innerHTML = "";
+    const text = node.text;
+    const hasChoices = node.choices.length > 0;
+    const ends = !hasChoices && (node.next === "end" || node.next === "quiz" || !talkMap[node.next]);
+    pokeInner.classList.toggle("last-line", hasChoices || ends);
     pokeText.textContent = "";
     isTyping = true;
     if (typewriterTimer) clearTimeout(typewriterTimer);
@@ -1248,24 +1316,24 @@ document.getElementById('google-btn').addEventListener('click', async () => {
       } else {
         isTyping = false;
         typewriterTimer = null;
+        revealChoices();
       }
     }
     typeNext();
   }
 
   function advanceDialogue() {
-    if (!activeDialogueNpc) return;
-    // If still typing, skip to end of current line
+    if (!activeDialogueNpc || !currentNode) return;
+    // Đang gõ chữ → hiện đủ câu ngay (và hiện các lựa chọn nếu có)
     if (isTyping) {
       if (typewriterTimer) { clearTimeout(typewriterTimer); typewriterTimer = null; }
       isTyping = false;
-      const lines = activeDialogueNpc.dialogue || [];
-      pokeText.textContent = lines[currentDialogueIndex] || "";
+      pokeText.textContent = currentNode.text;
+      revealChoices();
       return;
     }
-    const lines = activeDialogueNpc.dialogue || [];
-    if (currentDialogueIndex < lines.length - 1) { currentDialogueIndex++; showDialogueLine(); }
-    else { const doneNpc = activeDialogueNpc; closeNpcDialogue(); startNpcQuiz(doneNpc); }
+    if (currentNode.choices.length) return;   // phải chọn 1 phương án, không bấm bỏ qua
+    goTo(currentNode.next);
   }
 
   // ─── SKIN SHOP ───────────────────────────────────────────────

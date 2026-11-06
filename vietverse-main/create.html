@@ -423,6 +423,18 @@
     .quiz-opt input[type=radio] { accent-color:#2e7d32; width:16px; height:16px; flex-shrink:0; cursor:pointer; }
     .quiz-opt span { font-weight:900; color:var(--accent); width:14px; }
     .quiz-explain { margin-top:2px; }
+    /* ── BRANCHING DIALOGUE EDITOR ── */
+    .talk-mode { display:flex; gap:6px; margin-bottom:10px; }
+    .talk-mode button { flex:1; padding:8px 6px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text-muted); font-family:'Be Vietnam Pro',sans-serif; font-size:12px; font-weight:800; cursor:pointer; }
+    .talk-mode button.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+    .talk-node { border:1px solid var(--border); background:var(--bg3); border-radius:12px; padding:10px; margin-bottom:10px; }
+    .talk-node-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:12px; font-weight:800; color:var(--text-muted); }
+    .talk-node textarea { width:100%; min-height:52px; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--text); font-family:'Be Vietnam Pro',sans-serif; font-size:13px; outline:none; resize:vertical; }
+    .talk-sub { font-size:11px; font-weight:800; color:var(--text-muted); margin:8px 0 4px; }
+    .talk-choice { display:flex; gap:6px; align-items:center; margin-bottom:5px; }
+    .talk-choice input[type=text] { flex:1; min-width:0; padding:7px 9px; border-radius:8px; border:1px solid var(--border); background:#fff; font-family:'Be Vietnam Pro',sans-serif; font-size:12px; outline:none; }
+    .talk-choice select, .talk-next select { max-width:150px; padding:7px 6px; border-radius:8px; border:1px solid var(--border); background:#fff; font-family:'Be Vietnam Pro',sans-serif; font-size:12px; }
+    .talk-next { display:flex; gap:6px; align-items:center; font-size:12px; color:var(--text-muted); font-weight:700; }
     /* ── QUIZ IMPORT ── */
     .quiz-import-box { display:none; border:1px dashed var(--accent); background:var(--bg3); border-radius:12px; padding:12px; margin-bottom:10px; }
     .quiz-import-box.open { display:block; }
@@ -678,9 +690,32 @@
     <p>Đặt tên và các dòng hội thoại sẽ hiện khi người chơi đến gần ô này.</p>
     <label class="form-label">🏷️ Tên NPC</label>
     <input class="form-input" id="npc-name-input" maxlength="20" placeholder="VD: LÃO NHÂN" style="margin-bottom:14px">
-    <label class="form-label" style="margin-bottom:8px">💬 Các dòng hội thoại</label>
-    <div class="npc-dialogue-list" id="npc-dialogue-list"></div>
-    <button class="npc-add-line-btn" id="npc-add-line-btn">➕ Thêm dòng thoại</button>
+    <div class="talk-mode">
+      <button type="button" id="mode-linear" class="active">💬 Thoại thẳng</button>
+      <button type="button" id="mode-branch">🌿 Hội thoại rẽ nhánh</button>
+    </div>
+    <div id="linear-wrap">
+      <label class="form-label" style="margin-bottom:8px">💬 Các dòng hội thoại</label>
+      <div class="npc-dialogue-list" id="npc-dialogue-list"></div>
+      <button class="npc-add-line-btn" id="npc-add-line-btn">➕ Thêm dòng thoại</button>
+    </div>
+    <div id="branch-wrap" style="display:none">
+      <div class="quiz-hint">Mỗi thẻ là 1 lời NPC. Thêm tối đa 3 lựa chọn cho người chơi, mỗi lựa chọn dẫn tới thẻ khác (chọn "➕ Tạo thẻ mới" để viết lời NPC phản hồi). Thẻ đầu tiên là điểm bắt đầu.</div>
+      <div id="talk-list"></div>
+      <button class="npc-add-line-btn" id="talk-add-node" type="button">➕ Thêm thẻ lời thoại</button>
+      <button class="npc-add-line-btn" id="talk-import-toggle" type="button" style="margin-top:6px">📥 Nhập nhanh hội thoại (dán / tải file)</button>
+      <div class="quiz-import-box" id="talk-import-box">
+        <div class="quiz-hint" style="margin:0">Mỗi thẻ bắt đầu bằng <b>[số] lời NPC</b>. Dòng bắt đầu bằng <b>-</b> là lựa chọn của người chơi, viết <b>-&gt; số thẻ</b> (hoặc <b>end</b> = kết thúc, <b>quiz</b> = hỏi quiz). Thẻ không có lựa chọn thì thêm 1 dòng <b>-&gt; đích</b>. Cũng dán được từ Excel/Sheets (cột: Thẻ | Lời NPC | Lựa chọn 1 | Đi tới 1 | Lựa chọn 2 | Đi tới 2 | Lựa chọn 3 | Đi tới 3 | Sau đó).</div>
+        <textarea id="talk-import-text" spellcheck="false" placeholder="[1] Chào cháu! Cháu biết vì sao gọi là Cầu Rồng không?&#10;- Vì nó hình con rồng! -> 2&#10;- Cháu không biết -> 3&#10;&#10;[2] Đúng rồi! Cầu còn phun lửa cuối tuần nữa.&#10;-> quiz&#10;&#10;[3] Không sao, để ông kể cho nghe...&#10;-> 1"></textarea>
+        <div class="quiz-import-row">
+          <button type="button" class="primary" id="talk-import-apply">➕ Thêm vào NPC</button>
+          <label>📄 Tải file .txt / .csv<input type="file" id="talk-import-file" accept=".txt,.csv,.tsv" style="display:none"></label>
+          <button type="button" id="talk-import-sample">⬇️ Tải file mẫu</button>
+          <button type="button" id="talk-import-mode" data-replace="1">Chế độ: THAY THẾ các thẻ hiện có</button>
+        </div>
+        <div class="quiz-import-msg" id="talk-import-msg"></div>
+      </div>
+    </div>
     <label class="form-label" style="margin:16px 0 4px">🎓 Câu hỏi trắc nghiệm (tùy chọn)</label>
     <div class="quiz-hint">Người chơi trả lời đúng lần đầu → +10 điểm, +20 EXP. Chọn nút tròn ở đáp án đúng.</div>
     <div id="npc-quiz-list"></div>
@@ -1463,6 +1498,9 @@ function openNpcModal(index, gx, gy) {
     npcModal.dataset.pendingY = gy;
   }
   renderQuizRows(index >= 0 ? (npcs[index].quiz || []) : []);
+  const tk = index >= 0 ? npcs[index].talk : null;
+  if (tk && tk.nodes) { loadTalk(tk); setTalkMode('branch', true); }
+  else { talkNodes = []; setTalkMode('linear', true); }
   npcModal.classList.add('open');
 }
 
@@ -1515,22 +1553,33 @@ document.getElementById('npc-delete').addEventListener('click', () => {
 document.getElementById('npc-save').addEventListener('click', () => {
   const name = npcNameInput.value.trim();
   if (!name) { showToast('Nhập tên NPC!', 'error'); return; }
-  const dialogue = Array.from(npcDialogueListEl.querySelectorAll('textarea'))
-    .map(t => t.value.trim())
-    .filter(t => t.length > 0);
-  if (dialogue.length === 0) { showToast('Cần ít nhất 1 dòng thoại!', 'error'); return; }
+  let dialogue, talk = null;
   const qr = collectQuiz();
   if (qr.error) { showToast(qr.error, 'error'); return; }
   const quiz = qr.quiz;
+  if (talkMode === 'branch') {
+    const tr = collectTalk(quiz.length > 0);
+    if (tr.error) { showToast(tr.error, 'error'); return; }
+    talk = tr.talk;
+    dialogue = talk.nodes.map(n => n.text);      // bản dự phòng cho code cũ
+  } else {
+    dialogue = Array.from(npcDialogueListEl.querySelectorAll('textarea'))
+      .map(t => t.value.trim())
+      .filter(t => t.length > 0);
+    if (dialogue.length === 0) { showToast('Cần ít nhất 1 dòng thoại!', 'error'); return; }
+  }
 
   if (editingNpcIndex >= 0) {
     npcs[editingNpcIndex].name = name;
     npcs[editingNpcIndex].dialogue = dialogue;
     npcs[editingNpcIndex].quiz = quiz;
+    if (talk) npcs[editingNpcIndex].talk = talk; else delete npcs[editingNpcIndex].talk;
   } else {
     const gx = parseInt(npcModal.dataset.pendingX);
     const gy = parseInt(npcModal.dataset.pendingY);
-    npcs.push({ x: gx, y: gy, name, dialogue, quiz });
+    const n = { x: gx, y: gy, name, dialogue, quiz };
+    if (talk) n.talk = talk;
+    npcs.push(n);
   }
   redrawWalls();
   showToast('✅ Đã lưu NPC!', 'success');
@@ -1734,6 +1783,282 @@ function clampQuizItem(it) {
     ta.value = '';
     let t = `✅ Đã thêm ${items.length} câu hỏi. Kiểm tra lại rồi bấm 💾 Lưu.`;
     if (errors.length) t += `<br><span style="color:#e24b4a">⚠️ Bỏ qua ${errors.length} câu lỗi:<br>${errors.slice(0, 6).join('<br>')}</span>`;
+    setMsg(t, 'ok');
+  });
+})();
+
+
+// ──────────────────────────────────────────────
+// HỘI THOẠI RẼ NHÁNH (NPC.talk = { start, nodes:[{id,text,next?|choices?:[{label,next}]}] })
+// next: id thẻ | 'end' (kết thúc) | 'quiz' (mở câu hỏi quiz của NPC)
+// ──────────────────────────────────────────────
+let talkMode = 'linear';
+let talkNodes = [];           // [{id,text,next,choices:[{label,next}]}]
+let talkCounter = 1;
+const TALK_MAX_NODES = 20, TALK_MAX_CHOICES = 3;
+
+function newTalkNode(text = '') { return { id: 'n' + (talkCounter++), text, next: 'end', choices: [] }; }
+
+function loadTalk(tk) {
+  const raw = Array.isArray(tk.nodes) ? tk.nodes : Object.values(tk.nodes || {});
+  talkNodes = raw.map(n => ({
+    id: String(n.id),
+    text: String(n.text || ''),
+    next: n.next || 'end',
+    choices: (Array.isArray(n.choices) ? n.choices : Object.values(n.choices || {}))
+      .map(c => ({ label: String(c.label || ''), next: c.next || 'end' })),
+  }));
+  talkCounter = 1;
+  talkNodes.forEach(n => { const m = /^n(\d+)$/.exec(n.id); if (m) talkCounter = Math.max(talkCounter, +m[1] + 1); });
+  if (!talkNodes.length) talkNodes = [newTalkNode()];
+}
+
+function setTalkMode(mode, silent) {
+  if (mode === 'branch' && talkMode !== 'branch' && !talkNodes.length) {
+    // đổi từ thoại thẳng sang rẽ nhánh: biến các dòng thoại thành chuỗi thẻ nối tiếp
+    const lines = Array.from(npcDialogueListEl.querySelectorAll('textarea')).map(t => t.value.trim()).filter(Boolean);
+    talkCounter = 1;
+    talkNodes = (lines.length ? lines : ['']).map(t => newTalkNode(t));
+    talkNodes.forEach((n, i) => { n.next = i + 1 < talkNodes.length ? talkNodes[i + 1].id : 'end'; });
+  }
+  talkMode = mode;
+  document.getElementById('mode-linear').classList.toggle('active', mode === 'linear');
+  document.getElementById('mode-branch').classList.toggle('active', mode === 'branch');
+  document.getElementById('linear-wrap').style.display = mode === 'linear' ? '' : 'none';
+  document.getElementById('branch-wrap').style.display = mode === 'branch' ? '' : 'none';
+  if (mode === 'branch') renderTalk();
+}
+document.getElementById('mode-linear').addEventListener('click', () => {
+  if (talkMode === 'branch' && !confirm('Quay lại thoại thẳng? Các thẻ rẽ nhánh sẽ không được lưu.')) return;
+  talkNodes = []; setTalkMode('linear');
+});
+document.getElementById('mode-branch').addEventListener('click', () => setTalkMode('branch'));
+
+function talkTargetSelect(current, ownerId, onPick) {
+  const sel = document.createElement('select');
+  const add = (v, t) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); };
+  add('end', '🏁 Kết thúc');
+  add('quiz', '🎓 Hỏi quiz');
+  talkNodes.forEach((n, j) => {
+    const preview = (n.text || '(trống)').slice(0, 18);
+    add(n.id, `→ Thẻ ${j + 1}${n.id === ownerId ? ' (chính nó)' : ''}: ${preview}`);
+  });
+  if (talkNodes.length < TALK_MAX_NODES) add('__new', '➕ Tạo thẻ mới');
+  sel.value = current;
+  sel.addEventListener('change', () => {
+    if (sel.value === '__new') {
+      const nn = newTalkNode(); talkNodes.push(nn);
+      onPick(nn.id); renderTalk(talkNodes.length - 1);
+    } else { onPick(sel.value); }
+  });
+  return sel;
+}
+
+function renderTalk(focusIdx) {
+  const list = document.getElementById('talk-list');
+  list.innerHTML = '';
+  talkNodes.forEach((n, idx) => {
+    const box = document.createElement('div'); box.className = 'talk-node';
+    const head = document.createElement('div'); head.className = 'talk-node-head';
+    const title = document.createElement('span'); title.textContent = `${idx === 0 ? '🚩 ' : ''}Thẻ ${idx + 1}${idx === 0 ? ' — bắt đầu' : ''}`;
+    head.appendChild(title);
+    if (talkNodes.length > 1) {
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'npc-line-remove'; del.textContent = '✕'; del.title = 'Xóa thẻ';
+      del.addEventListener('click', () => {
+        talkNodes.splice(idx, 1);
+        talkNodes.forEach(x => { if (x.next === n.id) x.next = 'end'; x.choices.forEach(c => { if (c.next === n.id) c.next = 'end'; }); });
+        renderTalk();
+      });
+      head.appendChild(del);
+    }
+    box.appendChild(head);
+
+    const ta = document.createElement('textarea'); ta.maxLength = 200; ta.placeholder = 'Lời NPC nói...'; ta.value = n.text;
+    ta.addEventListener('input', () => { n.text = ta.value; });
+    ta.addEventListener('change', () => renderTalk());   // cập nhật xem trước ở các ô chọn thẻ
+    box.appendChild(ta);
+
+    const sub = document.createElement('div'); sub.className = 'talk-sub';
+    sub.textContent = n.choices.length ? '🗨️ Người chơi trả lời:' : 'Chưa có lựa chọn — NPC nói xong sẽ:';
+    box.appendChild(sub);
+
+    n.choices.forEach((c, ci) => {
+      const row = document.createElement('div'); row.className = 'talk-choice';
+      const inp = document.createElement('input'); inp.type = 'text'; inp.maxLength = 60; inp.placeholder = `Lựa chọn ${ci + 1}...`; inp.value = c.label;
+      inp.addEventListener('input', () => { c.label = inp.value; });
+      const sel = talkTargetSelect(c.next, n.id, v => { c.next = v; });
+      const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'npc-line-remove'; rm.textContent = '✕'; rm.title = 'Xóa lựa chọn';
+      rm.addEventListener('click', () => { n.choices.splice(ci, 1); renderTalk(); });
+      row.append(inp, sel, rm); box.appendChild(row);
+    });
+
+    if (!n.choices.length) {
+      const nx = document.createElement('div'); nx.className = 'talk-next';
+      nx.append(talkTargetSelect(n.next, n.id, v => { n.next = v; }));
+      box.appendChild(nx);
+    }
+    if (n.choices.length < TALK_MAX_CHOICES) {
+      const addBtn = document.createElement('button'); addBtn.type = 'button'; addBtn.className = 'npc-add-line-btn'; addBtn.style.marginTop = '4px';
+      addBtn.textContent = '➕ Thêm lựa chọn';
+      addBtn.addEventListener('click', () => { n.choices.push({ label: '', next: 'end' }); renderTalk(); });
+      box.appendChild(addBtn);
+    }
+    list.appendChild(box);
+  });
+  if (focusIdx != null) {
+    const t = list.querySelectorAll('.talk-node')[focusIdx];
+    if (t) { t.scrollIntoView({ block: 'nearest' }); const ta = t.querySelector('textarea'); if (ta) ta.focus(); }
+  }
+}
+
+document.getElementById('talk-add-node').addEventListener('click', () => {
+  if (talkNodes.length >= TALK_MAX_NODES) { showToast(`Tối đa ${TALK_MAX_NODES} thẻ`, 'error'); return; }
+  talkNodes.push(newTalkNode()); renderTalk(talkNodes.length - 1);
+});
+
+function collectTalk(hasQuiz) {
+  const ids = new Set(talkNodes.map(n => n.id));
+  const okTarget = t => t === 'end' || t === 'quiz' || ids.has(t);
+  let usesQuiz = false;
+  for (let i = 0; i < talkNodes.length; i++) {
+    const n = talkNodes[i], tag = `Thẻ ${i + 1}`;
+    if (!n.text.trim()) return { error: `${tag}: chưa nhập lời NPC` };
+    for (const c of n.choices) {
+      if (!c.label.trim()) return { error: `${tag}: có lựa chọn chưa nhập nội dung` };
+      if (!okTarget(c.next)) return { error: `${tag}: lựa chọn "${c.label}" trỏ tới thẻ không tồn tại` };
+      if (c.next === 'quiz') usesQuiz = true;
+    }
+    if (!n.choices.length) { if (!okTarget(n.next)) return { error: `${tag}: hướng đi tiếp theo không hợp lệ` }; if (n.next === 'quiz') usesQuiz = true; }
+  }
+  if (usesQuiz && !hasQuiz) return { error: 'Có chỗ dẫn tới quiz nhưng NPC chưa có câu hỏi nào. Hãy thêm câu hỏi hoặc đổi sang "Kết thúc".' };
+  const nodes = talkNodes.map(n => {
+    const o = { id: n.id, text: n.text.trim() };
+    if (n.choices.length) o.choices = n.choices.map(c => ({ label: c.label.trim(), next: c.next }));
+    else o.next = n.next;
+    return o;
+  });
+  return { talk: { start: nodes[0].id, nodes } };
+}
+
+
+// ──────────────────────────────────────────────
+// NHẬP NHANH HỘI THOẠI RẼ NHÁNH (dán text / TSV từ Excel / file .txt .csv)
+// ──────────────────────────────────────────────
+const TALK_SAMPLE = `# Dòng bắt đầu bằng # là ghi chú, sẽ bị bỏ qua
+[1] Chào cháu! Cháu biết vì sao cầu này gọi là Cầu Rồng không?
+- Vì nó hình con rồng! -> 2
+- Cháu không biết -> 3
+- Cho cháu thử đoán -> quiz
+
+[2] Đúng rồi! Cầu còn phun lửa vào cuối tuần nữa đấy.
+-> end
+
+[3] Không sao, để ông kể cho nghe. Cầu có hình con rồng bay uốn lượn qua sông Hàn.
+-> 1
+`;
+
+function normTalkTarget(t) {
+  const k = String(t || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
+  if (!k || ['end', 'ket thuc', 'het', 'x', 'dong', 'thoat'].includes(k)) return 'end';
+  if (['quiz', 'hoi quiz', 'cau hoi'].includes(k)) return 'quiz';
+  return String(t).trim();
+}
+
+// → { nodes:[{uid,text,next,choices:[{label,next}]}], errors:[] }  (target còn là "uid" của người dùng)
+function parseTalkText(raw) {
+  const errors = [], nodes = [];
+  const text = String(raw || '').replace(/\r/g, '').trim();
+  if (!text) return { nodes, errors: ['Chưa có nội dung.'] };
+  const lines = text.split('\n').filter(l => l.trim());
+
+  if (lines.every(l => l.includes('\t'))) {                       // dạng bảng (dán từ Excel/Sheets)
+    lines.forEach((l, i) => {
+      const c = l.split('\t').map(x => x.trim());
+      if (i === 0 && /^(thẻ|the|id|node)$/i.test(c[0])) return;
+      const n = { uid: c[0], text: c[1] || '', next: 'end', choices: [] };
+      for (let k = 0; k < 3; k++) {
+        const lab = c[2 + k * 2], tg = c[3 + k * 2];
+        if (lab) n.choices.push({ label: lab, next: normTalkTarget(tg) });
+      }
+      if (!n.choices.length) n.next = normTalkTarget(c[8]);
+      if (!n.uid) errors.push(`Dòng ${i + 1}: thiếu mã thẻ`); else nodes.push(n);
+    });
+    return { nodes, errors };
+  }
+
+  let cur = null;                                                  // dạng văn bản
+  lines.forEach(raw => {
+    const l = raw.trim(); let m;
+    if (l.startsWith('#')) return;
+    if ((m = l.match(/^\[([^\]]+)\]\s*(.*)$/))) { cur = { uid: m[1].trim(), text: m[2].trim(), next: 'end', choices: [] }; nodes.push(cur); }
+    else if (!cur) errors.push(`Dòng "${l.slice(0, 30)}": phải bắt đầu bằng [số thẻ]`);
+    else if ((m = l.match(/^(?:->|→|=>)\s*(\S+)\s*$/))) cur.next = normTalkTarget(m[1]);
+    else if ((m = l.match(/^[-*•]\s*(.+?)\s*(?:->|→|=>)\s*(\S+)\s*$/))) cur.choices.push({ label: m[1].trim(), next: normTalkTarget(m[2]) });
+    else if (/^[-*•]/.test(l)) errors.push(`Thẻ ${cur.uid}: lựa chọn "${l.slice(0, 30)}" thiếu "-> đích"`);
+    else cur.text += (cur.text ? ' ' : '') + l;
+  });
+  return { nodes, errors };
+}
+
+(function setupTalkImport() {
+  const box = document.getElementById('talk-import-box');
+  const ta = document.getElementById('talk-import-text');
+  const msg = document.getElementById('talk-import-msg');
+  const modeBtn = document.getElementById('talk-import-mode');
+  const setMsg = (t, cls) => { msg.className = 'quiz-import-msg ' + (cls || ''); msg.innerHTML = t; };
+
+  document.getElementById('talk-import-toggle').addEventListener('click', () => box.classList.toggle('open'));
+  modeBtn.addEventListener('click', () => {
+    const rep = modeBtn.dataset.replace === '1' ? '0' : '1';
+    modeBtn.dataset.replace = rep;
+    modeBtn.textContent = rep === '1' ? 'Chế độ: THAY THẾ các thẻ hiện có' : 'Chế độ: thêm nối tiếp';
+  });
+  document.getElementById('talk-import-sample').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + TALK_SAMPLE], { type: 'text/plain;charset=utf-8' }));
+    a.download = 'mau-hoi-thoai-npc.txt'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+  document.getElementById('talk-import-file').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { ta.value = r.result; setMsg(`Đã đọc file "${f.name}". Nhấn "Thêm vào NPC".`, 'ok'); };
+    r.readAsText(f, 'utf-8'); e.target.value = '';
+  });
+
+  document.getElementById('talk-import-apply').addEventListener('click', () => {
+    const { nodes, errors } = parseTalkText(ta.value);
+    const errs = errors.slice();
+    const seen = new Set();
+    nodes.forEach(n => { if (seen.has(n.uid)) errs.push(`Mã thẻ [${n.uid}] bị trùng`); seen.add(n.uid); });
+    nodes.forEach(n => {
+      if (!n.text) errs.push(`Thẻ ${n.uid}: chưa có lời NPC`);
+      if (n.choices.length > TALK_MAX_CHOICES) errs.push(`Thẻ ${n.uid}: chỉ nhận tối đa ${TALK_MAX_CHOICES} lựa chọn (đã bỏ phần dư)`);
+      const chk = (t, what) => { if (t !== 'end' && t !== 'quiz' && !seen.has(t)) errs.push(`Thẻ ${n.uid}: ${what} trỏ tới thẻ [${t}] không tồn tại`); };
+      n.choices.slice(0, TALK_MAX_CHOICES).forEach(c => chk(c.next, `"${c.label.slice(0, 20)}"`));
+      if (!n.choices.length) chk(n.next, 'hướng đi tiếp');
+    });
+    const fatal = errs.filter(e => !e.includes('đã bỏ phần dư'));
+    if (!nodes.length || fatal.length) { setMsg('❌ Chưa nhập được, hãy sửa các lỗi sau:<br>' + errs.slice(0, 8).join('<br>'), 'err'); return; }
+
+    const replace = modeBtn.dataset.replace === '1';
+    if (!replace && talkNodes.length + nodes.length > TALK_MAX_NODES) { setMsg(`❌ Vượt quá ${TALK_MAX_NODES} thẻ. Hãy dùng chế độ THAY THẾ hoặc bớt thẻ.`, 'err'); return; }
+    if (nodes.length > TALK_MAX_NODES) { setMsg(`❌ Tối đa ${TALK_MAX_NODES} thẻ mỗi NPC.`, 'err'); return; }
+    if (replace) { talkNodes = []; talkCounter = 1; }
+
+    const idMap = {};
+    const made = nodes.map(n => { const nn = newTalkNode(n.text.slice(0, 200)); idMap[n.uid] = nn.id; return nn; });
+    const tgt = t => (t === 'end' || t === 'quiz') ? t : idMap[t];
+    nodes.forEach((n, i) => {
+      made[i].choices = n.choices.slice(0, TALK_MAX_CHOICES).map(c => ({ label: c.label.slice(0, 60), next: tgt(c.next) }));
+      made[i].next = n.choices.length ? 'end' : tgt(n.next);
+    });
+    talkNodes.push(...made);
+    renderTalk();
+    ta.value = '';
+    let t = `✅ Đã thêm ${made.length} thẻ lời thoại. Kiểm tra lại rồi bấm 💾 Lưu.`;
+    const warn = errs.filter(e => e.includes('đã bỏ phần dư'));
+    if (warn.length) t += `<br><span style="color:#e24b4a">⚠️ ${warn.join('<br>')}</span>`;
     setMsg(t, 'ok');
   });
 })();
