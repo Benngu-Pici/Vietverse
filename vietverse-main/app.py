@@ -7,30 +7,28 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-# Tự động xác định thư mục gốc (hỗ trợ cả khi đặt app.py ở root hoặc trong sever-python)
+# Tự động xác định thư mục gốc
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if os.path.basename(CURRENT_DIR) == "sever-python":
     ROOT_DIR = os.path.dirname(CURRENT_DIR)
 else:
     ROOT_DIR = CURRENT_DIR
 
-# Nạp file .env từ cả thư mục hiện tại, root và sever-python
+# Nạp file .env
 load_dotenv(os.path.join(CURRENT_DIR, ".env"))
 load_dotenv(os.path.join(ROOT_DIR, ".env"))
 load_dotenv(os.path.join(ROOT_DIR, "sever-python", ".env"))
 
 API_KEY = os.getenv("AI_API_KEY")
 API_URL = os.getenv("AI_API_URL", "https://api.openai.com/v1/chat/completions")
-MODEL = os.getenv("AI_MODEL", "gpt-4o-mini")
+MODEL = os.getenv("AI_MODEL", "gpt-6-luna")
 PORT = int(os.getenv("PORT", "3001"))
-
-# Để trống mặc định để tránh lỗi 400 với các model không hỗ trợ reasoning_effort
-REASONING_EFFORT = os.getenv("AI_REASONING_EFFORT", "")
+REASONING_EFFORT = os.getenv("AI_REASONING_EFFORT", "low")
 MAX_OUTPUT_TOKENS = int(os.getenv("AI_MAX_TOKENS", "3000"))
 
 app = Flask(__name__, static_folder=None)
 
-# Bật CORS đầy đủ (cho phép cả header ngrok-skip-browser-warning từ index.html gửi lên)
+# Bật CORS đầy đủ cho cả Firebase web.app và local
 CORS(
     app,
     resources={
@@ -88,12 +86,9 @@ def is_rate_limited(ip: str) -> bool:
     return len(log) > RATE_LIMIT_MAX
 
 
-# ---------------------------------------------------------------------
-# BACKEND API ROUTES
-# ---------------------------------------------------------------------
 @app.get("/api/health")
 def health():
-    return jsonify(status="ok", ok=True, service="Vietverse AI Backend")
+    return jsonify(status="ok", ok=True, token_param="max_completion_tokens")
 
 
 @app.route("/api/chat", methods=["POST", "OPTIONS"])
@@ -106,7 +101,7 @@ def chat():
     model = (os.getenv("AI_MODEL") or MODEL).strip()
 
     if not api_key:
-        return jsonify(error="Server Render chưa cấu hình AI_API_KEY trong Environment Variables."), 500
+        return jsonify(error="Server chưa cấu hình AI_API_KEY trong biến môi trường."), 500
 
     forwarded = request.headers.get("X-Forwarded-For")
     ip = forwarded.split(",")[0].strip() if forwarded else (request.remote_addr or "unknown")
@@ -119,7 +114,6 @@ def chat():
     if not isinstance(messages, list) or len(messages) == 0:
         return jsonify(error='Thiếu trường "messages" hợp lệ.'), 400
 
-    # Lọc chỉ giữ các message hợp lệ
     cleaned_messages = []
     for m in messages[-10:]:
         if isinstance(m, dict) and m.get("role") in ("user", "assistant") and m.get("content"):
@@ -128,10 +122,11 @@ def chat():
     if not cleaned_messages:
         return jsonify(error="Nội dung tin nhắn không hợp lệ."), 400
 
+    # Luôn dùng max_completion_tokens làm mặc định cho model GPT-6 / o-series
     payload = {
         "model": model,
         "messages": [{"role": "system", "content": SYSTEM_PROMPT}, *cleaned_messages],
-        "max_tokens": MAX_OUTPUT_TOKENS,
+        "max_completion_tokens": MAX_OUTPUT_TOKENS,
         "stream": False,
     }
 
@@ -139,24 +134,41 @@ def chat():
     if effort:
         payload["reasoning_effort"] = effort
 
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+    }
+
     try:
-        upstream_res = requests.post(
-            api_url,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}",
-            },
-            json=payload,
-            timeout=60,
-        )
+        upstream_res = requests.post(api_url, headers=headers, json=payload, timeout=60)
+        try:
+            data = upstream_res.json() if upstream_res.content else None
+        except ValueError:
+            data = None
+
+        # Tự động fallback nếu API báo lỗi Unsupported parameter
+        if not upstream_res.ok and isinstance(data, dict):
+            err_msg = str(data.get("error", {}).get("message", ""))
+            retry_needed = False
+
+            if "max_tokens" in err_msg and "max_completion_tokens" in err_msg:
+                # Nếu proxy lỡ báo lỗi ngược, thử bỏ giới hạn token để model tự chạy
+                payload.pop("max_tokens", None)
+                payload.pop("max_completion_tokens", None)
+                retry_needed = True
+            elif "reasoning_effort" in err_msg:
+                payload.pop("reasoning_effort", None)
+                retry_needed = True
+
+            if retry_needed:
+                upstream_res = requests.post(api_url, headers=headers, json=payload, timeout=60)
+                try:
+                    data = upstream_res.json() if upstream_res.content else None
+                except ValueError:
+                    data = None
+
     except requests.RequestException as e:
         return jsonify(error=f"Không thể kết nối tới nhà cung cấp AI: {e}"), 502
-
-    # Parse JSON an toàn (tránh crash 500 khi upstream trả về trang lỗi HTML)
-    try:
-        data = upstream_res.json() if upstream_res.content else None
-    except ValueError:
-        data = None
 
     if not upstream_res.ok:
         upstream_msg = f"Lỗi HTTP {upstream_res.status_code} từ nhà cung cấp AI."
@@ -168,7 +180,6 @@ def chat():
                 upstream_msg = err_obj
         return jsonify(error=upstream_msg), upstream_res.status_code
 
-    # Bóc tách JSON linh hoạt (OpenAI, Gemini, Custom Proxy API)
     reply = None
     if isinstance(data, dict):
         if "choices" in data and len(data["choices"]) > 0:
@@ -182,20 +193,17 @@ def chat():
             reply = data["reply"]
 
     if not reply:
-        return jsonify(error="Phản hồi từ nhà cung cấp AI trống hoặc không đúng định dạng."), 502
+        return jsonify(error="Phản hồi từ nhà cung cấp AI không đúng định dạng."), 502
 
     return jsonify(reply=reply)
 
 
-# ---------------------------------------------------------------------
-# FRONTEND ROUTES & STATIC FILES (Khi chạy trực tiếp trên Render / Local)
-# ---------------------------------------------------------------------
 @app.route("/")
 def index():
     index_path = os.path.join(ROOT_DIR, "index.html")
     if os.path.isfile(index_path):
         return send_from_directory(ROOT_DIR, "index.html")
-    return jsonify(status="ok", message="Vietverse AI Backend is running on Render.")
+    return jsonify(status="ok", message="Vietverse AI Backend is running.")
 
 
 @app.route("/<path:path>")
@@ -214,5 +222,4 @@ def serve_file_or_page(path):
 
 if __name__ == "__main__":
     print(f"Vietverse Flask backend đang chạy tại http://0.0.0.0:{PORT}")
-    print(f"Model: {os.getenv('AI_MODEL') or MODEL} | URL: {os.getenv('AI_API_URL') or API_URL}")
     app.run(host="0.0.0.0", port=PORT, debug=False)
