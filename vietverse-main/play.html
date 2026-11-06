@@ -95,21 +95,173 @@
       border: 1px solid var(--border); font-weight: bold; letter-spacing: 1px;
     }
 
-    /* ── JOYSTICK ── */
-    .joystick-container { position: fixed; bottom: 30px; left: 24px; z-index: 200; display: none; }
+    /* ── MOBILE / TABLET GAMEPAD (ANALOG TRÁI + ACTION PAD PHẢI) ── */
+    .joystick-container {
+      position: fixed;
+      bottom: calc(26px + env(safe-area-inset-bottom, 0px));
+      left: calc(24px + env(safe-area-inset-left, 0px));
+      z-index: 260;
+      display: none;
+      touch-action: none;
+    }
     .joystick-base {
-      width: 110px; height: 110px; background: rgba(0,0,0,0.45);
-      border-radius: 50%; backdrop-filter: blur(8px);
-      border: 3px solid rgba(255,215,0,0.6);
+      width: 126px; height: 126px;
+      background: radial-gradient(circle, rgba(35,10,10,0.55) 0%, rgba(15,5,5,0.78) 100%);
+      border-radius: 50%;
+      backdrop-filter: blur(10px);
+      border: 3px solid rgba(255,179,0,0.72);
+      box-shadow: 0 8px 26px rgba(0,0,0,0.35), inset 0 0 18px rgba(255,179,0,0.18);
       display: flex; align-items: center; justify-content: center;
+      position: relative;
+      touch-action: none;
+    }
+    .joystick-base::before {
+      content: '▲'; position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; color: rgba(255,215,0,0.45); pointer-events: none;
+    }
+    .joystick-base::after {
+      content: '▼'; position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; color: rgba(255,215,0,0.45); pointer-events: none;
+    }
+    .joystick-dir-lr {
+      position: absolute; inset: 0; pointer-events: none;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 8px; font-size: 9px; color: rgba(255,215,0,0.45);
     }
     .joystick-thumb {
-      width: 48px; height: 48px;
-      background: radial-gradient(circle, #ffd700 0%, #ffaa00 100%);
-      border-radius: 50%; transition: transform 0.05s linear;
-      box-shadow: 0 0 15px rgba(255,215,0,0.6); border: 2px solid rgba(255,255,255,0.5);
+      width: 54px; height: 54px;
+      background: radial-gradient(circle at 35% 35%, #ffe57f 0%, #ffb300 65%, #e65100 100%);
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(255,179,0,0.75), inset 0 2px 4px rgba(255,255,255,0.8);
+      border: 2.5px solid rgba(255,255,255,0.85);
+      pointer-events: none;
+      will-change: transform;
     }
-    @media (max-width: 900px) { .joystick-container { display: block; } }
+
+    /* Cụm nút tương tác bên tay phải (Chuẩn công thái học ngón cái phải) */
+    .action-pad {
+      position: fixed;
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      right: calc(22px + env(safe-area-inset-right, 0px));
+      width: 175px; height: 175px;
+      z-index: 260;
+      display: none;
+      pointer-events: none;
+      touch-action: none;
+    }
+    .action-btn {
+      pointer-events: auto;
+      position: absolute;
+      border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,0.85);
+      color: #fff;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-weight: 800;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.32);
+      transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.15s ease;
+      touch-action: manipulation;
+      user-select: none;
+    }
+    .action-btn:active, .action-btn.pressed {
+      transform: scale(0.88) !important;
+      filter: brightness(1.15);
+    }
+    .action-btn .ab-icon { font-size: 22px; line-height: 1; }
+    .action-btn .ab-label {
+      font-size: 9px; font-weight: 900; letter-spacing: 0.3px;
+      margin-top: 2px; text-transform: uppercase;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.65);
+    }
+
+    /* Nút A chính (Tương tác NPC / Tiếp tục thoại / Xem người chơi gần nhất) */
+    .action-btn.btn-interact {
+      right: 4px; bottom: 8px;
+      width: 78px; height: 78px;
+      background: linear-gradient(135deg, #ffd54f 0%, #ffb300 55%, #f57c00 100%);
+      color: #2b1212;
+      border-color: #fff8e1;
+      box-shadow: 0 6px 24px rgba(255,179,0,0.55);
+    }
+    .action-btn.btn-interact .ab-icon { font-size: 28px; }
+    .action-btn.btn-interact .ab-label { color: #2b1212; text-shadow: none; font-size: 10px; }
+    .action-btn.btn-interact.ready-pulse {
+      animation: interactPulse 1.1s ease-in-out infinite;
+    }
+    @keyframes interactPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,193,7,0.75), 0 6px 24px rgba(255,179,0,0.6); }
+      50% { box-shadow: 0 0 0 12px rgba(255,193,7,0), 0 6px 28px rgba(255,179,0,0.85); }
+    }
+
+    /* Nút B: Chạy nhanh (Sprint) — nằm bên trái nút chính */
+    .action-btn.btn-sprint {
+      left: 6px; bottom: 12px;
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, rgba(211,47,47,0.9), rgba(183,28,28,0.95));
+    }
+    .action-btn.btn-sprint.active-sprint {
+      background: linear-gradient(135deg, #ff5252, #d32f2f);
+      box-shadow: 0 0 18px rgba(255,82,82,0.85);
+      border-color: #ffd700;
+    }
+
+    /* Nút X: Biểu cảm nhanh (Emote bánh xe / thả cảm xúc trên đầu) — nằm chéo góc trái trên */
+    .action-btn.btn-emote {
+      left: 24px; top: 34px;
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, rgba(46,125,50,0.9), rgba(27,94,32,0.95));
+    }
+
+    /* Nút Y: Mở Cửa hàng Skin (Merchant) — nằm phía trên nút chính */
+    .action-btn.btn-shop {
+      right: 12px; top: 10px;
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, rgba(123,31,162,0.9), rgba(74,20,140,0.95));
+    }
+
+    /* Menu chọn nhanh biểu cảm (Emote Wheel) */
+    .emote-wheel {
+      position: fixed;
+      bottom: calc(165px + env(safe-area-inset-bottom, 0px));
+      right: calc(75px + env(safe-area-inset-right, 0px));
+      background: rgba(255,255,255,0.96);
+      border: 2px solid var(--gold);
+      border-radius: 18px;
+      padding: 8px 10px;
+      display: none;
+      gap: 6px;
+      z-index: 270;
+      box-shadow: 0 8px 26px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      animation: emotePop 0.18s cubic-bezier(.34,1.56,.64,1);
+    }
+    .emote-wheel.open { display: flex; }
+    @keyframes emotePop {
+      from { transform: scale(0.7) translateY(10px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .emote-item {
+      width: 38px; height: 38px;
+      border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg3); font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: transform 0.12s, background 0.12s;
+    }
+    .emote-item:active, .emote-item:hover {
+      transform: scale(1.18); background: #fff3c4;
+    }
+
+    /* Hiển thị trên mọi thiết bị cảm ứng (Điện thoại, iPad Pro, Tablet) & màn hình <= 1180px */
+    @media (max-width: 1180px), (pointer: coarse) {
+      .joystick-container { display: block; }
+      .action-pad { display: block; }
+      .coord-display {
+        top: 56px; left: 14px; bottom: auto; right: auto;
+        font-size: 10.5px; padding: 3px 9px;
+      }
+    }
 
     /* ── CHARACTERS / COINS (same as original) ── */
     .grid-cell { position: absolute; width: 16px; height: 16px; }
@@ -204,7 +356,14 @@
     .chat-countdown { font-size: 9px; color: var(--text-muted); margin-left: 4px; }
 
     @media (max-width: 768px) {
-      .joystick-container { left: 16px; bottom: 165px; }
+      .joystick-container {
+        left: calc(16px + env(safe-area-inset-left, 0px));
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      }
+      .action-pad {
+        right: calc(14px + env(safe-area-inset-right, 0px));
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      }
       .tb-mapname { max-width: 130px; font-size: 12px; }
     }
 
@@ -576,11 +735,45 @@
 <!-- COORD DISPLAY -->
 <div class="coord-display" id="coord-display">📍 X: -- | Y: --</div>
 
-<!-- JOYSTICK -->
+<!-- JOYSTICK (ANALOG TRÁI) -->
 <div class="joystick-container" id="joystick-container">
   <div class="joystick-base" id="joystick-base">
+    <div class="joystick-dir-lr"><span>◀</span><span>▶</span></div>
     <div class="joystick-thumb" id="joystick-thumb"></div>
   </div>
+</div>
+
+<!-- CỤM TƯƠNG TÁC TAY PHẢI (RIGHT ACTION PAD) -->
+<div class="action-pad" id="action-pad">
+  <!-- Nút Y (Trên): Cửa hàng Skin -->
+  <button type="button" class="action-btn btn-shop" id="btn-action-shop" title="Cửa hàng Skin">
+    <span class="ab-icon">🎨</span>
+    <span class="ab-label">Skin</span>
+  </button>
+  <!-- Nút X (Trái trên): Thả biểu cảm -->
+  <button type="button" class="action-btn btn-emote" id="btn-action-emote" title="Biểu cảm nhanh">
+    <span class="ab-icon">👋</span>
+    <span class="ab-label">Cảm xúc</span>
+  </button>
+  <!-- Nút B (Trái dưới): Giữ để chạy nhanh -->
+  <button type="button" class="action-btn btn-sprint" id="btn-action-sprint" title="Giữ để chạy nhanh">
+    <span class="ab-icon">⚡</span>
+    <span class="ab-label">Chạy</span>
+  </button>
+  <!-- Nút A (Chính - Lớn nhất): Tương tác NPC / Tiếp thoại / Xem hồ sơ người chơi gần -->
+  <button type="button" class="action-btn btn-interact" id="btn-action-interact" title="Tương tác">
+    <span class="ab-icon" id="interact-btn-icon">🖐️</span>
+    <span class="ab-label" id="interact-btn-label">Tương tác</span>
+  </button>
+</div>
+
+<!-- BÁNH XE BIỂU CẢM NHANH (EMOTE WHEEL) -->
+<div class="emote-wheel" id="emote-wheel">
+  <button type="button" class="emote-item" data-emote="👋 Chào nhé!">👋</button>
+  <button type="button" class="emote-item" data-emote="❤️ Tuyệt quá!">❤️</button>
+  <button type="button" class="emote-item" data-emote="😂 Haha!">😂</button>
+  <button type="button" class="emote-item" data-emote="🔥 Đỉnh thực sự!">🔥</button>
+  <button type="button" class="emote-item" data-emote="🌾 Tự hào Việt Nam!">🌾</button>
 </div>
 
 <!-- MERCHANT MODAL -->
@@ -693,38 +886,70 @@ firebase.initializeApp(firebaseConfig);
 class Joystick {
   constructor(baseElement, thumbElement, callback) {
     this.base = baseElement; this.thumb = thumbElement; this.callback = callback;
-    this.active = false; this.centerX = 0; this.centerY = 0; this.maxDistance = 40;
+    this.active = false; this.touchId = null;
+    this.centerX = 0; this.centerY = 0; this.maxDistance = 42;
     this.init();
   }
   init() {
+    // Hỗ trợ đa điểm (Multi-touch): Lưu đúng identifier của ngón tay cái bên trái
+    // để khi ngón cái bên phải bấm các nút tương tác thì cần analog không bị giật hoặc mất hướng
     this.base.addEventListener('touchstart', (e) => {
-      e.preventDefault(); this.active = true;
+      e.preventDefault();
+      if (this.active) return;
+      const touch = e.changedTouches[0];
+      this.touchId = touch.identifier;
+      this.active = true;
       const rect = this.base.getBoundingClientRect();
-      this.centerX = rect.left + rect.width/2; this.centerY = rect.top + rect.height/2;
-      this.handleMove(e.touches[0]);
-    });
-    this.base.addEventListener('touchmove', (e) => { e.preventDefault(); if (this.active) this.handleMove(e.touches[0]); });
-    this.base.addEventListener('touchend', (e) => { e.preventDefault(); this.active = false; this.reset(); });
+      this.centerX = rect.left + rect.width / 2;
+      this.centerY = rect.top + rect.height / 2;
+      this.handleMove(touch);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!this.active) return;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === this.touchId) {
+          this.handleMove(e.changedTouches[i]);
+          break;
+        }
+      }
+    }, { passive: false });
+
+    const endTouch = (e) => {
+      if (!this.active) return;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === this.touchId) {
+          this.active = false;
+          this.touchId = null;
+          this.reset();
+          break;
+        }
+      }
+    };
+    window.addEventListener('touchend', endTouch, { passive: false });
+    window.addEventListener('touchcancel', endTouch, { passive: false });
+
     this.base.addEventListener('mousedown', (e) => {
       e.preventDefault(); this.active = true;
       const rect = this.base.getBoundingClientRect();
-      this.centerX = rect.left + rect.width/2; this.centerY = rect.top + rect.height/2;
+      this.centerX = rect.left + rect.width / 2;
+      this.centerY = rect.top + rect.height / 2;
       this.handleMove(e);
     });
-    window.addEventListener('mousemove', (e) => { if (this.active) this.handleMove(e); });
-    window.addEventListener('mouseup', () => { this.active = false; this.reset(); });
+    window.addEventListener('mousemove', (e) => { if (this.active && this.touchId === null) this.handleMove(e); });
+    window.addEventListener('mouseup', () => { if (this.active && this.touchId === null) { this.active = false; this.reset(); } });
   }
-  handleMove(event) {
-    let dx = event.clientX - this.centerX, dy = event.clientY - this.centerY;
-    const distance = Math.sqrt(dx*dx + dy*dy);
-    if (distance > this.maxDistance) { dx = dx/distance*this.maxDistance; dy = dy/distance*this.maxDistance; }
-    this.thumb.style.transform = `translate(${dx}px, ${dy}px)`;
-    let normX = dx/this.maxDistance, normY = dy/this.maxDistance;
-    if (Math.abs(normX) < 0.1) normX = 0;
-    if (Math.abs(normY) < 0.1) normY = 0;
+  handleMove(point) {
+    let dx = point.clientX - this.centerX, dy = point.clientY - this.centerY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance > this.maxDistance) { dx = (dx / distance) * this.maxDistance; dy = (dy / distance) * this.maxDistance; }
+    this.thumb.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+    let normX = dx / this.maxDistance, normY = dy / this.maxDistance;
+    if (Math.abs(normX) < 0.08) normX = 0;
+    if (Math.abs(normY) < 0.08) normY = 0;
     this.callback(normX, normY);
   }
-  reset() { this.thumb.style.transform = `translate(0px,0px)`; this.callback(0,0); }
+  reset() { this.thumb.style.transform = `translate3d(0px,0px,0)`; this.callback(0, 0); }
 }
 
 class KeyPressListener {
@@ -838,6 +1063,9 @@ document.getElementById('google-btn').addEventListener('click', async () => {
   let camX = 0, camY = 0;
   const keys = {};
   let joyX = 0, joyY = 0;
+  let isSprinting = false;
+  let nearestInteractNpc = null;
+  let nearestOtherPlayerId = null;
   let lastFirebaseSend = 0;
   let chatInputFocused = false;
 
@@ -1014,10 +1242,12 @@ document.getElementById('google-btn').addEventListener('click', async () => {
     if (Math.abs(joyX) > 0.1 || Math.abs(joyY) > 0.1) { inputX = joyX; inputY = joyY; }
     if (inputX !== 0 && inputY !== 0) { inputX *= 0.707; inputY *= 0.707; }
 
+    const currentMaxSpeed = isSprinting ? MAX_SPEED * 1.65 : MAX_SPEED;
+    const currentAccel    = isSprinting ? ACCEL * 1.45 : ACCEL;
     if (inputX !== 0 || inputY !== 0) {
-      velX += inputX * ACCEL; velY += inputY * ACCEL;
+      velX += inputX * currentAccel; velY += inputY * currentAccel;
       const speed = Math.sqrt(velX*velX + velY*velY);
-      if (speed > MAX_SPEED) { velX = velX/speed*MAX_SPEED; velY = velY/speed*MAX_SPEED; }
+      if (speed > currentMaxSpeed) { velX = velX/speed*currentMaxSpeed; velY = velY/speed*currentMaxSpeed; }
     }
     velX *= FRICTION; velY *= FRICTION;
     if (Math.abs(velX) < 0.01) velX = 0;
@@ -1182,19 +1412,63 @@ document.getElementById('google-btn').addEventListener('click', async () => {
 
   function checkNpcInteraction(gx, gy) {
     const npcList = mapInfo.npcs || [];
-    if (npcList.length === 0) return;
-    // Show/hide hint indicators based on proximity
+    nearestInteractNpc = null;
+    let bestDist = Infinity;
+
     npcList.forEach((npc, idx) => {
       const dist = Math.max(Math.abs(gx - npc.x), Math.abs(gy - npc.y));
       const hint = document.getElementById(`npc-hint-${idx}`);
-      if (hint) {
-        if (dist <= NPC_INTERACT_RADIUS && !isInDialogue) {
-          hint.classList.add('visible');
-        } else {
-          hint.classList.remove('visible');
+      if (dist <= NPC_INTERACT_RADIUS && !isInDialogue) {
+        if (hint) hint.classList.add('visible');
+        if (dist < bestDist) {
+          bestDist = dist;
+          nearestInteractNpc = npc;
         }
+      } else {
+        if (hint) hint.classList.remove('visible');
       }
     });
+
+    // Tìm người chơi khác đứng gần (trong bán kính 3 ô) nếu không có NPC gần
+    nearestOtherPlayerId = null;
+    let bestPlayerDist = Infinity;
+    for (const uid of Object.keys(players)) {
+      if (uid === playerId) continue;
+      const p = players[uid];
+      if (!p) continue;
+      const d = Math.max(Math.abs(gx - (p.x || 0)), Math.abs(gy - (p.y || 0)));
+      if (d <= NPC_INTERACT_RADIUS && d < bestPlayerDist) {
+        bestPlayerDist = d;
+        nearestOtherPlayerId = uid;
+      }
+    }
+
+    updateActionPadPrompt();
+  }
+
+  function updateActionPadPrompt() {
+    const btnInteract = document.getElementById('btn-action-interact');
+    const iconEl      = document.getElementById('interact-btn-icon');
+    const labelEl     = document.getElementById('interact-btn-label');
+    if (!btnInteract || !iconEl || !labelEl) return;
+
+    if (isInDialogue) {
+      iconEl.textContent = '💬';
+      labelEl.textContent = 'Tiếp tục';
+      btnInteract.classList.add('ready-pulse');
+    } else if (nearestInteractNpc) {
+      iconEl.textContent = (nearestInteractNpc.quiz && nearestInteractNpc.quiz.length) ? '🎓' : '🎋';
+      labelEl.textContent = 'Nói chuyện';
+      btnInteract.classList.add('ready-pulse');
+    } else if (nearestOtherPlayerId) {
+      iconEl.textContent = '👤';
+      labelEl.textContent = 'Xem hồ sơ';
+      btnInteract.classList.add('ready-pulse');
+    } else {
+      iconEl.textContent = '🖐️';
+      labelEl.textContent = 'Tương tác';
+      btnInteract.classList.remove('ready-pulse');
+    }
   }
 
   // ─── Hội thoại: hỗ trợ cả thoại thẳng (npc.dialogue) lẫn rẽ nhánh (npc.talk) ───
@@ -1231,6 +1505,7 @@ document.getElementById('google-btn').addEventListener('click', async () => {
     talkMap = built.map;
     document.querySelector('.poke-speaker').textContent = `🎋 ${(npc.name || NPC_SPEAKER_DEFAULT).toUpperCase()}`;
     npcDialogueBox.style.display = "block";
+    updateActionPadPrompt();
     document.addEventListener("keydown", onDialogueKey);
     npcDialogueBox.addEventListener("click", advanceDialogue);
     if (!built.start) { goTo("quiz"); return; }
@@ -1401,13 +1676,174 @@ document.getElementById('google-btn').addEventListener('click', async () => {
     }, BUBBLE_DURATION);
   }
 
-  // ─── MOBILE CONTROLS ─────────────────────────────────────────
+  // ─── MOBILE & TABLET CONTROLS (ANALOG + RIGHT ACTION PAD) ────
   function setupMobileControls() {
     const joystickBase  = document.getElementById("joystick-base");
     const joystickThumb = document.getElementById("joystick-thumb");
     if (joystickBase && joystickThumb) {
       new Joystick(joystickBase, joystickThumb, (x, y) => { joyX = x; joyY = y; });
     }
+
+    const btnInteract = document.getElementById("btn-action-interact");
+    const btnSprint   = document.getElementById("btn-action-sprint");
+    const btnEmote    = document.getElementById("btn-action-emote");
+    const btnShop     = document.getElementById("btn-action-shop");
+    const emoteWheel  = document.getElementById("emote-wheel");
+
+    // 1. Nút A (Tương tác chính): Tự động nhận biết ngữ cảnh
+    if (btnInteract) {
+      const handlePrimaryAction = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Đang trong hội thoại NPC -> Bấm để qua câu thoại tiếp theo (hoặc chọn đáp án đầu nếu đang hiện lựa chọn)
+        if (isInDialogue) {
+          if (choicesShown) {
+            const firstChoice = pokeChoices.querySelector(".poke-choice");
+            if (firstChoice) firstChoice.click();
+          } else {
+            advanceDialogue();
+          }
+          return;
+        }
+        // Đang đứng gần NPC -> Mở hội thoại / Quiz
+        const gx = Math.floor(localX / TILE), gy = Math.floor(localY / TILE);
+        checkNpcInteraction(gx, gy);
+        if (nearestInteractNpc) {
+          openNpcDialogue(nearestInteractNpc);
+          return;
+        }
+        // Đang đứng gần người chơi khác -> Xem hồ sơ / Nhắn tin
+        if (nearestOtherPlayerId) {
+          openPlayerProfile(nearestOtherPlayerId);
+          return;
+        }
+        // Nếu xung quanh không có NPC nhưng trên bản đồ có NPC -> chỉ đường tới NPC gần nhất
+        const npcList = mapInfo.npcs || [];
+        if (npcList.length > 0) {
+          let closest = npcList[0], minDist = Infinity;
+          npcList.forEach(n => {
+            const d = Math.hypot(n.x - gx, n.y - gy);
+            if (d < minDist) { minDist = d; closest = n; }
+          });
+          showToast(`🧭 Hãy lại gần ${closest.name || 'NPC'} (X:${closest.x}, Y:${closest.y}) để tương tác!`, 'info');
+        } else {
+          showToast('👣 Di chuyển lại gần NPC hoặc người chơi khác để tương tác!', 'info');
+        }
+      };
+      btnInteract.addEventListener("touchstart", handlePrimaryAction, { passive: false });
+      btnInteract.addEventListener("click", (e) => {
+        if ('ontouchstart' in window) return;
+        handlePrimaryAction(e);
+      });
+    }
+
+    // 2. Nút B (Chạy nhanh / Sprint): Giữ để tăng tốc hoặc chạm để bật/tắt
+    if (btnSprint) {
+      const startSprint = (e) => {
+        e.preventDefault();
+        isSprinting = true;
+        btnSprint.classList.add("active-sprint");
+      };
+      const stopSprint = (e) => {
+        e.preventDefault();
+        isSprinting = false;
+        btnSprint.classList.remove("active-sprint");
+      };
+      btnSprint.addEventListener("touchstart", startSprint, { passive: false });
+      btnSprint.addEventListener("touchend", stopSprint, { passive: false });
+      btnSprint.addEventListener("touchcancel", stopSprint, { passive: false });
+      btnSprint.addEventListener("mousedown", startSprint);
+      window.addEventListener("mouseup", () => {
+        if (isSprinting) {
+          isSprinting = false;
+          btnSprint.classList.remove("active-sprint");
+        }
+      });
+    }
+
+    // 3. Nút Y (Cửa hàng Skin): Mở ngay shop đổi trang phục bằng xu
+    if (btnShop) {
+      const toggleShop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (merchantModal.style.display === "flex") {
+          closeMerchantModal();
+        } else {
+          openMerchantModal();
+        }
+      };
+      btnShop.addEventListener("touchstart", toggleShop, { passive: false });
+      btnShop.addEventListener("click", (e) => {
+        if ('ontouchstart' in window) return;
+        toggleShop(e);
+      });
+    }
+
+    // 4. Nút X (Biểu cảm / Emote nhanh): Bật menu cảm xúc & bắn bong bóng chat trên đầu nhân vật
+    if (btnEmote && emoteWheel) {
+      const toggleEmoteWheel = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        emoteWheel.classList.toggle("open");
+      };
+      btnEmote.addEventListener("touchstart", toggleEmoteWheel, { passive: false });
+      btnEmote.addEventListener("click", (e) => {
+        if ('ontouchstart' in window) return;
+        toggleEmoteWheel(e);
+      });
+
+      emoteWheel.querySelectorAll(".emote-item").forEach(item => {
+        const sendQuickEmote = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const text = item.getAttribute("data-emote");
+          emoteWheel.classList.remove("open");
+          if (!text || !playerId) return;
+          const msg = {
+            uid: playerId,
+            name: (players[playerId] && players[playerId].name) || 'Player',
+            text,
+            ts: Date.now(),
+          };
+          chatRefFor('map').push(msg);
+          if (playerElements[playerId]) showChatBubble(playerId, text);
+        };
+        item.addEventListener("touchstart", sendQuickEmote, { passive: false });
+        item.addEventListener("click", (e) => {
+          if ('ontouchstart' in window) return;
+          sendQuickEmote(e);
+        });
+      });
+
+      document.addEventListener("touchstart", (e) => {
+        if (emoteWheel.classList.contains("open") && !emoteWheel.contains(e.target) && e.target !== btnEmote) {
+          emoteWheel.classList.remove("open");
+        }
+      }, { passive: true });
+    }
+
+    // Phím tắt bàn phím bổ trợ (Shift để chạy nhanh, Phím E để tương tác, Phím B mở Shop)
+    document.addEventListener("keydown", (e) => {
+      if (chatInputFocused) return;
+      if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
+        isSprinting = true;
+        if (btnSprint) btnSprint.classList.add("active-sprint");
+      } else if (e.code === "KeyE" && !isInDialogue) {
+        const gx = Math.floor(localX / TILE), gy = Math.floor(localY / TILE);
+        checkNpcInteraction(gx, gy);
+        if (nearestInteractNpc) openNpcDialogue(nearestInteractNpc);
+        else if (nearestOtherPlayerId) openPlayerProfile(nearestOtherPlayerId);
+      } else if (e.code === "KeyB") {
+        if (merchantModal.style.display === "flex") closeMerchantModal();
+        else openMerchantModal();
+      }
+    });
+    document.addEventListener("keyup", (e) => {
+      if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
+        isSprinting = false;
+        if (btnSprint) btnSprint.classList.remove("active-sprint");
+      }
+    });
   }
 
   // ─── PLAYER RENDERING ────────────────────────────────────────
